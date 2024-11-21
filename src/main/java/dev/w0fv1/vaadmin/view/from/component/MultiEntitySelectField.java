@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -48,12 +49,15 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
 
     @Override
     void setData(List<ID> data) {
-
+        this.entitySelectButton.setValue(new ArrayList<>() {{
+            addAll(data);
+        }});
     }
 
     @Override
     public void clear() {
-
+        this.entitySelectButton.clear();
     }
+
 
 }

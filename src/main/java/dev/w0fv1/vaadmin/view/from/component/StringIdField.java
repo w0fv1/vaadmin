@@ -1,31 +1,31 @@
 package dev.w0fv1.vaadmin.view.from.component;
 
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 
+@Slf4j
+public class StringIdField extends BaseFormField<String> {
 
-public class LongTextInputField extends BaseFormField<String> {
+    private final TextField textField;
 
-
-    private final TextArea textField;
-
-    public LongTextInputField(Field field, BaseFormModel formModel) {
+    public StringIdField(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
+        this.textField = new TextField();
 
-        this.textField = new TextArea();
         this.textField.setId(field.getName()); // 设置唯一的 fieldId
 
         this.textField.setPlaceholder("请输入 " + getFormField().title()); // 占位符
+
         String modelData = getModelData();
 
         if (modelData != null) {
             this.textField.setValue(modelData);
         }
-
+        this.textField.setEnabled(false);
         this.textField.setEnabled(getFormField().enabled());
 
         this.add(textField);
@@ -45,5 +45,4 @@ public class LongTextInputField extends BaseFormField<String> {
     public void clear() {
         this.textField.clear();
     }
-
 }

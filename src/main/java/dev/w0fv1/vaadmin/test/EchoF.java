@@ -16,8 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 @FormConfig(title = "回声表单")
 public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
+
     @FormField(id = true)
     private Long id;
+
     @NotBlank(message = "消息不能为空")
     @Size(min = 10, max = 255, message = "消息长度必须在10到255个字符之间")
     @FormField(title = "信息")
@@ -69,7 +71,11 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
 
     @Override
     public void translate(Echo model) {
-
+       model.setMessage(message);
+       model.setFlag(flag);
+       model.setKeywords(keywords);
+       model.setLabels(labels);
+       model.setStatus(status);
     }
 
 

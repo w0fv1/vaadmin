@@ -58,12 +58,14 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
 
     @Override
     void setData(ID data) {
-
+        this.entitySelectButton.setValue(new ArrayList<>() {{
+            add(data);
+        }});
     }
 
     @Override
     public void clear() {
-
+        this.entitySelectButton.clear();
     }
 
 }

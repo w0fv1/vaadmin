@@ -38,7 +38,7 @@ public class Echo implements BaseManageEntity<Long> {
     @Convert(converter = StringListConverter.class)
     private List<String> keywords = new ArrayList<>();
 
-    @ElementCollection(targetClass = Label.class)
+    @ElementCollection(targetClass = Label.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "echo_labels", joinColumns = @JoinColumn(name = "echo_id"))
     @Enumerated(EnumType.STRING)
     private List<Label> labels = new ArrayList<>();
@@ -76,21 +76,22 @@ public class Echo implements BaseManageEntity<Long> {
     public Echo(String message) {
         this.message = message;
     }
+
     @Converter
     public static class StringListConverter implements AttributeConverter<List<String>, String> {
         @Override
         public String convertToDatabaseColumn(List<String> strings) {
-            if (strings == null){
+            if (strings == null) {
                 return "";
             }
-            if (strings.isEmpty()){
+            if (strings.isEmpty()) {
                 return "";
             }
             StringBuilder result = new StringBuilder();
-            for (String string : strings){
+            for (String string : strings) {
                 result.append(string).append(";");
             }
-            return result.substring(0, result.length()-1);
+            return result.substring(0, result.length() - 1);
         }
 
         @Override
@@ -99,11 +100,11 @@ public class Echo implements BaseManageEntity<Long> {
         }
 
     }
+
     public enum Label {
         NEW,
         HOT,
         RECOMMENDED,
-
     }
 
     public enum Status {

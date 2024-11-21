@@ -47,7 +47,7 @@ public class TagGroup extends FlexLayout {
      * @param tag 要添加的标签
      */
     public void addTag(String tag) {
-        if (!tags.contains(tag)) { // 确保标签唯一
+        if (!tags.contains(tag) && !tag.isEmpty()) { // 确保标签唯一
             tags.add(tag);
             Span badge = createBadge(tag);
             add(badge);

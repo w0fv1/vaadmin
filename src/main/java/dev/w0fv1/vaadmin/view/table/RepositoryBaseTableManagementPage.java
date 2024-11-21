@@ -12,7 +12,6 @@ import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.TransactionStatus;
@@ -54,12 +53,9 @@ public abstract class RepositoryBaseTableManagementPage<
         super.build();
     }
 
-    public void init() {
-        buildRepositoryActionGrid();
-        initView();
-    }
-
-    private void initView() {
+    @Override
+    public void onInit() {
+        buildRepositoryActionColumn();
         createDialog = new Dialog();
 
         VerticalLayout dialogLayout;
@@ -81,7 +77,6 @@ public abstract class RepositoryBaseTableManagementPage<
     }
 
 
-    @Transactional
     @Override
     public List<T> loadData(int page) {
         List<T> dataList = genericRepository.execute(new TransactionCallback<List<T>>() {
@@ -138,7 +133,7 @@ public abstract class RepositoryBaseTableManagementPage<
         super.jumpPage(0);
     }
 
-    public void buildRepositoryActionGrid() {
+    public void buildRepositoryActionColumn() {
 
         super.extComponentColumn(
                 (ValueProvider<T, Component>) t -> {
@@ -148,21 +143,16 @@ public abstract class RepositoryBaseTableManagementPage<
                     button.addClickListener((ComponentEventListener<ClickEvent<Button>>) event -> {
                         Dialog updateDialog = new Dialog();
                         VerticalLayout dialogLayout = null;
-                        try {
-                            dialogLayout = new RepositoryForm<>(
-                                    this.formClass,
-                                    () -> {
-                                        updateDialog.close();
-                                        reloadCurrentData();
-                                    }, () -> {
-                                updateDialog.close();
-                                reloadCurrentData();
-                            }, genericRepository
-                            );
-                        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                                 IllegalAccessException e) {
-                            throw new RuntimeException(e);
-                        }
+                        dialogLayout = new RepositoryForm<>(
+                                t.toFormModel(),
+                                () -> {
+                                    updateDialog.close();
+                                    reloadCurrentData();
+                                }, () -> {
+                            updateDialog.close();
+                            reloadCurrentData();
+                        }, genericRepository
+                        );
                         updateDialog.add(dialogLayout);
                         add(updateDialog);
                         updateDialog.open();

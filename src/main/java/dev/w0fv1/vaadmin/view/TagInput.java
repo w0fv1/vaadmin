@@ -64,7 +64,7 @@ public class TagInput extends VerticalLayout {
      */
     public void setTags(List<String> tags) {
         tagGroup.clearTags();
-        if (tags != null) {
+        if (tags != null && !tags.isEmpty()) {
             tags.forEach(tagGroup::addTag);
         }
     }

@@ -33,6 +33,7 @@ public class EntitySelectButton<
         EntitySelectPage.OnFinish<ID> onFinishCallback = selectedData -> {
 
             if (selectedData != null && !selectedData.isEmpty()) {
+                selectedItems.clear();
                 selectedItems.addAll(new ArrayList<>(selectedData));
 
                 setText("ID为" + selectedItems + "的" + selectedData.size() + "条数据(点击重选)");
@@ -64,6 +65,7 @@ public class EntitySelectButton<
             public void onComponentEvent(ClickEvent<Button> event) {
                 dialog.open();
                 selectPage.refresh();
+                selectPage.setSelectedData(selectedItems);
             }
         };
         this.addClickListener(clickEventComponentEventListener);

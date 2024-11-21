@@ -53,6 +53,14 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
         this.grid = new Grid<>();
     }
 
+    @PostConstruct
+    public void init() {
+        setData(loadData(page));
+        configurePaginationComponent();
+        onInit();
+    }
+
+
     public void build() {
         buildTitle();
         buildSubAction();
@@ -97,12 +105,6 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
         }
     }
 
-
-    @PostConstruct
-    public void init() {
-        setData(loadData(page));
-        configurePaginationComponent();
-    }
 
     public void refresh() {
         resetFilter();
@@ -331,6 +333,10 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
     }
 
     abstract public void onCreate();
+
+    public void onInit() {
+
+    }
 
     abstract public Long getTotalSize();
 

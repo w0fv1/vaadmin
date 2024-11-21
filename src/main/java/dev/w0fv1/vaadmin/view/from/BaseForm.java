@@ -108,6 +108,8 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         log.info(formModel.toString());
 
         this.onSave(formModel);
+
+        this.clear();
     }
 
     abstract public void onSave(F data);
@@ -156,10 +158,14 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
         Class<?> type = field.getType();
         FormField fromField = field.getAnnotation(FormField.class);
-        if (type.equals(String.class) &&(!field.isAnnotationPresent(Size.class) || (field.getAnnotation(Size.class).max() < 256))) {
+        if (type.equals(String.class) && (!field.isAnnotationPresent(Size.class) || (field.getAnnotation(Size.class).max() < 256))) {
             formFieldComponent = new TextInputField(field, formModel);
         } else if (type.equals(String.class) && (field.isAnnotationPresent(Size.class) && (field.getAnnotation(Size.class).max() > 256))) {
             formFieldComponent = new LongTextInputField(field, formModel);
+        } else if (fromField.id() && type.equals(String.class)) {
+            formFieldComponent = new StringIdField(field, formModel);
+        } else if (fromField.id() && type.equals(Long.class)) {
+            formFieldComponent = new LongIdField(field, formModel);
         } else if (type.equals(Double.class)) {
             formFieldComponent = new NumberInputField(field, formModel);
         } else if (type.equals(Boolean.class)) {
