@@ -29,12 +29,12 @@ public class RepositoryForm<
 
     private final GenericRepository genericRepository;
     private final Runnable onCancel;
-    private final Runnable onSave;
+    private final OnSave<ID> onSave;
 
 
     private final Boolean isUpdate;
 
-    public RepositoryForm(F fromModel, Runnable onSave, Runnable onCancel, GenericRepository genericRepository) {
+    public RepositoryForm(F fromModel, OnSave<ID> onSave, Runnable onCancel, GenericRepository genericRepository) {
         super(fromModel, fromModel.getId() != null);
         this.isUpdate = fromModel.getId() != null;
         this.genericRepository = genericRepository;
@@ -44,7 +44,7 @@ public class RepositoryForm<
         super.build();
     }
 
-    public RepositoryForm(Class<F> fromClass, Runnable onSave, Runnable onCancel, GenericRepository genericRepository) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public RepositoryForm(Class<F> fromClass, OnSave<ID> onSave, Runnable onCancel, GenericRepository genericRepository) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         this(fromClass.getDeclaredConstructor().newInstance(), onSave, onCancel, genericRepository);
     }
 
@@ -114,6 +114,7 @@ public class RepositoryForm<
                     }
                 }
                 saveModel = genericRepository.save(saveModel);
+                onSave.run(saveModel.getId());
 
             } catch (Exception e) {
                 // 回滚事务
@@ -123,7 +124,13 @@ public class RepositoryForm<
             return saveModel;
         });
         BaseMainView.showNotification("保存成功！", NotificationVariant.LUMO_SUCCESS);
-        onSave.run();
+    }
+
+    public interface OnSave<ID> {
+        /**
+         * Runs this operation.
+         */
+        void run(ID id);
     }
 
 

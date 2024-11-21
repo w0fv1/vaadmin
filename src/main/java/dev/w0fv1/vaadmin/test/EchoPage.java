@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -14,6 +15,8 @@ import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
 import lombok.extern.slf4j.Slf4j;
+
+import static dev.w0fv1.vaadmin.view.framework.BaseMainView.showNotification;
 
 @Slf4j
 @Route(value = "/home", layout = MainView.class)
@@ -77,5 +80,10 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
     @Override
     public Component extDataAction() {
         return new Button("extDataAction Message");
+    }
+
+    @Override
+    public void onSave(Long aLong) {
+        showNotification(aLong + "被创建了", NotificationVariant.LUMO_SUCCESS);
     }
 }

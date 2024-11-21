@@ -44,6 +44,7 @@ public abstract class RepositoryBaseTableManagementPage<
 
     private Dialog createDialog;
 
+    abstract public void onSave(ID id);
 
     public RepositoryBaseTableManagementPage(Class<T> tableClass, Class<F> formClass, Class<E> entityClass) {
         super(tableClass);
@@ -61,7 +62,8 @@ public abstract class RepositoryBaseTableManagementPage<
         VerticalLayout dialogLayout;
         try {
             dialogLayout = new RepositoryForm<>(
-                    this.formClass, () -> {
+                    this.formClass, (ID id) -> {
+                this.onSave(id);
                 createDialog.close();
                 reloadCurrentData();
             }, () -> {
@@ -145,7 +147,7 @@ public abstract class RepositoryBaseTableManagementPage<
                         VerticalLayout dialogLayout = null;
                         dialogLayout = new RepositoryForm<>(
                                 t.toFormModel(),
-                                () -> {
+                                (ID id) -> {
                                     updateDialog.close();
                                     reloadCurrentData();
                                 }, () -> {
