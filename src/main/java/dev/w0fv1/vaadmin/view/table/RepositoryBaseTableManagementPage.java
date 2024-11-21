@@ -9,7 +9,7 @@ import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.from.RepositoryForm;
 import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
-import dev.w0fv1.vaadmin.view.model.table.BaseManageEntityTableModel;
+import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -26,7 +26,7 @@ import java.util.List;
 
 @Slf4j
 public abstract class RepositoryBaseTableManagementPage<
-        T extends BaseManageEntityTableModel<E, ID>,
+        T extends BaseEntityTableModel<E, ID>,
         F extends BaseEntityFormModel<E, ID>,
         E extends BaseManageEntity<ID>,
         ID> extends BaseTableManagementPage<T> {

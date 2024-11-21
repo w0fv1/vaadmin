@@ -51,8 +51,8 @@ dependencies {
 // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 
-    implementation("dev.w0fv1:fmapper:0.0.4") // 替换为实际的 group 和 version
-    annotationProcessor("dev.w0fv1:fmapper:0.0.4") // 注解处理器依赖
+    implementation("dev.w0fv1:fmapper:0.0.5") // 替换为实际的 group 和 version
+    annotationProcessor("dev.w0fv1:fmapper:0.0.5") // 注解处理器依赖
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -106,10 +106,10 @@ publishing {
                 password = System.getProperty("gpr.token") // 从系统属性中读取 Token
             }
         }
-        maven {
-            name = "local"
-            url = uri("${layout.buildDirectory}/repo")
-        }
+//        maven {
+//            name = "local"
+//            url = uri("${layout.buildDirectory}/repo")
+//        }
     }
 }
 

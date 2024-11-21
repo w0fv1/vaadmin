@@ -6,7 +6,7 @@ import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public interface BaseManageEntityTableModel<
+public interface BaseEntityTableModel<
         E extends BaseManageEntity<ID>,
         ID
         > extends BaseManageEntity<ID>, BaseTableModel {
@@ -29,7 +29,7 @@ public interface BaseManageEntityTableModel<
                 ParameterizedType pType = (ParameterizedType) type;
                 Type rawType = pType.getRawType();
 
-                if (rawType instanceof Class && BaseManageEntityTableModel.class.isAssignableFrom((Class<?>) rawType)) {
+                if (rawType instanceof Class && BaseEntityTableModel.class.isAssignableFrom((Class<?>) rawType)) {
                     Type actualType = pType.getActualTypeArguments()[0];
                     if (actualType instanceof Class<?>) {
                         return (Class<E>) actualType;

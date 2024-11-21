@@ -1,6 +1,6 @@
 package dev.w0fv1.vaadmin.test;
 
-import dev.w0fv1.vaadmin.view.model.table.BaseManageEntityTableModel;
+import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
 import dev.w0fv1.vaadmin.view.model.table.TableConfig;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @TableConfig(title = "回声管理", description = "这是一个测试页面, 用于测试后台框架的建立", likeSearch = true)
 @NoArgsConstructor
-public class EchoT implements BaseManageEntityTableModel<Echo, Long> {
+public class EchoT implements BaseEntityTableModel<Echo, Long> {
     private Long id;
     private String message;
 
