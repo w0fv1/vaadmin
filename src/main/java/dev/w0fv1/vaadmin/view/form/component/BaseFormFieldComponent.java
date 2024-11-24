@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
@@ -14,14 +14,14 @@ import static dev.w0fv1.vaadmin.component.FileValidator.validFile;
 import static dev.w0fv1.vaadmin.util.TypeUtil.defaultIfNull;
 
 @Getter
-public abstract class BaseFormField<Type> extends VerticalLayout {
+public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     private final Field field;
     private final BaseFormModel formModel;
     private final FormField formField;
 
     private ErrorMessage errorMessage;
 
-    protected BaseFormField(Field field, BaseFormModel formModel) {
+    public BaseFormFieldComponent(Field field, BaseFormModel formModel) {
         this.field = field;
         this.formModel = formModel;
         this.formField = field.getAnnotation(FormField.class);
@@ -29,7 +29,7 @@ public abstract class BaseFormField<Type> extends VerticalLayout {
         buildTitle();
     }
 
-    void buildTitle() {
+    public void buildTitle() {
         String title = formField.title().isEmpty() ? field.getName() : formField.title();
         if (!formField.enabled()) {
             title += "(不可编辑)";
@@ -42,13 +42,13 @@ public abstract class BaseFormField<Type> extends VerticalLayout {
     }
 
 
-    abstract Type getData();
+    public abstract Type getData();
 
     public void save() {
         setModelData();
     }
 
-    abstract void setData(Type data);
+    public abstract void setData(Type data);
 
     @SuppressWarnings("unchecked")
     public Type getModelData() {
@@ -87,5 +87,5 @@ public abstract class BaseFormField<Type> extends VerticalLayout {
         }
     }
 
-    abstract public void clear();
+    public abstract void clear();
 }

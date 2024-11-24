@@ -1,26 +1,26 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
-import com.vaadin.flow.component.textfield.TextField;
-import dev.w0fv1.vaadmin.view.ErrorMessage;
+import com.vaadin.flow.component.textfield.TextArea;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 
 import java.lang.reflect.Field;
 
 
-public class TextInputField extends BaseFormField<String> {
+public class LongTextInputField extends BaseFormFieldComponent<String> {
 
 
-    private final TextField textField;
+    private final TextArea textField;
 
-    public TextInputField(Field field, BaseFormModel formModel) {
+    public LongTextInputField(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
 
-        this.textField = new TextField();
+        this.textField = new TextArea();
         this.textField.setId(field.getName()); // 设置唯一的 fieldId
 
         this.textField.setPlaceholder("请输入 " + getFormField().title()); // 占位符
         String modelData = getModelData();
+
         if (modelData != null) {
             this.textField.setValue(modelData);
         }

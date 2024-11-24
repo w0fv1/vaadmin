@@ -7,7 +7,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.ValueProvider;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
-import dev.w0fv1.vaadmin.view.from.RepositoryForm;
+import dev.w0fv1.vaadmin.view.form.RepositoryForm;
 import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
 import jakarta.annotation.Resource;

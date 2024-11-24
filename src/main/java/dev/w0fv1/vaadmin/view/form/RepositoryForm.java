@@ -1,13 +1,13 @@
-package dev.w0fv1.vaadmin.view.from;
+package dev.w0fv1.vaadmin.view.form;
 
 import com.vaadin.flow.component.notification.NotificationVariant;
 import dev.w0fv1.mapper.Mapper;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.framework.BaseMainView;
-import dev.w0fv1.vaadmin.view.from.component.BaseFormField;
-import dev.w0fv1.vaadmin.view.from.component.MultiEntitySelectField;
-import dev.w0fv1.vaadmin.view.from.component.SingleEntitySelectField;
+import dev.w0fv1.vaadmin.view.form.component.BaseFormFieldComponent;
+import dev.w0fv1.vaadmin.view.form.component.MultiEntitySelectField;
+import dev.w0fv1.vaadmin.view.form.component.SingleEntitySelectField;
 import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.model.form.FormField;
 import dev.w0fv1.vaadmin.view.model.form.FormEntityField;
@@ -54,7 +54,7 @@ public class RepositoryForm<
     }
 
     @Override
-    BaseFormField<?> extMapComponent(Field field, F formModel) {
+    BaseFormFieldComponent<?> extMapComponent(Field field, F formModel) {
 
         if (field.isAnnotationPresent(FormEntityField.class) && Collection.class.isAssignableFrom(field.getType())) {
             return new MultiEntitySelectField<>(field, formModel, genericRepository);

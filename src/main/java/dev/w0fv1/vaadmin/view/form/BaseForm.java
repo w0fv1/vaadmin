@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.from;
+package dev.w0fv1.vaadmin.view.form;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -11,12 +11,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 import dev.w0fv1.vaadmin.view.model.form.FormConfig;
 import dev.w0fv1.vaadmin.view.model.form.FormField;
-import dev.w0fv1.vaadmin.view.from.component.*;
+import dev.w0fv1.vaadmin.view.form.component.*;
 import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -33,7 +34,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
     private final Boolean isUpdate;
 
-    private final List<BaseFormField<?>> fieldComponents = new ArrayList<>();
+    private final List<BaseFormFieldComponent<?>> fieldComponents = new ArrayList<>();
 
     protected BaseForm(F fromModel, Boolean isUpdate) {
         if (fromModel == null) {
@@ -88,11 +89,11 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
 
     private void save() {
-        for (BaseFormField<?> fieldComponent : fieldComponents) {
+        for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.setModelData();
         }
         List<Boolean> validResults = new ArrayList<>();
-        for (BaseFormField<?> fieldComponent : fieldComponents) {
+        for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             Boolean valid = fieldComponent.valid();
             validResults.add(valid);
         }
@@ -102,7 +103,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
             }
         }
 
-        for (BaseFormField<?> fieldComponent : fieldComponents) {
+        for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.save();
         }
         log.info(formModel.toString());
@@ -115,7 +116,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     abstract public void onSave(F data);
 
     private void clear() {
-        for (BaseFormField<?> fieldComponent : fieldComponents) {
+        for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.clear();
         }
     }
@@ -150,7 +151,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     }
 
     private Component mapComponent(Field field) {
-        BaseFormField<?> formFieldComponent = this.extMapComponent(field, this.formModel);
+        BaseFormFieldComponent<?> formFieldComponent = this.extMapComponent(field, this.formModel);
         if (formFieldComponent != null) {
             fieldComponents.add(formFieldComponent);
             return formFieldComponent;
@@ -158,7 +159,18 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
         Class<?> type = field.getType();
         FormField fromField = field.getAnnotation(FormField.class);
-        if (type.equals(String.class) && (!field.isAnnotationPresent(Size.class) || (field.getAnnotation(Size.class).max() < 256))) {
+
+        if (field.isAnnotationPresent(FormFieldComponent.class)) {
+            Class<? extends CustomFormFieldComponentBuilder> fieldComponentBuilder = field.getAnnotation(FormFieldComponent.class).value();
+
+            try {
+                CustomFormFieldComponentBuilder customFormFieldComponentBuilder = fieldComponentBuilder.getDeclaredConstructor().newInstance();
+                formFieldComponent = customFormFieldComponentBuilder.build(field, formModel);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        } else if (type.equals(String.class) && (!field.isAnnotationPresent(Size.class) || (field.getAnnotation(Size.class).max() < 256))) {
             formFieldComponent = new TextInputField(field, formModel);
         } else if (type.equals(String.class) && (field.isAnnotationPresent(Size.class) && (field.getAnnotation(Size.class).max() > 256))) {
             formFieldComponent = new LongTextInputField(field, formModel);
@@ -187,7 +199,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         return formFieldComponent;
     }
 
-    abstract BaseFormField<?> extMapComponent(Field field, F formModel);
+    abstract BaseFormFieldComponent<?> extMapComponent(Field field, F formModel);
 
     private void buildTitle() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();

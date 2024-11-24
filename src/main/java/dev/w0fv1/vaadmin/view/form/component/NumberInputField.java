@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import com.vaadin.flow.component.textfield.NumberField;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
@@ -7,11 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;
 
 @Slf4j
-public class LongIdField extends BaseFormField<Long> {
+public class NumberInputField extends BaseFormFieldComponent<Double> {
 
     private final NumberField numberField;
 
-    public LongIdField(Field field, BaseFormModel formModel) {
+    public NumberInputField(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
         this.numberField = new NumberField();
@@ -20,26 +20,25 @@ public class LongIdField extends BaseFormField<Long> {
 
         this.numberField.setPlaceholder("请输入 " + getFormField().title()); // 占位符
 
-        Long modelData = getModelData();
+        Double modelData  = getModelData();
 
         if (modelData != null) {
-            this.numberField.setValue(modelData.doubleValue());
+            this.numberField.setValue(modelData);
         }
 
         this.numberField.setEnabled(getFormField().enabled());
-        this.numberField.setEnabled(false);
 
         this.add(numberField);
     }
 
     @Override
-    public Long getData() {
-        return this.numberField.getValue().longValue();
+    public Double getData() {
+        return this.numberField.getValue();
     }
 
     @Override
-    public void setData(Long data) {
-        this.numberField.setValue(data.doubleValue());
+    public void setData(Double data) {
+        this.numberField.setValue(data);
     }
 
     @Override

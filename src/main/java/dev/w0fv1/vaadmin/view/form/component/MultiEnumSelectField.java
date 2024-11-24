@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
@@ -7,7 +7,7 @@ import dev.w0fv1.vaadmin.view.model.form.FormField;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class MultiEnumSelectField extends BaseFormField<List<Enum<?>>> {
+public class MultiEnumSelectField extends BaseFormFieldComponent<List<Enum<?>>> {
     private final MultiSelectComboBox<Enum<?>> multiSelectComboBox;
 
     public MultiEnumSelectField(Field field, BaseFormModel formModel) {

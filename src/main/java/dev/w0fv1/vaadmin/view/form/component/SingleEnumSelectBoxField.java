@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 
@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 
 import com.vaadin.flow.component.combobox.ComboBox;
 
-public class SingleEnumSelectBoxField extends BaseFormField<Enum<?>> {
+public class SingleEnumSelectBoxField extends BaseFormFieldComponent<Enum<?>> {
     private final ComboBox<Enum<?>> comboBox;
 
     public SingleEnumSelectBoxField(Field field, BaseFormModel formModel) {

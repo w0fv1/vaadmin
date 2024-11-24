@@ -1,11 +1,11 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import com.vaadin.flow.component.checkbox.Checkbox;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 
 import java.lang.reflect.Field;
 
-public class BooleanCheckBoxField extends BaseFormField<Boolean> {
+public class BooleanCheckBoxField extends BaseFormFieldComponent<Boolean> {
     private final Checkbox checkBox;
 
     public BooleanCheckBoxField(Field field, BaseFormModel formModel) {

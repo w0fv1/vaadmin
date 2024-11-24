@@ -1,9 +1,6 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -14,10 +11,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import dev.w0fv1.vaadmin.view.ErrorMessage;
+
 @Slf4j
 @Getter
-public class DateTimeField extends BaseFormField<OffsetDateTime> {
+public class DateTimeField extends BaseFormFieldComponent<OffsetDateTime> {
     @NotNull
     private final DateTimePicker dateTimePicker;
 

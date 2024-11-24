@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Getter
-public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends BaseFormField<ID> {
+public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends BaseFormFieldComponent<ID> {
 
     private final EntitySelectButton<E, ID> entitySelectButton;
     private Boolean isSingle;
@@ -47,7 +47,7 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
     }
 
     @Override
-    ID getData() {
+    public ID getData() {
         if (this.entitySelectButton.getValue().isEmpty()) {
             return null;
         }
@@ -57,7 +57,7 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
 
 
     @Override
-    void setData(ID data) {
+    public void setData(ID data) {
         this.entitySelectButton.setValue(new ArrayList<>() {{
             add(data);
         }});

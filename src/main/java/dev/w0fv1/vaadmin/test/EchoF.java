@@ -1,6 +1,10 @@
 package dev.w0fv1.vaadmin.test;
 
 import dev.w0fv1.vaadmin.test.EchoEntityFieldMapper;
+import dev.w0fv1.vaadmin.view.form.FormFieldComponent;
+import dev.w0fv1.vaadmin.view.form.component.SampleFileUploadFieldComponent;
+import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponent;
+import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponentBuilder;
 import dev.w0fv1.vaadmin.view.model.form.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,6 +33,17 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @Size(min = 10, max = 1255, message = "消息长度必须在10到255个字符之间")
     @FormField(title = "长信息")
     private String longMessage;
+
+    @FormFieldComponent(SampleFormFieldComponentBuilder.class)
+    @NotBlank(message = "消息不能为空")
+    @Size(min = 10, max = 1255, message = "消息长度必须在10到255个字符之间")
+    @FormField(title = "定制化信息组件")
+    private String customMessage;
+
+    @FormFieldComponent(SampleFileUploadFieldComponent.SampleFileFormFieldComponentBuilder.class)
+    @NotBlank(message = "上传不能为空")
+    @FormField(title = "上传文件示例")
+    private String fileUrl;
 
     @FormField(title = "关键词", subType = String.class)
     private List<String> keywords;
@@ -71,11 +86,11 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
 
     @Override
     public void translate(Echo model) {
-       model.setMessage(message);
-       model.setFlag(flag);
-       model.setKeywords(keywords);
-       model.setLabels(labels);
-       model.setStatus(status);
+        model.setMessage(message);
+        model.setFlag(flag);
+        model.setKeywords(keywords);
+        model.setLabels(labels);
+        model.setStatus(status);
     }
 
 

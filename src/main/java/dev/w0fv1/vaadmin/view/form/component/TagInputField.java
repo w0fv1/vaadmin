@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.from.component;
+package dev.w0fv1.vaadmin.view.form.component;
 
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 import dev.w0fv1.vaadmin.view.TagInput;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * TagInputField 作为表单组件，封装 TagInput，并与表单模型同步。
  */
-public class TagInputField extends BaseFormField<List<String>> {
+public class TagInputField extends BaseFormFieldComponent<List<String>> {
     private final TagInput tagInput;
 
     /**
