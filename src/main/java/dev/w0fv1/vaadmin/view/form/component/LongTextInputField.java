@@ -9,21 +9,22 @@ import java.lang.reflect.Field;
 public class LongTextInputField extends BaseFormFieldComponent<String> {
 
 
-    private final TextArea textField;
+    private  TextArea textField;
 
     public LongTextInputField(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
 
+    }
+
+    @Override
+    public void initView() {
+
         this.textField = new TextArea();
-        this.textField.setId(field.getName()); // 设置唯一的 fieldId
+        this.textField.setId(getField().getName()); // 设置唯一的 fieldId
 
         this.textField.setPlaceholder("请输入 " + getFormField().title()); // 占位符
-        String modelData = getModelData();
 
-        if (modelData != null) {
-            this.textField.setValue(modelData);
-        }
 
         this.textField.setEnabled(getFormField().enabled());
 

@@ -3,6 +3,7 @@ package dev.w0fv1.vaadmin.view.form.component;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import dev.w0fv1.vaadmin.util.TypeUtil;
 import dev.w0fv1.vaadmin.view.ErrorMessage;
 import dev.w0fv1.vaadmin.view.model.form.FormField;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
@@ -18,15 +19,31 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     private final Field field;
     private final BaseFormModel formModel;
     private final FormField formField;
-
     private ErrorMessage errorMessage;
 
     public BaseFormFieldComponent(Field field, BaseFormModel formModel) {
+        this(field, formModel, true);
+    }
+
+    public BaseFormFieldComponent(Field field, BaseFormModel formModel, Boolean autoInitialize) {
         this.field = field;
         this.formModel = formModel;
         this.formField = field.getAnnotation(FormField.class);
         this.setPadding(false);
         buildTitle();
+
+        initView();
+
+        if (autoInitialize) {
+            setDefaultValue(getDefaultValue());
+        }
+    }
+
+
+    abstract public void initView();
+
+    public void setDefaultValue(Type defaultValue) {
+        setData(defaultValue);
     }
 
     public void buildTitle() {
@@ -53,13 +70,23 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     @SuppressWarnings("unchecked")
     public Type getModelData() {
         getField().setAccessible(true);
-        Type data = null;
+        Type data;
         try {
             data = (Type) getField().get(this.getFormModel());
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        return (Type) defaultIfNull(data, getField().getType());
+        return data;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Type getDefaultValue() {
+        Type data = getModelData();
+        if (data != null) return data;
+        if (!formField.defaultValue().isEmpty()) {
+            return (Type) TypeUtil.convert(formField.defaultValue(), field.getType());
+        }
+        return (Type) defaultIfNull(null, field.getType());
     }
 
     public Boolean valid() {

@@ -9,20 +9,20 @@ import java.lang.reflect.Field;
 public class TextInputField extends BaseFormFieldComponent<String> {
 
 
-    private final TextField textField;
+    private TextField textField;
 
     public TextInputField(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
 
-        this.textField = new TextField();
-        this.textField.setId(field.getName()); // 设置唯一的 fieldId
+    }
 
+    @Override
+    public void initView() {
+
+        this.textField = new TextField();
+        this.textField.setId(getField().getName()); // 设置唯一的 fieldId
         this.textField.setPlaceholder("请输入 " + getFormField().title()); // 占位符
-        String modelData = getModelData();
-        if (modelData != null) {
-            this.textField.setValue(modelData);
-        }
 
         this.textField.setEnabled(getFormField().enabled());
 

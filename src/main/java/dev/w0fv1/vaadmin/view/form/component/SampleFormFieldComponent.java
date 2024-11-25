@@ -8,20 +8,21 @@ import java.lang.reflect.Field;
 
 public class SampleFormFieldComponent extends BaseFormFieldComponent<String> {
 
-    private final TextField textField;
+    private TextField textField;
 
     public SampleFormFieldComponent(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
 
+    }
+
+    @Override
+    public void initView() {
+
         this.textField = new TextField();
-        this.textField.setId(field.getName()); // 设置唯一的 fieldId
+        this.textField.setId(getField().getName()); // 设置唯一的 fieldId
 
         this.textField.setPlaceholder("请输入 " + getFormField().title() + "这是一个定制化Form组件示例"); // 占位符
-        String modelData = getModelData();
-        if (modelData != null) {
-            this.textField.setValue(modelData);
-        }
 
         this.textField.setEnabled(getFormField().enabled());
 

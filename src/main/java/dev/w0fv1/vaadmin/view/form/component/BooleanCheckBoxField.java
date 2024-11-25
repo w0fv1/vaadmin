@@ -6,21 +6,19 @@ import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 import java.lang.reflect.Field;
 
 public class BooleanCheckBoxField extends BaseFormFieldComponent<Boolean> {
-    private final Checkbox checkBox;
+    private Checkbox checkBox;
 
     public BooleanCheckBoxField(Field field, BaseFormModel formModel) {
         super(field, formModel);
+    }
 
-        checkBox = new Checkbox();
+    @Override
+    public void initView() {
+        this.checkBox = new Checkbox();
 
         this.checkBox.setLabel(getFormField().title());
 
-        this.checkBox.setId(field.getName()); // 设置唯一的 fieldId
-
-        Boolean modelData = getModelData();
-        if (modelData != null) {
-            this.checkBox.setValue(modelData);
-        }
+        this.checkBox.setId(getField().getName()); // 设置唯一的 fieldId
 
         this.checkBox.setEnabled(getFormField().enabled());
 

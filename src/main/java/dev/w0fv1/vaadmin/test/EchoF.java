@@ -34,6 +34,15 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "长信息")
     private String longMessage;
 
+    @NotBlank(message = "消息不能为空")
+    @Size(min = 10, max = 1255, message = "消息长度必须在10到255个字符之间")
+    @FormField(title = "默认信息", defaultValue = "默认信息")
+    private String defaultMessage;
+
+    @FormField(title = "默认Bool", defaultValue = "true")
+    private Boolean defaultBooleanMessage;
+
+
     @FormFieldComponent(SampleFormFieldComponentBuilder.class)
     @NotBlank(message = "消息不能为空")
     @Size(min = 10, max = 1255, message = "消息长度必须在10到255个字符之间")

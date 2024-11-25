@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 public @interface FormEntityField {
     boolean entity() default true;
 
+
     Class<? extends Mapper> entityMapper() default Mapper.class;
 
     Class<? extends BaseManageEntity<?>> entityType();

@@ -16,28 +16,26 @@ import java.time.ZoneOffset;
 @Getter
 public class DateTimeField extends BaseFormFieldComponent<OffsetDateTime> {
     @NotNull
-    private final DateTimePicker dateTimePicker;
+    private  DateTimePicker dateTimePicker;
 
     public DateTimeField(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
+    }
+
+    @Override
+    public void initView() {
+
 
         this.dateTimePicker = new DateTimePicker();
-        this.dateTimePicker.setId(field.getName()); // 设置唯一的 fieldId
+        this.dateTimePicker.setId(getField().getName()); // 设置唯一的 fieldId
 
         this.dateTimePicker.setStep(Duration.ofMinutes(30)); // Set step to 30 minutes
-
-        OffsetDateTime modelData = getModelData();
-        if (modelData != null) {
-            this.dateTimePicker.setValue(modelData.toLocalDateTime());
-        }
 
         this.dateTimePicker.setEnabled(getFormField().enabled());
 
         this.add(this.dateTimePicker);
     }
-
-
 
     @Override
     public OffsetDateTime getData() {

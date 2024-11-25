@@ -21,7 +21,7 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
     private Boolean isSingle;
 
     public SingleEntitySelectField(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
-        super(field, formModel);
+        super(field, formModel, false);
 
         FormField formField = field.getAnnotation(FormField.class);
         FormEntityField formEntityField = field.getAnnotation(FormEntityField.class);
@@ -44,6 +44,12 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
 
 
         add(this.entitySelectButton);
+    }
+
+
+    @Override
+    public void initView() {
+
     }
 
     @Override

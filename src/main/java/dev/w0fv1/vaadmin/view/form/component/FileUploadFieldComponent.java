@@ -20,6 +20,10 @@ public abstract class FileUploadFieldComponent extends BaseFormFieldComponent<St
 
     public FileUploadFieldComponent(Field field, BaseFormModel formModel) {
         super(field, formModel);
+    }
+
+    @Override
+    public void initView() {
         uploadButton = new Button("上传" + this.getFormField().title());
 
         upload = new Upload(buffer);

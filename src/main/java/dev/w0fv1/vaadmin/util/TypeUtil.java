@@ -1,10 +1,26 @@
 package dev.w0fv1.vaadmin.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class TypeUtil {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static <T> T convert(String input, Class<T> targetType) {
+        if (input == null) return null;
+        try {
+            return objectMapper.convertValue(input, targetType);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T defaultIfNull(Object data, Class<T> clazz) {
@@ -32,6 +48,10 @@ public class TypeUtil {
             return (T) Byte.valueOf((byte) 0);
         } else if (clazz == OffsetDateTime.class) {
             return (T) OffsetDateTime.now();
+        } else if (clazz == List.class) {
+            return (T) new ArrayList();
+        } else if (clazz == Set.class) {
+            return (T) new HashSet();
         }
 
         // 如果类型不在上述范围内，可以根据需求返回 null 或抛出异常

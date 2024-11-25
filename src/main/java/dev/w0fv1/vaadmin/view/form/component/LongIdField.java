@@ -9,22 +9,20 @@ import java.lang.reflect.Field;
 @Slf4j
 public class LongIdField extends BaseFormFieldComponent<Long> {
 
-    private final NumberField numberField;
+    private NumberField numberField;
 
     public LongIdField(Field field, BaseFormModel formModel) {
         super(field, formModel);
+    }
 
+    @Override
+    public void initView() {
         this.numberField = new NumberField();
 
-        this.numberField.setId(field.getName()); // 设置唯一的 fieldId
+        this.numberField.setId(getField().getName()); // 设置唯一的 fieldId
 
         this.numberField.setPlaceholder("请输入 " + getFormField().title()); // 占位符
 
-        Long modelData = getModelData();
-
-        if (modelData != null) {
-            this.numberField.setValue(modelData.doubleValue());
-        }
 
         this.numberField.setEnabled(getFormField().enabled());
         this.numberField.setEnabled(false);

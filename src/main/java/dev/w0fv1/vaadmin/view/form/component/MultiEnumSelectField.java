@@ -8,28 +8,28 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class MultiEnumSelectField extends BaseFormFieldComponent<List<Enum<?>>> {
-    private final MultiSelectComboBox<Enum<?>> multiSelectComboBox;
+    private MultiSelectComboBox<Enum<?>> multiSelectComboBox;
 
     public MultiEnumSelectField(Field field, BaseFormModel formModel) {
         super(field, formModel);
 
-        FormField formField = field.getAnnotation(FormField.class);
+
+    }
+
+    @Override
+    public void initView() {
+        FormField formField = getField().getAnnotation(FormField.class);
         Class<?> subType = formField.subType();
 
         multiSelectComboBox = new MultiSelectComboBox<>();
         multiSelectComboBox.setItems((Enum<?>[]) subType.getEnumConstants());
         multiSelectComboBox.setPlaceholder("请选择 " + getFormField().title());
-        multiSelectComboBox.setId(field.getName());
+        multiSelectComboBox.setId(getField().getName());
 
         // 初始化值
         List<Enum<?>> initialValues = getModelData();
         if (initialValues != null) {
             multiSelectComboBox.setValue(initialValues);
-        }
-
-        List<Enum<?>> selectedValues = getModelData();
-        if (selectedValues != null) {
-            multiSelectComboBox.setValue(selectedValues);
         }
 
         // 设置是否可用

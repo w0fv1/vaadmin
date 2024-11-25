@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FormField {
     boolean id() default false;
+    String defaultValue() default "";
 
     String title() default "";
 
@@ -33,6 +34,11 @@ public @interface FormField {
         @Override
         public boolean id() {
             return false;
+        }
+
+        @Override
+        public String defaultValue() {
+            return "";
         }
 
         @Override
