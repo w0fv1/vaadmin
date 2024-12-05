@@ -13,7 +13,6 @@ import java.lang.reflect.Field;
 @Slf4j
 public abstract class FileUploadFieldComponent extends BaseFormFieldComponent<String> {
 
-    private final MemoryBuffer buffer = new MemoryBuffer();
     private Upload upload;
     private Button uploadButton;
 
@@ -24,14 +23,16 @@ public abstract class FileUploadFieldComponent extends BaseFormFieldComponent<St
 
     @Override
     public void initView() {
+        MemoryBuffer buffer = new MemoryBuffer();
+
         uploadButton = new Button("上传" + this.getFormField().title());
 
         upload = new Upload(buffer);
         upload.setUploadButton(uploadButton);
-
+        upload.setReceiver(buffer);
         // 上传完成事件监听器
         upload.addSucceededListener(event -> {
-            handleUploadSucceeded(this.buffer);
+            handleUploadSucceeded(buffer);
         });
 
         add(upload);

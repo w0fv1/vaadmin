@@ -10,7 +10,7 @@ plugins {
 group = "dev.w0fv1"
 version = "0.0.20"
 val springBootVersion = "3.3.5" // 设置 Spring Boot 版本
-val vaadinVersion = "24.5.1"
+val vaadinVersion = "24.5.7"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
