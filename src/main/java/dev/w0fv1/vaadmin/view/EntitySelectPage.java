@@ -85,6 +85,31 @@ public class EntitySelectPage<
             Class<E> entityClass,
             OnFinish<ID> onFinish,
             boolean singleSelection,
+            GenericRepository genericRepository,
+            GenericRepository.PredicateBuilder<E> builder
+    ) {
+
+        this.entityClass = entityClass;
+        this.onFinish = onFinish;
+        this.singleSelection = singleSelection;
+        this.genericRepository = genericRepository;
+
+        this.grid = new Grid<>(entityClass, false);
+        configureTitle();
+        configureSearchFields();
+        configureActionButtons();
+        configureDataGrid();
+        configurePaginationComponent();
+
+        add(grid, createPaginationLayout(), createActionButtonLayout());
+        predicateManager.putPredicate("init", builder);
+        applyFilters();
+    }
+
+    public EntitySelectPage(
+            Class<E> entityClass,
+            OnFinish<ID> onFinish,
+            boolean singleSelection,
             GenericRepository genericRepository
     ) {
 
@@ -353,7 +378,7 @@ public class EntitySelectPage<
         // Removed likeSearchInput.clear();
         idSearchInput.clear();
         uuidSearchInput.clear();
-        predicateManager.clearPredicates();
+        predicateManager.clearPredicatesWithOut("init");
         selectedItems.clear();
         jumpPage(0);
     }
@@ -363,7 +388,6 @@ public class EntitySelectPage<
      * Applies filters based on search inputs.
      */
     private void applyFilters() {
-        predicateManager.clearPredicates();
 
         // Removed like search filters
 

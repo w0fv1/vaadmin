@@ -17,10 +17,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -187,6 +184,13 @@ public class GenericRepository {
         // Clear all predicates
         public void clearPredicates() {
             predicateBuilders.clear();
+        }
+        public void clearPredicatesWithOut(String... keysToKeep) {
+            // Convert the keysToKeep array to a set for faster lookup
+            Set<String> keysSet = new HashSet<>(Arrays.asList(keysToKeep));
+
+            // Remove all predicates whose key is not in the specified keys
+            predicateBuilders.entrySet().removeIf(entry -> !keysSet.contains(entry.getKey()));
         }
 
         // Build predicates using the CriteriaBuilder and Root
