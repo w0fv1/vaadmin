@@ -13,6 +13,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
+import dev.w0fv1.vaadmin.view.EntitySelectPage;
 import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,12 +75,52 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
 
     @Override
     public Component extSubAction() {
-        return new Button("SubAction Message");
+        return new Button("打开数据选择测试", new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                Dialog dialog = new Dialog();
+                EntitySelectPage<Echo, Long> selectPage = new EntitySelectPage<>(
+                        Echo.class,
+                        (d) -> {
+                            log.info("select :{}", d);
+                            dialog.close();
+                        },
+                        true, // Set to true for single selection
+                        genericRepository,
+                        (cb, root, predicates) -> predicates.add(cb.equal(root.get("status"), Echo.Status.NORMAL))
+                );
+
+
+                dialog.add(selectPage);
+
+                add(dialog);
+                dialog.open();
+            }
+        });
     }
 
     @Override
     public Component extDataAction() {
         return new Button("extDataAction Message");
+    }
+
+    @Override
+    public Component extTitleAction() {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+
+        Button button = new Button("随机创建");
+
+        button.addClickListener(new ComponentEventListener<>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                echoService.randomEcho();
+                EchoPage.super.refresh();
+            }
+        });
+
+        horizontalLayout.add(button);
+
+        return horizontalLayout;
     }
 
     @Override

@@ -89,19 +89,7 @@ public class EntitySelectPage<
             GenericRepository.PredicateBuilder<E> builder
     ) {
 
-        this.entityClass = entityClass;
-        this.onFinish = onFinish;
-        this.singleSelection = singleSelection;
-        this.genericRepository = genericRepository;
-
-        this.grid = new Grid<>(entityClass, false);
-        configureTitle();
-        configureSearchFields();
-        configureActionButtons();
-        configureDataGrid();
-        configurePaginationComponent();
-
-        add(grid, createPaginationLayout(), createActionButtonLayout());
+        this(entityClass, onFinish, singleSelection, genericRepository);
         predicateManager.putPredicate("init", builder);
         applyFilters();
     }

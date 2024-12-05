@@ -38,6 +38,8 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
         echoF.setKeywords(keywords);
         echoF.setFlag(flag);
         echoF.setLabels(labels);
+        echoF.setDefaultMessage(longMessage);
+        echoF.setCustomMessage(message);
         echoF.setStatus(status);
         echoF.setCreatedTime(createdTime);
         echoF.setUpdatedTime(updatedTime);

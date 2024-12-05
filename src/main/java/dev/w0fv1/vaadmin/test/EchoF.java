@@ -50,7 +50,6 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     private String customMessage;
 
     @FormFieldComponent(SampleFileUploadFieldComponent.SampleFileFormFieldComponentBuilder.class)
-    @NotBlank(message = "上传不能为空")
     @FormField(title = "上传文件示例")
     private String fileUrl;
 
