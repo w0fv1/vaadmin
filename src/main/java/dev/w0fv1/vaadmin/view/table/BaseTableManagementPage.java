@@ -71,6 +71,7 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
         buildActionGrid();
         add(grid);
         extColumns();
+        add(extPage());
     }
 
 
@@ -346,6 +347,10 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
 
     private int getTotalPages() {
         return (int) Math.ceil((double) getTotalSize() / getPageSize());
+    }
+
+    public Component extPage() {
+        return new Div();
     }
 
 }

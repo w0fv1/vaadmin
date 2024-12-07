@@ -9,13 +9,17 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import dev.w0fv1.vaadmin.view.EntitySelectPage;
+import dev.w0fv1.vaadmin.view.ListBoxGroup;
 import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Arrays;
 
 import static dev.w0fv1.vaadmin.view.framework.BaseMainView.showNotification;
 
@@ -126,5 +130,76 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
     @Override
     public void onSave(Long aLong) {
         showNotification(aLong + "被创建了", NotificationVariant.LUMO_SUCCESS);
+    }
+
+    @Override
+    public Component extPage() {
+        VerticalLayout horizontalLayout = new VerticalLayout();
+        // 创建 ListBoxGroup 实例
+        ListBoxGroup<String> listBoxGroup = new ListBoxGroup<>();
+
+        // 添加 ListBox（无背景图片）
+        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>("item1", "Default Background"));
+
+        // 添加 ListBox（带背景图片）
+        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
+                "item2",
+                "Image Background",
+                "https://via.placeholder.com/150" // 示例图片 URL
+        ));
+
+        // 添加 ListBox（带背景图片）
+        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
+                "item2",
+                "Image Background",
+                "https://via.placeholder.com/150" // 示例图片 URL
+        ));
+
+        // 添加 ListBox（带背景图片）
+        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
+                "item2",
+                "Image Background",
+                "https://via.placeholder.com/150" // 示例图片 URL
+        ));
+
+        // 添加 ListBox（带背景图片）
+        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
+                "item2",
+                "Image Background + https://via.placeholder.com/150",
+                "https://via.placeholder.com/150" // 示例图片 URL
+        ));
+
+        // 添加 ListBox（带背景图片）
+        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
+                "item2",
+                "Image Background",
+                "https://via.placeholder.com/150" // 示例图片 URL
+        ));
+
+        // 添加 ListBox（带背景图片）
+        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
+                "item2",
+                "Image Background",
+                "https://via.placeholder.com/150" // 示例图片 URL
+        ));
+
+        // 设置添加按钮的行为
+        listBoxGroup.setOnAddButtonClick(() -> {
+            // 点击 "+" 按钮时添加一个新项（无背景图片）
+            listBoxGroup.addListBox(new ListBoxGroup.ListBox<>("newItem", "New Default Item"));
+        });
+
+        // 设置顺序变更回调
+        listBoxGroup.setOnOrderChangeListener(newOrder -> {
+            System.out.println("Order changed: " + Arrays.toString(newOrder.toArray()));
+        });
+
+        horizontalLayout.add(listBoxGroup);
+
+
+
+
+
+        return horizontalLayout ;
     }
 }
