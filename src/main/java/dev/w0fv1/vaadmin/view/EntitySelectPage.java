@@ -73,7 +73,7 @@ public class EntitySelectPage<
         // Removed likeSearchInput.clear();
         idSearchInput.clear();
         uuidSearchInput.clear();
-        predicateManager.clearPredicates();
+        predicateManager.clearPredicatesWithOut("init");
         selectedItems.clear();
         pageInput.clear();
         selectedCheckboxes.clear();
