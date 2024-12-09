@@ -6,16 +6,16 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import dev.w0fv1.vaadmin.view.EntitySelectPage;
+import dev.w0fv1.vaadmin.view.ImageListBox;
 import dev.w0fv1.vaadmin.view.ListBoxGroup;
+import dev.w0fv1.vaadmin.view.TextListBox;
 import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,70 +136,45 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
     public Component extPage() {
         VerticalLayout horizontalLayout = new VerticalLayout();
         // 创建 ListBoxGroup 实例
-        ListBoxGroup<String> listBoxGroup = new ListBoxGroup<>();
-
+        ListBoxGroup<String> horizontalListBoxGroup = new ListBoxGroup<>(ListBoxGroup.Orientation.HORIZONTAL);
+        horizontalLayout.add(horizontalListBoxGroup);
         // 添加 ListBox（无背景图片）
-        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>("item1", "Default Background"));
+        horizontalListBoxGroup.addListBox(new ImageListBox<>("item1", "Default Background"));
 
         // 添加 ListBox（带背景图片）
-        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
+        horizontalListBoxGroup.addListBox(new ImageListBox<>(
                 "item2",
                 "Image Background",
                 "https://via.placeholder.com/150" // 示例图片 URL
         ));
-
-        // 添加 ListBox（带背景图片）
-        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
-                "item2",
-                "Image Background",
-                "https://via.placeholder.com/150" // 示例图片 URL
-        ));
-
-        // 添加 ListBox（带背景图片）
-        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
-                "item2",
-                "Image Background",
-                "https://via.placeholder.com/150" // 示例图片 URL
-        ));
-
-        // 添加 ListBox（带背景图片）
-        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
-                "item2",
-                "Image Background + https://via.placeholder.com/150",
-                "https://via.placeholder.com/150" // 示例图片 URL
-        ));
-
-        // 添加 ListBox（带背景图片）
-        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
-                "item2",
-                "Image Background",
-                "https://via.placeholder.com/150" // 示例图片 URL
-        ));
-
-        // 添加 ListBox（带背景图片）
-        listBoxGroup.addListBox(new ListBoxGroup.ListBox<>(
-                "item2",
-                "Image Background",
-                "https://via.placeholder.com/150" // 示例图片 URL
-        ));
-
         // 设置添加按钮的行为
-        listBoxGroup.setOnAddButtonClick(() -> {
+        horizontalListBoxGroup.setOnAddButtonClick(() -> {
             // 点击 "+" 按钮时添加一个新项（无背景图片）
-            listBoxGroup.addListBox(new ListBoxGroup.ListBox<>("newItem", "New Default Item"));
+            horizontalListBoxGroup.addListBox(new ImageListBox<>("newItem", "New Default Item"));
         });
-
         // 设置顺序变更回调
-        listBoxGroup.setOnOrderChangeListener(newOrder -> {
+        horizontalListBoxGroup.setOnOrderChangeListener(newOrder -> {
             System.out.println("Order changed: " + Arrays.toString(newOrder.toArray()));
         });
 
-        horizontalLayout.add(listBoxGroup);
+        ListBoxGroup<String> verticallListBoxGroup = new ListBoxGroup<>(ListBoxGroup.Orientation.VERTICAL);
+
+        verticallListBoxGroup.addListBox(new TextListBox<>("item3", "Default Background"));
+        verticallListBoxGroup.addListBox(new TextListBox<>("item3", "Default Background"));
+        verticallListBoxGroup.addListBox(new TextListBox<>("item3", "Default Background"));
+        verticallListBoxGroup.addListBox(new TextListBox<>("item3", "Default Background"));
+        verticallListBoxGroup.addListBox(new TextListBox<>("item3", "Default Background"));
+        verticallListBoxGroup.addListBox(new TextListBox<>("item3", "Default Background"));
+        verticallListBoxGroup.addListBox(new TextListBox<>("item3", "Default BackgroundDefault BackgroundDefault BackgroundDefault Background"));
+        horizontalLayout.add(verticallListBoxGroup);
+
+        // 设置添加按钮的行为
+        verticallListBoxGroup.setOnAddButtonClick(() -> {
+            // 点击 "+" 按钮时添加一个新项（无背景图片）
+            verticallListBoxGroup.addListBox(new TextListBox<>("newItem", "New Default Item"));
+        });
 
 
-
-
-
-        return horizontalLayout ;
+        return horizontalLayout;
     }
 }
