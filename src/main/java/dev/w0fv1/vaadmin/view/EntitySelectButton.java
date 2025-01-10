@@ -84,6 +84,7 @@ public class EntitySelectButton<
         this.selectedItems.clear();
         this.selectedItems.addAll(selectedItems);
         selectPage.setSelectedData(selectedItems);
+        setText("ID为" + selectedItems + "的" + selectedItems.size() + "条数据(点击重选)");
     }
 
 

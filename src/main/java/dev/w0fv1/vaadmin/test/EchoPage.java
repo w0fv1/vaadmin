@@ -10,12 +10,11 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
-import dev.w0fv1.vaadmin.view.EntitySelectPage;
-import dev.w0fv1.vaadmin.view.ImageListBox;
-import dev.w0fv1.vaadmin.view.ListBoxGroup;
-import dev.w0fv1.vaadmin.view.TextListBox;
+import dev.w0fv1.vaadmin.view.*;
 import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -174,6 +173,19 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
             verticallListBoxGroup.addListBox(new TextListBox<>("newItem", "New Default Item"));
         });
 
+
+        ImageUploadButton imageUploadButton = new ImageUploadButton(null, buffer -> {
+
+        });
+        horizontalLayout.add(imageUploadButton);
+
+        TextInput textInput = new TextInput("测试", new SerializableConsumer<String>() {
+            @Override
+            public void accept(String s) {
+                log.info("textInput:{}", s);
+            }
+        });
+        horizontalLayout.add(textInput);
 
         return horizontalLayout;
     }

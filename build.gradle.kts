@@ -8,7 +8,7 @@ plugins {
 
 
 group = "dev.w0fv1"
-version = "0.0.27"
+version = "0.0.30"
 val springBootVersion = "3.3.5" // 设置 Spring Boot 版本
 val vaadinVersion = "24.5.7"
 
@@ -28,6 +28,13 @@ buildscript {
         mavenCentral()
         maven { url = uri("https://maven.vaadin.com/vaadin-prereleases") }
         maven { url = uri("https://repo.spring.io/milestone") }
+        maven {
+            url = uri("https://maven.pkg.github.com/w0fv1/fampper")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 
