@@ -109,8 +109,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/w0fv1/vaadmin")
             credentials {
-                username = "w0fv1" // 你的 GitHub 用户名
-                password = System.getProperty("gpr.token") // 从系统属性中读取 Token
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
 //        maven {
