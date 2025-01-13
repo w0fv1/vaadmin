@@ -1,6 +1,7 @@
 package dev.w0fv1.vaadmin.test;
 
 import dev.w0fv1.vaadmin.view.form.FormFieldComponent;
+import dev.w0fv1.vaadmin.view.form.UpperCaseTransformer;
 import dev.w0fv1.vaadmin.view.form.component.SampleFileUploadFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponentBuilder;
 import dev.w0fv1.vaadmin.view.model.form.*;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,13 +29,13 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "信息")
     private String message;
 
-    @NotBlank(message = "消息不能为空")
-    @Size(min = 10, max = 1255, message = "消息长度必须在10到255个字符之间")
     @FormField(title = "长信息")
     private String longMessage;
 
-    @NotBlank(message = "消息不能为空")
-    @Size(min = 10, max = 1255, message = "消息长度必须在10到255个字符之间")
+    @TextTransform(processorClass = UpperCaseTransformer.class)
+    @FormField(title = "变化信息")
+    private String transformedMessage;
+
     @FormField(title = "默认信息", defaultValue = "默认信息")
     private String defaultMessage;
 
@@ -42,8 +44,6 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
 
 
     @FormFieldComponent(SampleFormFieldComponentBuilder.class)
-    @NotBlank(message = "消息不能为空")
-    @Size(min = 10, max = 1255, message = "消息长度必须在10到255个字符之间")
     @FormField(title = "定制化信息组件")
     private String customMessage;
 
@@ -93,7 +93,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
         echo.setStatus(status);
         echo.setCreatedTime(createdTime);
         echo.setUpdatedTime(updatedTime);
-
+        System.out.println(this.toString());
         return echo;
     }
 

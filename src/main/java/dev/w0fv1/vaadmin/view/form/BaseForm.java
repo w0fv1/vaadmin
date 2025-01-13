@@ -8,9 +8,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
-import dev.w0fv1.vaadmin.view.model.form.FormConfig;
-import dev.w0fv1.vaadmin.view.model.form.FormField;
+import dev.w0fv1.vaadmin.view.model.form.*;
 import dev.w0fv1.vaadmin.view.form.component.*;
 import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +104,9 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.save();
         }
+        // ------ 在校验完之后做自定义的字符串处理 ------
+        handleTextTransform();
+
         log.info(formModel.toString());
 
         this.onSave(formModel);
@@ -115,6 +116,45 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
     abstract public void onSave(F data);
 
+    /**
+     * 针对标记了 @TextTransform 的字段进行处理
+     */
+    private void handleTextTransform() {
+        Class<F> clazz = this.fromClass;
+        // 获取所有字段
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            if (!field.isAnnotationPresent(TextTransform.class)) {
+                continue;
+            }
+            if (!field.getType().equals(String.class)) {
+                // 如果不是String类型，你也可以选择跳过或者抛异常
+                continue;
+            }
+
+            // 取到注解和对应的处理器
+            TextTransform annotation = field.getAnnotation(TextTransform.class);
+            Class<? extends StringTransformer> transformerClass = annotation.processorClass();
+
+            try {
+                StringTransformer transformer = transformerClass.getDeclaredConstructor().newInstance();
+
+                // 拿到当前字段的值
+                field.setAccessible(true);
+                String originalValue = (String) field.get(formModel);
+
+                // 做转换
+                String newValue = transformer.transform(originalValue);
+
+                // 放回model
+                field.set(formModel, newValue);
+
+            } catch (Exception e) {
+                log.error("handleTextTransform error: ", e);
+                // 你可以选择抛出异常或者忽略
+            }
+        }
+    }
     private void clear() {
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.clear();
@@ -159,6 +199,10 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
         Class<?> type = field.getType();
         FormField fromField = field.getAnnotation(FormField.class);
+
+        if (fromField == null) {
+            log.info(field.getName());
+        }
 
         if (field.isAnnotationPresent(FormFieldComponent.class)) {
             Class<? extends CustomFormFieldComponentBuilder> fieldComponentBuilder = field.getAnnotation(FormFieldComponent.class).value();
