@@ -5,7 +5,7 @@ import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.EntitySelectButton;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 import dev.w0fv1.vaadmin.view.model.form.FormField;
-import dev.w0fv1.vaadmin.view.model.form.FormEntityField;
+import dev.w0fv1.vaadmin.view.model.form.FormEntitySelectField;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,12 +24,12 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
         super(field, formModel, false);
 
         FormField formField = field.getAnnotation(FormField.class);
-        FormEntityField formEntityField = field.getAnnotation(FormEntityField.class);
+        FormEntitySelectField formEntitySelectField = field.getAnnotation(FormEntitySelectField.class);
         String title = formField.title();
         isSingle = !field.getType().equals(List.class);
         this.entitySelectButton = new EntitySelectButton<>(
                 "选择" + title,
-                (Class<E>) formEntityField.entityType(),
+                (Class<E>) formEntitySelectField.entityField().entityType(),
                 isSingle,
                 genericRepository
 

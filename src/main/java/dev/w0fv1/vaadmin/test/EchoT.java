@@ -1,7 +1,5 @@
 package dev.w0fv1.vaadmin.test;
 
-import dev.w0fv1.vaadmin.view.model.form.FormEntityField;
-import dev.w0fv1.vaadmin.view.model.form.FormField;
 import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
 import dev.w0fv1.vaadmin.view.model.table.TableConfig;
 import lombok.Data;

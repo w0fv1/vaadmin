@@ -10,9 +10,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FormEntityField {
+public @interface EntityField {
     boolean entity() default true;
-
 
     Class<? extends Mapper> entityMapper() default Mapper.class;
 

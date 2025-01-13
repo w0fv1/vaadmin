@@ -1,9 +1,7 @@
 package dev.w0fv1.vaadmin.test;
 
-import dev.w0fv1.vaadmin.test.EchoEntityFieldMapper;
 import dev.w0fv1.vaadmin.view.form.FormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFileUploadFieldComponent;
-import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponentBuilder;
 import dev.w0fv1.vaadmin.view.model.form.*;
 import jakarta.validation.constraints.NotBlank;
@@ -71,12 +69,19 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "更新时间")
     private OffsetDateTime updatedTime;
 
-    @FormEntityField(
-            entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,
-            entityType = Echo.class
+    @FormEntitySelectField(
+           entityField = @EntityField(
+                   entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,
+                   entityType = Echo.class)
     )
     @FormField(title = "manyToOne回声")
     private Long echoId;
+
+    @EntityField(
+            entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,
+            entityType = Echo.class)
+    @FormField(title = "手动manyToOne回声")
+    private Long manualEchoId;
 
     @Override
     public Echo toEntity() {

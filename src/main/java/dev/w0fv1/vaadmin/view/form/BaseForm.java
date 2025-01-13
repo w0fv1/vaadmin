@@ -179,7 +179,17 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         } else if (fromField.id() && type.equals(Long.class)) {
             formFieldComponent = new LongIdField(field, formModel);
         } else if (type.equals(Double.class)) {
-            formFieldComponent = new NumberInputField(field, formModel);
+            formFieldComponent = new NumberInputField<>(field, formModel, Double.class);
+        } else if (type.equals(Float.class)) {
+            formFieldComponent = new NumberInputField<>(field, formModel, Float.class);
+        } else if (type.equals(Long.class)) {
+            formFieldComponent = new NumberInputField<>(field, formModel, Long.class);
+        } else if (type.equals(Integer.class)) {
+            formFieldComponent = new NumberInputField<>(field, formModel, Integer.class);
+        } else if (type.equals(Short.class)) {
+            formFieldComponent = new NumberInputField<>(field, formModel, Short.class);
+        } else if (type.equals(Byte.class)) {
+            formFieldComponent = new NumberInputField<>(field, formModel, Byte.class);
         } else if (type.equals(Boolean.class)) {
             formFieldComponent = new BooleanCheckBoxField(field, formModel);
         } else if (type.equals(List.class) && fromField.subType().equals(String.class)) {

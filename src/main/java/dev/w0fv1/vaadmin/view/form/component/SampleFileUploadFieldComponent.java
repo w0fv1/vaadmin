@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 
 
 @Slf4j
-public class SampleFileUploadFieldComponent extends FileUploadFieldComponent {
+public class SampleFileUploadFieldComponent extends FileUploadFieldComponent<String> {
 
     private String url;
 

@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 
 
 @Slf4j
-public abstract class FileUploadFieldComponent extends BaseFormFieldComponent<String> {
+public abstract class FileUploadFieldComponent<Type> extends BaseFormFieldComponent<Type> {
 
     private Upload upload;
     private Button uploadButton;
@@ -41,9 +41,9 @@ public abstract class FileUploadFieldComponent extends BaseFormFieldComponent<St
     public abstract void handleUploadSucceeded(MemoryBuffer buffer);
 
 
-    public abstract String getData();
+    public abstract Type getData();
 
-    public abstract void setData(String data);
+    public abstract void setData(Type data);
 
     public void clear() {
         this.upload.clearFileList();

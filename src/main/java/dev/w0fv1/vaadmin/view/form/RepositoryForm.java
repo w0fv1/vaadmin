@@ -9,12 +9,14 @@ import dev.w0fv1.vaadmin.view.form.component.BaseFormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.MultiEntitySelectField;
 import dev.w0fv1.vaadmin.view.form.component.SingleEntitySelectField;
 import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
+import dev.w0fv1.vaadmin.view.model.form.EntityField;
 import dev.w0fv1.vaadmin.view.model.form.FormField;
-import dev.w0fv1.vaadmin.view.model.form.FormEntityField;
+import dev.w0fv1.vaadmin.view.model.form.FormEntitySelectField;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,9 +58,9 @@ public class RepositoryForm<
     @Override
     BaseFormFieldComponent<?> extMapComponent(Field field, F formModel) {
 
-        if (field.isAnnotationPresent(FormEntityField.class) && Collection.class.isAssignableFrom(field.getType())) {
+        if (field.isAnnotationPresent(FormEntitySelectField.class) && Collection.class.isAssignableFrom(field.getType())) {
             return new MultiEntitySelectField<>(field, formModel, genericRepository);
-        } else if (field.isAnnotationPresent(FormEntityField.class) && !Collection.class.isAssignableFrom(field.getType())) {
+        } else if (field.isAnnotationPresent(FormEntitySelectField.class) && !Collection.class.isAssignableFrom(field.getType())) {
             return new SingleEntitySelectField<>(field, formModel, genericRepository);
         }
         return null;
@@ -86,13 +88,19 @@ public class RepositoryForm<
                     FormField fromField = declaredField.getAnnotation(FormField.class);
 
 
-                    if (!declaredField.isAnnotationPresent(FormEntityField.class)) {
+                    if (!declaredField.isAnnotationPresent(FormEntitySelectField.class) && !declaredField.isAnnotationPresent(EntityField.class) ) {
                         continue;
                     }
-                    FormEntityField fromEntityField = declaredField.getAnnotation(FormEntityField.class);
+                    EntityField entityField = null;
+                    if (declaredField.isAnnotationPresent(FormEntitySelectField.class)){
+                        entityField = declaredField.getAnnotation(FormEntitySelectField.class).entityField();
+                    }else {
+                        entityField = declaredField.getAnnotation(EntityField.class);
+                    }
 
-                    Class<? extends BaseManageEntity<?>> entityClass = fromEntityField.entityType();
-                    Mapper mapper = fromEntityField.entityMapper().getDeclaredConstructor().newInstance();
+
+                    Class<? extends BaseManageEntity<?>> entityClass = entityField.entityType();
+                    Mapper mapper = entityField.entityMapper().getDeclaredConstructor().newInstance();
 
                     declaredField.setAccessible(true);
 
@@ -109,6 +117,14 @@ public class RepositoryForm<
                         if (id == null) {
                             throw new RuntimeException("id == null && !fromField.nullable()");
                         }
+                        if (!(id instanceof  Number)){
+                            throw new RuntimeException("id must be a Number");
+                        }
+                        if (new BigDecimal(id.toString()).compareTo(BigDecimal.ZERO) == 0){
+                            continue;
+                        }
+
+
                         Object entity = genericRepository.find(id, entityClass);
                         mapper.accept(saveModel, entity);
                     }
