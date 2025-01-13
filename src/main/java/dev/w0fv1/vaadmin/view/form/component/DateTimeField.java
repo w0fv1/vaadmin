@@ -26,7 +26,6 @@ public class DateTimeField extends BaseFormFieldComponent<OffsetDateTime> {
     @Override
     public void initView() {
 
-
         this.dateTimePicker = new DateTimePicker();
         this.dateTimePicker.setId(getField().getName()); // 设置唯一的 fieldId
 
@@ -50,7 +49,7 @@ public class DateTimeField extends BaseFormFieldComponent<OffsetDateTime> {
         this.dateTimePicker.setValue(data.toLocalDateTime());
     }
     @Override
-    public void clear() {
+    public void clearUI() {
         this.dateTimePicker.clear();
         this.dateTimePicker.setValue(LocalDateTime.now());
     }

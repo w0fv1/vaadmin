@@ -41,7 +41,7 @@ public class SingleEnumSelectBoxField extends BaseFormFieldComponent<Enum<?>> {
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.comboBox.clear();
     }
 }

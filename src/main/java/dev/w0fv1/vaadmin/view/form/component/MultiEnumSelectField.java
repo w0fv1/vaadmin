@@ -51,7 +51,7 @@ public class MultiEnumSelectField extends BaseFormFieldComponent<List<Enum<?>>> 
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.multiSelectComboBox.clear();
     }
 }

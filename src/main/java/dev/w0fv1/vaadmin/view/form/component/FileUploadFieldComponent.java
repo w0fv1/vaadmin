@@ -45,7 +45,7 @@ public abstract class FileUploadFieldComponent<Type> extends BaseFormFieldCompon
 
     public abstract void setData(Type data);
 
-    public void clear() {
+    public void clearUI() {
         this.upload.clearFileList();
     }
 }

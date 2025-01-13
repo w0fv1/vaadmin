@@ -41,7 +41,7 @@ public class LongIdField extends BaseFormFieldComponent<Long> {
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.numberField.clear();
     }
 }

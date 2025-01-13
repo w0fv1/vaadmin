@@ -84,7 +84,7 @@ public class NumberInputField<T extends Number> extends BaseFormFieldComponent<T
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.numberField.clear();
     }
 }

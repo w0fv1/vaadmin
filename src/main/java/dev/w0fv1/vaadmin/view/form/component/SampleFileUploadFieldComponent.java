@@ -1,8 +1,6 @@
 package dev.w0fv1.vaadmin.view.form.component;
 
 
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +33,7 @@ public class SampleFileUploadFieldComponent extends FileUploadFieldComponent<Str
     }
 
     @Override
-    public void clear() {
-        super.clear();
+    public void clearUI() {
         this.url = null;
     }
 

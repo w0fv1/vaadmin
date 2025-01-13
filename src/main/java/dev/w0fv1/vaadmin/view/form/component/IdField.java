@@ -41,7 +41,7 @@ public class IdField extends BaseFormFieldComponent<Double> {
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.numberField.clear();
     }
 }

@@ -20,6 +20,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     private final BaseFormModel formModel;
     private final FormField formField;
     private ErrorMessage errorMessage;
+    private final Boolean autoInitialize;
 
     public BaseFormFieldComponent(Field field, BaseFormModel formModel) {
         this(field, formModel, true);
@@ -33,8 +34,8 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         buildTitle();
 
         initView();
-
-        if (autoInitialize) {
+        this.autoInitialize = autoInitialize;
+        if (this.autoInitialize) {
             setDefaultValue(getDefaultValue());
         }
     }
@@ -81,13 +82,16 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
 
     @SuppressWarnings("unchecked")
     public Type getDefaultValue() {
-        Type data = getModelData();
-        if (data != null) return data;
+
+        // 如果 model 里没有值，则看表单配置的 defaultValue
         if (!formField.defaultValue().isEmpty()) {
             return (Type) TypeUtil.convert(formField.defaultValue(), field.getType());
         }
+
+        // 都没有，就返回一个“类型安全”的默认值（可能是 null 或 0 等）
         return (Type) defaultIfNull(null, field.getType());
     }
+
 
     public Boolean valid() {
         String valid = validFile(field, formModel);
@@ -114,5 +118,14 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         }
     }
 
-    public abstract void clear();
+    public abstract void clearUI();
+
+    public void clear() {
+        clearUI();
+        // 默认实现：将 data 设置为 getDefaultValue()
+        if (autoInitialize) {
+            setDefaultValue(getDefaultValue());
+        }
+    }
+
 }

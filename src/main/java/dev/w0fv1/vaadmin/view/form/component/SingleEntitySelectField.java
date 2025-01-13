@@ -35,7 +35,6 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
 
         );
         ID modelData = getModelData();
-        log.info("modelData is null :"+((modelData==null)?"null":modelData.toString()));
 
         if (modelData != null) {
             this.entitySelectButton.setValue(new ArrayList<>() {{
@@ -71,7 +70,7 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.entitySelectButton.clear();
     }
 

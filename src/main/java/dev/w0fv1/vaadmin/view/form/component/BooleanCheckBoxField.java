@@ -37,7 +37,7 @@ public class BooleanCheckBoxField extends BaseFormFieldComponent<Boolean> {
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.checkBox.clear();
     }
 }

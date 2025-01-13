@@ -44,7 +44,7 @@ public class TagInputField extends BaseFormFieldComponent<List<String>> {
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         tagInput.clear();
     }
 }

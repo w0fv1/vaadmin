@@ -60,7 +60,7 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.entitySelectButton.clear();
     }
 

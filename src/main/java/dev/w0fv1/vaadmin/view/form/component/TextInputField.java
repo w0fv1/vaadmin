@@ -40,7 +40,7 @@ public class TextInputField extends BaseFormFieldComponent<String> {
     }
 
     @Override
-    public void clear() {
+    public void clearUI() {
         this.textField.clear();
     }
 
