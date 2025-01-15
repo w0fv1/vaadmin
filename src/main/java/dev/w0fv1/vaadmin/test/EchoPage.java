@@ -174,8 +174,16 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
         });
 
 
-        ImageUploadButton imageUploadButton = new ImageUploadButton(null, buffer -> {
+        ImageUploadButton<String> imageUploadButton = new ImageUploadButton<String>(null, new ImageUploadButton.ImageUploadHandler<String>() {
+            @Override
+            public String handleUploadSucceeded(MemoryBuffer buffer) {
+                return "success";
+            }
 
+            @Override
+            public void apply(String data) {
+                log.info("upload " + data);
+            }
         });
         horizontalLayout.add(imageUploadButton);
 
