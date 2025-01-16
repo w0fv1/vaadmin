@@ -13,8 +13,6 @@ public class TextInputField extends BaseFormFieldComponent<String> {
 
     public TextInputField(Field field, BaseFormModel formModel) {
         super(field, formModel);
-
-
     }
 
     @Override

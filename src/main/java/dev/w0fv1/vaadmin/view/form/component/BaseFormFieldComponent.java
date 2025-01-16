@@ -36,16 +36,14 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         initView();
         this.autoInitialize = autoInitialize;
         if (this.autoInitialize) {
-            setDefaultValue(getDefaultValue());
+            setData(getDefaultValue());
         }
     }
 
 
     abstract public void initView();
 
-    public void setDefaultValue(Type defaultValue) {
-        setData(defaultValue);
-    }
+
 
     public void buildTitle() {
         String title = formField.title().isEmpty() ? field.getName() : formField.title();
@@ -82,7 +80,8 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
 
     @SuppressWarnings("unchecked")
     public Type getDefaultValue() {
-
+        Type data = getModelData();
+        if (data != null) return data;
         // 如果 model 里没有值，则看表单配置的 defaultValue
         if (!formField.defaultValue().isEmpty()) {
             return (Type) TypeUtil.convert(formField.defaultValue(), field.getType());
@@ -124,7 +123,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         clearUI();
         // 默认实现：将 data 设置为 getDefaultValue()
         if (autoInitialize) {
-            setDefaultValue(getDefaultValue());
+            setData(getDefaultValue());
         }
     }
 
