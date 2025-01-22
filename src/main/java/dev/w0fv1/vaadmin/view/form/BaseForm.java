@@ -154,6 +154,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
             }
         }
     }
+
     private void clear() {
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.clear();
@@ -252,7 +253,10 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         return formFieldComponent;
     }
 
-    abstract BaseFormFieldComponent<?> extMapComponent(Field field, F formModel);
+    BaseFormFieldComponent<?> extMapComponent(Field field, F formModel) {
+        return null;
+    }
+
 
     private void buildTitle() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();

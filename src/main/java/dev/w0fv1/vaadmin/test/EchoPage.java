@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -15,6 +16,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import dev.w0fv1.vaadmin.view.*;
+import dev.w0fv1.vaadmin.view.form.NormalForm;
 import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -194,6 +196,44 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
             }
         });
         horizontalLayout.add(textInput);
+
+
+        // 1. 创建一个按钮
+        Button openFormButton = new Button("点击弹出表单");
+
+        // 2. 给按钮添加点击事件
+        openFormButton.addClickListener(event -> {
+            // 2.1 创建表单数据对象
+            EchoF echoF = new EchoF();
+            Dialog dialog = new Dialog();
+
+            // 2.2 构造一个 NormalForm
+            NormalForm<EchoF> normalForm = new NormalForm<>(
+                    echoF,
+                    savedData -> {
+                        // onSave 回调逻辑
+                        Notification.show("保存成功，用户输入：" + savedData.toString());
+                    },
+                    () -> {
+                        dialog.close();
+                        // onCancel 回调逻辑
+                        Notification.show("用户取消了操作");
+                    }
+            );
+
+            // 2.3 创建一个 Dialog，并将表单添加进去
+            dialog.add(normalForm);
+
+            // 可以根据需要设置 dialog 尺寸
+            dialog.setWidth("600px");
+            dialog.setHeight("80vh");
+
+            // 打开对话框
+            dialog.open();
+        });
+
+        // 3. 将按钮添加到布局
+        horizontalLayout.add(openFormButton);
 
         return horizontalLayout;
     }
