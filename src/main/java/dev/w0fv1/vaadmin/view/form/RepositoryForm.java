@@ -50,9 +50,19 @@ public class RepositoryForm<
         this(fromClass.getDeclaredConstructor().newInstance(), onSave, onCancel, genericRepository);
     }
 
+    public RepositoryForm(F fromModel, GenericRepository genericRepository) {
+        this(fromModel, null, null, genericRepository);
+    }
+
+    public RepositoryForm(Class<F> fromClass, GenericRepository genericRepository) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        this(fromClass.getDeclaredConstructor().newInstance(), null, null, genericRepository);
+    }
+
     @Override
     public void onCancel() {
-        onCancel.run();
+        if (onCancel != null) {
+            onCancel.run();
+        }
     }
 
     @Override
@@ -88,13 +98,13 @@ public class RepositoryForm<
                     FormField fromField = declaredField.getAnnotation(FormField.class);
 
 
-                    if (!declaredField.isAnnotationPresent(FormEntitySelectField.class) && !declaredField.isAnnotationPresent(EntityField.class) ) {
+                    if (!declaredField.isAnnotationPresent(FormEntitySelectField.class) && !declaredField.isAnnotationPresent(EntityField.class)) {
                         continue;
                     }
                     EntityField entityField = null;
-                    if (declaredField.isAnnotationPresent(FormEntitySelectField.class)){
+                    if (declaredField.isAnnotationPresent(FormEntitySelectField.class)) {
                         entityField = declaredField.getAnnotation(FormEntitySelectField.class).entityField();
-                    }else {
+                    } else {
                         entityField = declaredField.getAnnotation(EntityField.class);
                     }
 
@@ -117,10 +127,10 @@ public class RepositoryForm<
                         if (id == null) {
                             throw new RuntimeException("id == null && !fromField.nullable()");
                         }
-                        if (!(id instanceof  Number)){
+                        if (!(id instanceof Number)) {
                             throw new RuntimeException("id must be a Number");
                         }
-                        if (new BigDecimal(id.toString()).compareTo(BigDecimal.ZERO) == 0){
+                        if (new BigDecimal(id.toString()).compareTo(BigDecimal.ZERO) == 0) {
                             continue;
                         }
 
@@ -130,7 +140,9 @@ public class RepositoryForm<
                     }
                 }
                 saveModel = genericRepository.save(saveModel);
-                onSave.run(saveModel.getId());
+                if (onSave != null) {
+                    onSave.run(saveModel.getId());
+                }
 
             } catch (Exception e) {
                 // 回滚事务
