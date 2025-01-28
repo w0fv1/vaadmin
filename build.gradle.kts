@@ -1,16 +1,21 @@
 plugins {
     id("java-library")
-    id("io.spring.dependency-management") version "1.1.6"
+    id("io.spring.dependency-management") version "1.1.7"
     id("maven-publish")
     id("signing")
-    id("com.vaadin")
+    id("com.vaadin") version "24.6.2"
 }
 
 
 group = "dev.w0fv1"
 version = "0.0.40"
-val springBootVersion = "3.3.5" // 设置 Spring Boot 版本
-val vaadinVersion = "24.5.7"
+
+
+val springBootVersion = "3.4.2" // 设置 Spring Boot 版本
+
+extra["springAiVersion"] = "1.0.0-M5"
+extra["vaadinVersion"] = "24.6.2"
+
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -41,8 +46,8 @@ buildscript {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
-        mavenBom("com.vaadin:vaadin-bom:$vaadinVersion")
+        mavenBom("com.vaadin:vaadin-bom:${property("vaadinVersion")}")
+        mavenBom("org.springframework.ai:spring-ai-bom:${property("springAiVersion")}")
     }
 }
 
@@ -52,7 +57,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
 
     implementation("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
     implementation("org.reflections:reflections:0.10.2")
 
 // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
@@ -61,12 +66,12 @@ dependencies {
     implementation("dev.w0fv1:fmapper:0.0.5") // 替换为实际的 group 和 version
     annotationProcessor("dev.w0fv1:fmapper:0.0.5") // 注解处理器依赖
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok:1.18.36")
+    annotationProcessor("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
 
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("com.h2database:h2:2.3.230")
 }
 
 tasks.test {
