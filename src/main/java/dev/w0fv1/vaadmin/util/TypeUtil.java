@@ -1,22 +1,29 @@
 package dev.w0fv1.vaadmin.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapType;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TypeUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static <T> T convert(String input, Class<T> targetType) {
+    @SuppressWarnings("unchecked")
+    public static <T> T convert(String input, Class<T> targetType, Class<?> subType) {
         if (input == null) return null;
+
         try {
+            if (List.class.isAssignableFrom(targetType) && subType != null) {
+                CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, subType);
+                return objectMapper.readValue(input, listType);
+            } else if (Set.class.isAssignableFrom(targetType) && subType != null) {
+                CollectionType setType = objectMapper.getTypeFactory().constructCollectionType(Set.class, subType);
+                return objectMapper.readValue(input, setType);
+            }
             return objectMapper.convertValue(input, targetType);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

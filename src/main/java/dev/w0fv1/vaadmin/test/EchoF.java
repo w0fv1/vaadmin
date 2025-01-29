@@ -51,7 +51,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "上传文件示例")
     private String fileUrl;
 
-    @FormField(title = "关键词", subType = String.class)
+    @FormField(title = "关键词", subType = String.class, defaultValue = "[\"TEST\"]")
     private List<String> keywords;
 
     @FormField(title = "标记")
@@ -70,9 +70,9 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     private OffsetDateTime updatedTime;
 
     @FormEntitySelectField(
-           entityField = @EntityField(
-                   entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,
-                   entityType = Echo.class)
+            entityField = @EntityField(
+                    entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,
+                    entityType = Echo.class)
     )
     @FormField(title = "manyToOne回声")
     private Long echoId;

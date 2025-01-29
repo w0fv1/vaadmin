@@ -83,8 +83,9 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         Type data = getModelData();
         if (data != null) return data;
         // 如果 model 里没有值，则看表单配置的 defaultValue
+        FormField formField = getFormField();
         if (!formField.defaultValue().isEmpty()) {
-            return (Type) TypeUtil.convert(formField.defaultValue(), field.getType());
+            return (Type) TypeUtil.convert(formField.defaultValue(), field.getType(),formField.subType());
         }
 
         // 都没有，就返回一个“类型安全”的默认值（可能是 null 或 0 等）
