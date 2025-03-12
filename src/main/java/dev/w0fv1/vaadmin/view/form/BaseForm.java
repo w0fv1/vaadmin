@@ -16,6 +16,7 @@ import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -222,6 +223,8 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
             formFieldComponent = new StringIdField(field, formModel);
         } else if (fromField.id() && type.equals(Long.class)) {
             formFieldComponent = new LongIdField(field, formModel);
+        } else if (type.equals(BigDecimal.class)) {
+            formFieldComponent = new BigDecimalInputField(field, formModel);
         } else if (type.equals(Double.class)) {
             formFieldComponent = new NumberInputField<>(field, formModel, Double.class);
         } else if (type.equals(Float.class)) {

@@ -17,6 +17,7 @@ public class MainView extends BaseMainView {
     protected List<SideNavItem> getSideNavItems() {
         return List.of(
                 new SideNavItem("主页", EchoPage.class, VaadinIcon.HOME.create())
+//                ,new SideNavItem("测试主页", ZoneTablePage.class, VaadinIcon.HOME.create())
         );
     }
 }

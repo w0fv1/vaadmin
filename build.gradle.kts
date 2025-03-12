@@ -26,6 +26,13 @@ repositories {
     maven { url = uri("https://maven.vaadin.com/vaadin-prereleases") }
     maven { url = uri("https://repo.spring.io/milestone") }
     maven { url = uri("https://maven.vaadin.com/vaadin-addons") }
+    maven {
+        url = uri("https://maven.pkg.github.com/w0fv1/fampper")
+        credentials {
+            username = System.getenv("GITHUB_USERNAME")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 buildscript {
@@ -33,13 +40,7 @@ buildscript {
         mavenCentral()
         maven { url = uri("https://maven.vaadin.com/vaadin-prereleases") }
         maven { url = uri("https://repo.spring.io/milestone") }
-        maven {
-            url = uri("https://maven.pkg.github.com/w0fv1/fampper")
-            credentials {
-                username = System.getenv("GITHUB_USERNAME")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
+
     }
 }
 

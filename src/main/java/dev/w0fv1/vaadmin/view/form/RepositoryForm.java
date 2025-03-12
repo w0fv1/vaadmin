@@ -110,6 +110,9 @@ public class RepositoryForm<
 
 
                     Class<? extends BaseManageEntity<?>> entityClass = entityField.entityType();
+                    System.out.println("entityField.entityMapper()"+entityField.entityMapper().toString());
+
+                    System.out.println("entityField.entityMapper()"+entityField.entityMapper().toString());
                     Mapper mapper = entityField.entityMapper().getDeclaredConstructor().newInstance();
 
                     declaredField.setAccessible(true);
