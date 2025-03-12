@@ -8,7 +8,7 @@ plugins {
 
 
 group = "dev.w0fv1"
-version = "0.1.1"
+version = "0.1.2"
 
 
 val springBootVersion = "3.4.2" // 设置 Spring Boot 版本
