@@ -83,6 +83,10 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "手动manyToOne回声")
     private Long manualEchoId;
 
+    public EchoF(String message) {
+        this.message = message;
+    }
+
     @Override
     public Echo toEntity() {
         Echo echo = new Echo();

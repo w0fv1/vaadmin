@@ -46,35 +46,72 @@ public abstract class RepositoryBaseTableManagementPage<
 
     abstract public void onSave(ID id);
 
+
+    public interface CreateFromBuilder<
+            F extends BaseEntityFormModel<E, ID>,
+            E extends BaseManageEntity<ID>,
+            ID> {
+        RepositoryForm<F, E, ID> createForm();
+    }
+
+    private CreateFromBuilder createFromBuilder;
+
     public RepositoryBaseTableManagementPage(Class<T> tableClass, Class<F> formClass, Class<E> entityClass) {
         super(tableClass);
         this.entityClass = entityClass;
         this.formClass = formClass;
         this.tableClass = tableClass;
+
+        super.build();
+    }
+
+    public RepositoryBaseTableManagementPage(Class<T> tableClass, Class<F> formClass, CreateFromBuilder<F, E, ID> createFromBuilder, Class<E> entityClass) {
+        super(tableClass);
+        this.entityClass = entityClass;
+        this.formClass = formClass;
+        this.tableClass = tableClass;
+        this.createFromBuilder = createFromBuilder;
         super.build();
     }
 
     @Override
     public void onInit() {
+        if (createFromBuilder == null) {
+            var that = this;
+
+            createFromBuilder = () -> {
+                try {
+                    return new RepositoryForm<>(
+                            that.formClass,
+                            (ID id) -> {
+                                that.onSave(id);
+                                createDialog.close();
+                                reloadCurrentData();
+                            },
+                            () -> {
+                                createDialog.close();
+                                reloadCurrentData();
+                            },
+                            that.genericRepository
+                    );
+                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                         IllegalAccessException e) {
+                    throw new RuntimeException("无法创建 RepositoryForm 实例", e);
+                }
+            };
+        }
+
         buildRepositoryActionColumn();
         createDialog = new Dialog();
 
-        VerticalLayout dialogLayout;
         try {
-            dialogLayout = new RepositoryForm<>(
-                    this.formClass, (ID id) -> {
-                this.onSave(id);
-                createDialog.close();
-                reloadCurrentData();
-            }, () -> {
-                createDialog.close();
-                reloadCurrentData();
-            }, this.genericRepository);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            RepositoryForm<F, E, ID> formInstance = createFromBuilder.createForm();
+            VerticalLayout dialogLayout = new VerticalLayout(formInstance);
+            createDialog.add(dialogLayout);
+        } catch (Exception e) {
+            throw new RuntimeException("无法创建 RepositoryForm 实例", e);
         }
-        createDialog.add(dialogLayout);
+
         add(createDialog);
     }
 

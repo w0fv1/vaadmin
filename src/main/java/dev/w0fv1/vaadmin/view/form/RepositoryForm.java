@@ -130,10 +130,8 @@ public class RepositoryForm<
                         if (id == null) {
                             throw new RuntimeException("id == null && !fromField.nullable()");
                         }
-                        if (!(id instanceof Number)) {
-                            throw new RuntimeException("id must be a Number");
-                        }
-                        if (new BigDecimal(id.toString()).compareTo(BigDecimal.ZERO) == 0) {
+
+                        if (id instanceof Number && new BigDecimal(id.toString()).compareTo(BigDecimal.ZERO) == 0) {
                             continue;
                         }
 

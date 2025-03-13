@@ -17,6 +17,7 @@ import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import dev.w0fv1.vaadmin.view.*;
 import dev.w0fv1.vaadmin.view.form.NormalForm;
+import dev.w0fv1.vaadmin.view.form.RepositoryForm;
 import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -234,6 +235,29 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
 
         // 3. 将按钮添加到布局
         horizontalLayout.add(openFormButton);
+
+
+        Button button = new Button("客制化创建");
+
+        button.addClickListener((ComponentEventListener<ClickEvent<Button>>) event -> {
+            Dialog customCreateDialog = new Dialog();
+            VerticalLayout dialogLayout = null;
+            dialogLayout = new RepositoryForm<>(
+                    new EchoF("预制内容预制内容预制内容预制内容预制内容"),
+                    (Long id) -> {
+                        customCreateDialog.close();
+                        reloadCurrentData();
+                    }, () -> {
+                customCreateDialog.close();
+                reloadCurrentData();
+            }, genericRepository
+            );
+            customCreateDialog.add(dialogLayout);
+            add(customCreateDialog);
+            customCreateDialog.open();
+        });
+
+        horizontalLayout.add(button);
 
         return horizontalLayout;
     }
