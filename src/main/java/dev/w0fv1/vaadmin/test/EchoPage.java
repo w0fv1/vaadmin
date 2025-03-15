@@ -3,9 +3,11 @@ package dev.w0fv1.vaadmin.test;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -258,6 +260,21 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
         });
 
         horizontalLayout.add(button);
+
+
+        TabSection.TabItem<String> tab1 = new TabSection.TabItem<>("Tab 1", "tab1", new Span("这是Tab 1的内容"));
+        TabSection.TabItem<String> tab2 = new TabSection.TabItem<>("Tab 2", "tab2", new Span("这是Tab 2的内容"));
+        TabSection.TabItem<String> tab3 = new TabSection.TabItem<>("Tab 3", "tab3", new Span("这是Tab 3的内容"));
+
+        TabSection<String> tabSection = new TabSection<>(Arrays.asList(tab1, tab2, tab3));
+
+        tabSection.addTab(new TabSection.TabItem<>("设置", "settings", new Span("设置内容")));
+        tabSection.onTabSelected(value -> {
+            Notification.show("选中Tab值：" + value);
+        });
+        // 示例：获取当前选中的Tab value
+
+        horizontalLayout.add(tabSection);
 
         return horizontalLayout;
     }
