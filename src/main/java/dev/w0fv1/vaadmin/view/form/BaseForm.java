@@ -205,8 +205,8 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
             log.info(field.getName());
         }
 
-        if (field.isAnnotationPresent(FormFieldComponent.class)) {
-            Class<? extends CustomFormFieldComponentBuilder> fieldComponentBuilder = field.getAnnotation(FormFieldComponent.class).value();
+        if (field.isAnnotationPresent(CustomFormFieldComponent.class)) {
+            Class<? extends CustomFormFieldComponentBuilder> fieldComponentBuilder = field.getAnnotation(CustomFormFieldComponent.class).value();
 
             try {
                 CustomFormFieldComponentBuilder customFormFieldComponentBuilder = fieldComponentBuilder.getDeclaredConstructor().newInstance();

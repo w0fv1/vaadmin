@@ -1,5 +1,6 @@
 package dev.w0fv1.vaadmin;
 
+import com.sun.jna.Callback;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -9,18 +10,23 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static java.util.Objects.isNull;
 
+@Slf4j
 @Component
 @Repository
 public class GenericRepository {
@@ -37,6 +43,33 @@ public class GenericRepository {
     public <T> T execute(TransactionCallback<T> action) throws TransactionException {
         return transactionTemplate.execute(action);
     }
+
+    @Nullable
+    public <T> T execute(Supplier<T> callback) throws TransactionException {
+        return transactionTemplate.execute(status -> {
+            try {
+                return callback.get();
+            } catch (Exception e) {
+                log.error("数据加载失败", e);
+                status.setRollbackOnly();
+                return null;
+            }
+        });
+    }
+
+    @Nullable
+    public void execute(Runnable callback) throws TransactionException {
+        transactionTemplate.execute(status -> {
+            try {
+                callback.run();
+            } catch (Exception e) {
+                log.error("数据加载失败", e);
+                status.setRollbackOnly();
+            }
+            return null;
+        });
+    }
+
 
     @Transactional
     public <T> T save(T entity) {
@@ -63,7 +96,7 @@ public class GenericRepository {
     }
 
     @Transactional
-    public <T,ID> List<T> findAll(List<ID> ids, Class<T> type) {
+    public <T, ID> List<T> findAll(List<ID> ids, Class<T> type) {
         if (ids == null || ids.isEmpty()) {
             return List.of(); // 返回空列表
         }
@@ -185,6 +218,7 @@ public class GenericRepository {
         public void clearPredicates() {
             predicateBuilders.clear();
         }
+
         public void clearPredicatesWithOut(String... keysToKeep) {
             // Convert the keysToKeep array to a set for faster lookup
             Set<String> keysSet = new HashSet<>(Arrays.asList(keysToKeep));

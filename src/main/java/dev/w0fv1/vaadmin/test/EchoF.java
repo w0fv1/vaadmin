@@ -1,6 +1,7 @@
 package dev.w0fv1.vaadmin.test;
 
-import dev.w0fv1.vaadmin.view.form.FormFieldComponent;
+import dev.w0fv1.vaadmin.view.form.component.SampleRepositoryDialogFormFieldComponent;
+import dev.w0fv1.vaadmin.view.model.form.CustomFormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.UpperCaseTransformer;
 import dev.w0fv1.vaadmin.view.form.component.SampleDialogFormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFileUploadFieldComponent;
@@ -11,7 +12,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -44,18 +44,22 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     private Boolean defaultBooleanMessage;
 
 
-    @FormFieldComponent(SampleFormFieldComponentBuilder.class)
+    @CustomFormFieldComponent(SampleFormFieldComponentBuilder.class)
     @FormField(title = "定制化信息组件")
     private String customMessage;
 
-    @FormFieldComponent(SampleFileUploadFieldComponent.SampleFileFormFieldComponentBuilder.class)
+    @CustomFormFieldComponent(SampleFileUploadFieldComponent.SampleFileFormFieldComponentBuilder.class)
     @FormField(title = "上传文件示例")
     private String fileUrl;
 
 
-    @FormFieldComponent(SampleDialogFormFieldComponent.SampleDialogFormFieldComponentBuilder.class)
+    @CustomFormFieldComponent(SampleDialogFormFieldComponent.SampleDialogFormFieldComponentBuilder.class)
     @FormField(title = "dialog示例")
     private String dialog;
+
+    @CustomRepositoryFormFieldComponent(SampleRepositoryDialogFormFieldComponent.SampleRepositoryDialogFormFieldComponentBuilder.class)
+    @FormField(title = "repository dialog示例")
+    private Long repositoryDialogId;
 
 
     @FormField(title = "关键词", subType = String.class, defaultValue = "[\"TEST\"]")

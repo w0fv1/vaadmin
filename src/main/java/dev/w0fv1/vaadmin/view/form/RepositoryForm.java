@@ -4,14 +4,9 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import dev.w0fv1.mapper.Mapper;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
+import dev.w0fv1.vaadmin.view.form.component.*;
 import dev.w0fv1.vaadmin.view.framework.BaseMainView;
-import dev.w0fv1.vaadmin.view.form.component.BaseFormFieldComponent;
-import dev.w0fv1.vaadmin.view.form.component.MultiEntitySelectField;
-import dev.w0fv1.vaadmin.view.form.component.SingleEntitySelectField;
-import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
-import dev.w0fv1.vaadmin.view.model.form.EntityField;
-import dev.w0fv1.vaadmin.view.model.form.FormField;
-import dev.w0fv1.vaadmin.view.model.form.FormEntitySelectField;
+import dev.w0fv1.vaadmin.view.model.form.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -72,6 +67,17 @@ public class RepositoryForm<
             return new MultiEntitySelectField<>(field, formModel, genericRepository);
         } else if (field.isAnnotationPresent(FormEntitySelectField.class) && !Collection.class.isAssignableFrom(field.getType())) {
             return new SingleEntitySelectField<>(field, formModel, genericRepository);
+        } else if (field.isAnnotationPresent(CustomRepositoryFormFieldComponent.class)) {
+            Class<? extends CustomRepositoryFormFieldComponentBuilder> fieldComponentBuilder = field.getAnnotation(CustomRepositoryFormFieldComponent.class).value();
+            try {
+                CustomRepositoryFormFieldComponentBuilder customFormFieldComponentBuilder = fieldComponentBuilder.getDeclaredConstructor().newInstance();
+                BaseFormFieldComponent<?> formFieldComponent = customFormFieldComponentBuilder.build(field, formModel, genericRepository);
+
+                return formFieldComponent;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
         }
         return null;
     }
@@ -110,9 +116,9 @@ public class RepositoryForm<
 
 
                     Class<? extends BaseManageEntity<?>> entityClass = entityField.entityType();
-                    System.out.println("entityField.entityMapper()"+entityField.entityMapper().toString());
+                    System.out.println("entityField.entityMapper()" + entityField.entityMapper().toString());
 
-                    System.out.println("entityField.entityMapper()"+entityField.entityMapper().toString());
+                    System.out.println("entityField.entityMapper()" + entityField.entityMapper().toString());
                     Mapper mapper = entityField.entityMapper().getDeclaredConstructor().newInstance();
 
                     declaredField.setAccessible(true);
