@@ -2,6 +2,7 @@ package dev.w0fv1.vaadmin.test;
 
 import dev.w0fv1.vaadmin.view.form.FormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.UpperCaseTransformer;
+import dev.w0fv1.vaadmin.view.form.component.SampleDialogFormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFileUploadFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponentBuilder;
 import dev.w0fv1.vaadmin.view.model.form.*;
@@ -50,6 +51,12 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormFieldComponent(SampleFileUploadFieldComponent.SampleFileFormFieldComponentBuilder.class)
     @FormField(title = "上传文件示例")
     private String fileUrl;
+
+
+    @FormFieldComponent(SampleDialogFormFieldComponent.SampleDialogFormFieldComponentBuilder.class)
+    @FormField(title = "dialog示例")
+    private String dialog;
+
 
     @FormField(title = "关键词", subType = String.class, defaultValue = "[\"TEST\"]")
     private List<String> keywords;
