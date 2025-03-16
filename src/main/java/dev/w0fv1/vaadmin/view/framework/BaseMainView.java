@@ -21,11 +21,14 @@ import java.util.List;
 
 public abstract class BaseMainView extends AppLayout {
 
+    // 保存 SideNav 引用
+    protected SideNav sideNav;
+
     public BaseMainView() {
         DrawerToggle toggle = new DrawerToggle();
         H5 title = new H5(getTitle());
-        SideNav nav = createSideNav();
-        Scroller scroller = new Scroller(nav);
+        this.sideNav = createSideNav(); // 使用更新后的 createSideNav()
+        Scroller scroller = new Scroller(sideNav);
         scroller.setClassName(LumoUtility.Padding.SMALL);
         addToDrawer(scroller);
         addToNavbar(toggle, title);
@@ -33,11 +36,23 @@ public abstract class BaseMainView extends AppLayout {
     }
 
     private SideNav createSideNav() {
-        SideNav sideNav = new SideNav();
-        for (SideNavItem sideNavItem : getSideNavItems()) {
-            sideNav.addItem(sideNavItem);
+        SideNav nav = new SideNav();
+        // 初始化时加载导航项
+        for (SideNavItem item : getSideNavItems()) {
+            nav.addItem(item);
         }
-        return sideNav;
+        return nav;
+    }
+
+    /**
+     * 动态刷新侧边导航栏，重新加载导航项
+     */
+    protected void updateSideNav() {
+        sideNav.removeAll();
+        List<SideNavItem> items = getSideNavItems();
+        for (SideNavItem item : items) {
+            sideNav.addItem(item);
+        }
     }
 
     // 静态工具方法，用于展示不同类型的通知
@@ -60,6 +75,8 @@ public abstract class BaseMainView extends AppLayout {
 
     protected abstract String getTitle();
 
+    /**
+     * 子类需要提供侧边导航项列表，后续可以根据需要动态更新这些项
+     */
     protected abstract List<SideNavItem> getSideNavItems();
-
 }
