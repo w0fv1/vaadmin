@@ -28,11 +28,11 @@ import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 
 
 @Slf4j
-@Route(value = "/home", layout = MainView.class)
-public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Echo, Long> {
+@Route(value = "/home222", layout = MainView.class)
+public class EchoTESTPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Echo, Long> {
     private final EchoService echoService;
 
-    public EchoPage(EchoService echoService) {
+    public EchoTESTPage(EchoService echoService) {
         super(EchoT.class, EchoF.class, Echo.class);
         this.echoService = echoService;
     }
@@ -122,7 +122,7 @@ public class EchoPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Ec
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
                 echoService.randomEcho();
-                EchoPage.super.refresh();
+                EchoTESTPage.super.refresh();
             }
         });
 

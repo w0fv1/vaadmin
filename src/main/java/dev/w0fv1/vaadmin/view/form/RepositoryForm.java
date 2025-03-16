@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
+import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
+
 
 @Slf4j
 public class RepositoryForm<
@@ -158,7 +160,7 @@ public class RepositoryForm<
             }
             return saveModel;
         });
-        BaseMainView.showNotification("保存成功！", NotificationVariant.LUMO_SUCCESS);
+        showNotification("保存成功！", NotificationVariant.LUMO_SUCCESS);
     }
 
     public interface OnSave<ID> {

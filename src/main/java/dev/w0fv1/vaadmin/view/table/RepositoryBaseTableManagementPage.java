@@ -106,8 +106,10 @@ public abstract class RepositoryBaseTableManagementPage<
 
         try {
             RepositoryForm<F, E, ID> formInstance = createFromBuilder.createForm();
-            VerticalLayout dialogLayout = new VerticalLayout(formInstance);
-            createDialog.add(dialogLayout);
+            if (formInstance != null) {
+                VerticalLayout dialogLayout = new VerticalLayout(formInstance);
+                createDialog.add(dialogLayout);
+            }
         } catch (Exception e) {
             throw new RuntimeException("无法创建 RepositoryForm 实例", e);
         }
