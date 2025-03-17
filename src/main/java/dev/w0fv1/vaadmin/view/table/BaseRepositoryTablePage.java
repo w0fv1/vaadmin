@@ -8,6 +8,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
+import dev.w0fv1.vaadmin.view.BasePage;
 import dev.w0fv1.vaadmin.view.form.RepositoryForm;
 import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
@@ -27,7 +28,7 @@ public abstract class BaseRepositoryTablePage<
         T extends BaseEntityTableModel<E, ID>,
         F extends BaseEntityFormModel<E, ID>,
         E extends BaseManageEntity<ID>,
-        ID> extends BaseTablePage<T> implements BeforeEnterObserver {
+        ID> extends BaseTablePage<T> implements BasePage {
 
     @Getter
     @Resource
@@ -201,55 +202,12 @@ public abstract class BaseRepositoryTablePage<
         return genericRepository.getTotalSize(entityClass, predicateManager);
     }
 
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Map<String, List<String>> parameters = event.getLocation().getQueryParameters()
-                .getParameters();
-
-        UrlParameters params = new UrlParameters(parameters);
-        onGetUrlParameters(params);
+        BasePage.super.beforeEnter(event);
     }
-
+    @Override
     public void onGetUrlParameters(UrlParameters parameters) {
 
-    }
-
-
-    public static class UrlParameters {
-        private final Map<String, List<String>> parameters;
-
-        public UrlParameters(Map<String, List<String>> parameters) {
-            this.parameters = parameters;
-        }
-
-        public Optional<String> getSingle(String key) {
-            return Optional.ofNullable(parameters.get(key))
-                    .filter(list -> !list.isEmpty())
-                    .map(list -> list.get(0));
-        }
-
-        public List<String> getAll(String key) {
-            return parameters.getOrDefault(key, List.of());
-        }
-
-        public Integer getInt(String key, Integer defaultValue) {
-            return getSingle(key).map(Integer::valueOf).orElse(defaultValue);
-        }
-
-        public Long getLong(String key, Long defaultValue) {
-            return getSingle(key).map(Long::valueOf).orElse(defaultValue);
-        }
-
-        public boolean contains(String key) {
-            return parameters.containsKey(key);
-        }
-
-        @Override
-        public String toString() {
-            return "UrlParameters{" +
-                    "parameters=" + parameters +
-                    '}';
-        }
     }
 }
