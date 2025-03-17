@@ -43,7 +43,9 @@ public abstract class BaseRepositoryTablePage<
 
     private Dialog createDialog;
 
-    public abstract void onSave(ID id);
+    public  void onSave(ID id){
+
+    }
 
     public interface CreateFormBuilder<
             F extends BaseEntityFormModel<E, ID>,
