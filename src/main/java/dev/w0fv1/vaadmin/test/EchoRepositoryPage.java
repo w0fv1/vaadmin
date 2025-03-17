@@ -278,4 +278,9 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
         return horizontalLayout;
     }
+
+    @Override
+    public void onGetUrlParameters(UrlParameters parameters) {
+        log.info("onGetUrlParameters:{}", parameters);
+    }
 }
