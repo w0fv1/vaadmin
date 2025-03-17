@@ -2,7 +2,7 @@ package dev.w0fv1.vaadmin.view;
 
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import dev.w0fv1.vaadmin.view.table.BaseRepositoryTablePage;
+import com.vaadin.flow.router.RouteParameters;
 
 import java.util.List;
 import java.util.Map;
@@ -14,25 +14,38 @@ public interface BasePage extends BeforeEnterObserver {
     default void beforeEnter(BeforeEnterEvent event) {
         Map<String, List<String>> parameters = event.getLocation().getQueryParameters()
                 .getParameters();
+        RouteParameters routeParameters = event.getRouteParameters();
 
-        BaseRepositoryTablePage.UrlParameters params = new BaseRepositoryTablePage.UrlParameters(parameters);
-        onGetUrlParameters(params);
+        ParameterMap queryParams = new ParameterMap(parameters);
+        ParameterMap pathParams = new ParameterMap(routeParameters);
+
+        onGetUrlQueryParameters(queryParams);
+        onGetPathParameters(pathParams);
     }
 
-    void onGetUrlParameters(BaseRepositoryTablePage.UrlParameters parameters);
+    void onGetUrlQueryParameters(ParameterMap parameters);
+    void onGetPathParameters(ParameterMap parameters);
 
 
-    public static class UrlParameters {
+    class ParameterMap {
         private final Map<String, List<String>> parameters;
 
-        public UrlParameters(Map<String, List<String>> parameters) {
+        public ParameterMap(Map<String, List<String>> parameters) {
             this.parameters = parameters;
+        }
+
+        public ParameterMap(RouteParameters routeParameters) {
+            this.parameters = routeParameters.getParameterNames().stream()
+                    .collect(java.util.stream.Collectors.toMap(
+                            name -> name,
+                            name -> List.of(routeParameters.get(name).orElse(""))
+                    ));
         }
 
         public Optional<String> getSingle(String key) {
             return Optional.ofNullable(parameters.get(key))
                     .filter(list -> !list.isEmpty())
-                    .map(list -> list.get(0));
+                    .map(List::getFirst);
         }
 
         public List<String> getAll(String key) {

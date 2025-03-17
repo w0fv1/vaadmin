@@ -280,7 +280,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     }
 
     @Override
-    public void onGetUrlParameters(UrlParameters parameters) {
+    public void onGetUrlQueryParameters(ParameterMap parameters) {
         log.info("onGetUrlParameters:{}", parameters);
     }
 }

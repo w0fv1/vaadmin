@@ -5,7 +5,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.BasePage;
@@ -20,8 +19,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 public abstract class BaseRepositoryTablePage<
@@ -209,7 +206,11 @@ public abstract class BaseRepositoryTablePage<
         BasePage.super.beforeEnter(event);
     }
     @Override
-    public void onGetUrlParameters(UrlParameters parameters) {
+    public void onGetUrlQueryParameters(ParameterMap parameters) {
+
+    }
+    @Override
+    public void onGetPathParameters(ParameterMap parameters) {
 
     }
 }
