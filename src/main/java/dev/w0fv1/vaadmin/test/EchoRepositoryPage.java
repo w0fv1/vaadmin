@@ -19,7 +19,7 @@ import com.vaadin.flow.router.Route;
 import dev.w0fv1.vaadmin.view.*;
 import dev.w0fv1.vaadmin.view.form.NormalForm;
 import dev.w0fv1.vaadmin.view.form.RepositoryForm;
-import dev.w0fv1.vaadmin.view.table.RepositoryBaseTableManagementPage;
+import dev.w0fv1.vaadmin.view.table.BaseRepositoryTablePage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -28,22 +28,22 @@ import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 
 
 @Slf4j
-@Route(value = "/home222", layout = MainView.class)
-public class EchoTESTPage extends RepositoryBaseTableManagementPage<EchoT, EchoF, Echo, Long> {
+@Route(value = "/home", layout = MainView.class)
+public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Echo, Long> {
     private final EchoService echoService;
 
-    public EchoTESTPage(EchoService echoService) {
+    public EchoRepositoryPage(EchoService echoService) {
         super(EchoT.class, EchoF.class, Echo.class);
         this.echoService = echoService;
     }
 
     @Override
-    public void extColumns() {
-        extComponentColumn((ValueProvider<EchoT, Component>) echoT -> new Button(echoT.getMessage())).setHeader("TEST");
+    public void extendGridColumns() {
+        extendGridComponentColumn((ValueProvider<EchoT, Component>) echoT -> new Button(echoT.getMessage())).setHeader("TEST");
 
-        extComponentColumn((ValueProvider<EchoT, Component>) echoT -> new Button(echoT.getMessage())).setHeader("Update Message");
+        extendGridComponentColumn((ValueProvider<EchoT, Component>) echoT -> new Button(echoT.getMessage())).setHeader("Update Message");
 
-        extComponentColumn((ValueProvider<EchoT, Component>) echoT -> {
+        extendGridComponentColumn((ValueProvider<EchoT, Component>) echoT -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
 
             Button button = new Button("修改信息", new ComponentEventListener<ClickEvent<Button>>() {
@@ -82,7 +82,7 @@ public class EchoTESTPage extends RepositoryBaseTableManagementPage<EchoT, EchoF
 
 
     @Override
-    public Component extSubAction() {
+    public Component extendSubAction() {
         return new Button("打开数据选择测试", new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
@@ -108,12 +108,12 @@ public class EchoTESTPage extends RepositoryBaseTableManagementPage<EchoT, EchoF
     }
 
     @Override
-    public Component extDataAction() {
+    public Component extendDataAction() {
         return new Button("extDataAction Message");
     }
 
     @Override
-    public Component extTitleAction() {
+    public Component extendPrimaryAction() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
         Button button = new Button("随机创建");
@@ -122,7 +122,7 @@ public class EchoTESTPage extends RepositoryBaseTableManagementPage<EchoT, EchoF
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
                 echoService.randomEcho();
-                EchoTESTPage.super.refresh();
+                EchoRepositoryPage.super.refresh();
             }
         });
 
@@ -137,7 +137,7 @@ public class EchoTESTPage extends RepositoryBaseTableManagementPage<EchoT, EchoF
     }
 
     @Override
-    public Component extPage() {
+    public Component extendPage() {
         VerticalLayout horizontalLayout = new VerticalLayout();
         // 创建 ListBoxGroup 实例
         ListBoxGroup<String> horizontalListBoxGroup = new ListBoxGroup<>(ListBoxGroup.Orientation.HORIZONTAL);

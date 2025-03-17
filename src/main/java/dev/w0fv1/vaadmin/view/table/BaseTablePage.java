@@ -30,7 +30,7 @@ import static java.lang.reflect.Modifier.PRIVATE;
 import static org.reflections.ReflectionUtils.getAllFields;
 
 @Slf4j
-public abstract class BaseTableManagementPage<T extends BaseTableModel> extends VerticalLayout {
+public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLayout {
     private final Grid<T> grid;
     private final List<T> data = new ArrayList<>();
 
@@ -41,10 +41,10 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
 
     private int page = 0;
 
-    private final TextField likeTextInput = new TextField();
+    private final TextField likeSearchTextInput = new TextField();
     private final Class<T> tableClass;
 
-    public BaseTableManagementPage(Class<T> tableClass) {
+    public BaseTablePage(Class<T> tableClass) {
         this.tableClass = tableClass;
         tableConfig = tableClass.getAnnotation(TableConfig.class);
         if (tableConfig == null) {
@@ -54,52 +54,54 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
     }
 
     @PostConstruct
-    public void init() {
+    public void initializeView() {
         setData(loadData(page));
-        configurePaginationComponent();
-        onInit();
+        buildPaginationComponent();
+        onInitialized();
     }
 
 
-    public void build() {
-        buildTitle();
-        buildSubAction();
-        buildLikeSearch();
-        buildDataAction();
-        add(extDataAction());
-        buildBaseDataGrid();
-        buildActionGrid();
+    public void buildView() {
+        buildTitleBar();
+        buildSubActions();
+        buildLikeSearchActions();
+        buildDataActions();
+
+        add(extendDataAction());
+
+        buildDataGrid();
         add(grid);
-        extColumns();
-        add(extPage());
+
+        extendGridColumns();
+        add(extendPage());
     }
 
 
-    private void buildDataAction() {
+    private void buildDataActions() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setWidth("100%");
-        horizontalLayout.add(new Button("创建", v -> onCreate()));
+        horizontalLayout.add(new Button("创建", v -> onCreateEvent()));
         horizontalLayout.setJustifyContentMode(JustifyContentMode.END);
-        horizontalLayout.add(extDataAction());
+        horizontalLayout.add(extendDataAction());
         add(horizontalLayout);
     }
 
-    private void buildSubAction() {
+    private void buildSubActions() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
-        horizontalLayout.add(extSubAction());
+        horizontalLayout.add(extendSubAction());
 
         add(horizontalLayout);
     }
 
-    private void buildTitle() {
+    private void buildTitleBar() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.add(new H1(getTitle()));
         horizontalLayout.add(new Button(VaadinIcon.REFRESH.create(), (ComponentEventListener<ClickEvent<Button>>) v -> {
             refresh();
         }));
         horizontalLayout.setAlignItems(Alignment.END);
-        horizontalLayout.add(extTitleAction());
+        horizontalLayout.add(extendPrimaryAction());
         add(horizontalLayout);
         if (getDescription() != null && !getDescription().isEmpty()) {
             add(new Span(getDescription()));
@@ -109,7 +111,7 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
 
     public void refresh() {
         resetFilter();
-        onResetFilter();
+        onResetFilterEvent();
         jumpPage(0);
     }
 
@@ -147,19 +149,14 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
 
     // Method to clear all filters
     public void resetFilter() {
-        likeTextInput.clear();
+        likeSearchTextInput.clear();
         jumpPage(0);
 
     }
 
-    abstract public void onResetFilter();
+    abstract public void onResetFilterEvent();
 
-
-    public void buildActionGrid() {
-
-    }
-
-    private void configurePaginationComponent() {
+    private void buildPaginationComponent() {
         Button previousButton = new Button("上一页", e -> previousPage());
         Button nextButton = new Button("下一页", e -> nextPage());
         Button jumpButton = new Button("跳转", e -> {
@@ -192,7 +189,7 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
     }
 
 
-    private void buildBaseDataGrid() {
+    private void buildDataGrid() {
         List<Field> fieldList = getAllFields(tableClass, ReflectionUtils.withModifier(PRIVATE)).stream().toList();
 
         fieldList = fieldList.stream()
@@ -221,15 +218,15 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
     }
 
 
-    private void buildLikeSearch() {
+    private void buildLikeSearchActions() {
         if (!tableConfig.likeSearch()) {
             return;
         }
 
-        likeTextInput.setLabel("模糊搜索/" + getLikeSearchFieldNameDisplayString());
+        likeSearchTextInput.setLabel("模糊搜索/" + getLikeSearchFieldNameDisplayString());
 
-        Button likeSearchButton = new Button("搜索", event -> onLikeSearch(likeTextInput.getValue()));
-        HorizontalLayout searchLayout = new HorizontalLayout(likeTextInput, likeSearchButton);
+        Button likeSearchButton = new Button("搜索", event -> onLikeSearchEvent(likeSearchTextInput.getValue()));
+        HorizontalLayout searchLayout = new HorizontalLayout(likeSearchTextInput, likeSearchButton);
         searchLayout.setAlignItems(Alignment.END);
         add(searchLayout);
     }
@@ -261,7 +258,7 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
         return likeSearchFieldNameDisplayString.toString();
     }
 
-    public abstract void onLikeSearch(String value);
+    public abstract void onLikeSearchEvent(String value);
 
     // Helper method to safely retrieve field values using reflection
     private String getFieldStringValue(T data, Field field) {
@@ -310,34 +307,40 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
         return tableConfig.description();
     }
 
-    public Component extTitleAction() {
-        return new Span("没有更多功能..");
-    }
-
-    public Component extSubAction() {
+    public Component extendPrimaryAction() {
         return new Div();
     }
 
-    public Component extDataAction() {
+    public Component extendSubAction() {
         return new Div();
     }
 
-    public Grid.Column<T> extColumn(ValueProvider<T, ?> valueProvider) {
+    public Component extendDataAction() {
+        return new Div();
+    }
+    abstract public void onCreateEvent();
+
+    public Grid.Column<T> extendGridColumn(ValueProvider<T, ?> valueProvider) {
         return this.grid.addColumn(valueProvider);
     }
 
-    public <V extends Component> Grid.Column<T> extComponentColumn(ValueProvider<T, V> componentProvider) {
+    public <V extends Component> Grid.Column<T> extendGridComponentColumn(ValueProvider<T, V> componentProvider) {
         return this.grid.addComponentColumn(componentProvider);
     }
 
-    public void extColumns() {
+    public void extendGridColumns() {
     }
 
-    abstract public void onCreate();
 
-    public void onInit() {
+    public void onInitialized() {
 
     }
+
+
+    public Component extendPage() {
+        return new Div();
+    }
+
 
     abstract public Long getTotalSize();
 
@@ -347,10 +350,6 @@ public abstract class BaseTableManagementPage<T extends BaseTableModel> extends 
 
     private int getTotalPages() {
         return (int) Math.ceil((double) getTotalSize() / getPageSize());
-    }
-
-    public Component extPage() {
-        return new Div();
     }
 
 }

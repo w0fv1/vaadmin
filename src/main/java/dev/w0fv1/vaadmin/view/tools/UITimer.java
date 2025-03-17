@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UITimer {
 
-    private final long delayMillis;
-    private final Runnable task;
-    private volatile Thread timerThread;
-    private volatile boolean started = false;
+    private final Timer timer;
     private final UI ui;
 
     /**
@@ -21,8 +18,7 @@ public class UITimer {
      */
     public UITimer(UI ui, long delayMillis, Runnable task) {
         this.ui = ui;
-        this.delayMillis = delayMillis;
-        this.task = task;
+        this.timer = new Timer(delayMillis, createUITask(task));
     }
 
     /**
@@ -39,54 +35,44 @@ public class UITimer {
     }
 
     /**
-     * 自动获取当前UI实例的构造函数（仅在UI线程调用有效）
+     * 自动获取当前UI实例、默认延迟1000ms的构造函数（仅在UI线程调用有效）
      *
-     * @param task        到点执行的任务
+     * @param task 到点执行的任务
      */
     public UITimer(Runnable task) {
-        this(UI.getCurrent(), 1000, task);
-        if (this.ui == null) {
-            throw new IllegalStateException("Cannot automatically obtain UI. Make sure you're calling from a UI thread.");
-        }
+        this(1000, task);
+    }
+
+    /**
+     * 创建封装UI安全调用的任务
+     *
+     * @param originalTask 原始任务
+     * @return UI安全封装后的任务
+     */
+    private Runnable createUITask(Runnable originalTask) {
+        return () -> {
+            log.debug("UITimer executing task safely on UI thread.");
+            ui.access(() -> {
+                originalTask.run();
+                ui.push();
+            });
+        };
     }
 
     /**
      * 启动计时器，延迟后执行任务（UI安全）
      */
     public synchronized void start() {
-        if (started) {
-            log.debug("UITimer already started.");
-            return;
-        }
-        started = true;
-        log.debug("UITimer starting with delay: {} ms", delayMillis);
-
+        log.debug("UITimer starting.");
         ui.setPollInterval(1000);
-
-        timerThread = Thread.startVirtualThread(() -> {
-            try {
-                Thread.sleep(delayMillis);
-                ui.access(() -> {
-                    log.debug("UITimer executing task safely on UI thread.");
-                    task.run();
-                    ui.push();
-                });
-            } catch (InterruptedException e) {
-                log.debug("UITimer interrupted before executing task.");
-                Thread.currentThread().interrupt();
-            }
-        });
+        timer.start();
     }
 
     /**
      * 取消计时任务
      */
     public synchronized void cancel() {
-        if (timerThread != null && timerThread.isAlive()) {
-            log.debug("UITimer cancelling.");
-            timerThread.interrupt();
-        } else {
-            log.debug("UITimer not active or already executed.");
-        }
+        log.debug("UITimer cancelling.");
+        timer.cancel();
     }
 }
