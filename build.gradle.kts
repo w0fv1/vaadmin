@@ -3,18 +3,18 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("maven-publish")
     id("signing")
-    id("com.vaadin") version "24.6.2"
+    id("com.vaadin") version "24.6.6"
 }
 
 
 group = "dev.w0fv1"
-version = "0.6.6"
+version = "0.6.7"
 
 
 val springBootVersion = "3.4.2" // 设置 Spring Boot 版本
 
 extra["springAiVersion"] = "1.0.0-M5"
-extra["vaadinVersion"] = "24.6.2"
+extra["vaadinVersion"] = "24.6.6"
 
 
 java {
