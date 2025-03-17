@@ -92,12 +92,18 @@ public abstract class BaseRepositoryTablePage<
         Dialog dialog = new Dialog();
         try {
             RepositoryForm<F, E, ID> formInstance = createFormBuilder.createForm();
-            dialog.add(new VerticalLayout(formInstance));
+            if (formInstance != null) {
+                dialog.add(new VerticalLayout(formInstance));
+            } else {
+                // 如果formInstance为null，添加默认提示或空布局，避免异常
+                dialog.add(new VerticalLayout(new Text("暂无可显示的表单")));
+            }
         } catch (Exception e) {
             throw new RuntimeException("无法创建 RepositoryForm 实例", e);
         }
         return dialog;
     }
+
 
     private void handleSave(ID id, Dialog dialog) {
         onSave(id);
