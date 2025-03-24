@@ -1,6 +1,7 @@
 package dev.w0fv1.vaadmin.view.tools;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.UIDetachedException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,12 +22,6 @@ public class UITimer {
         this.timer = new Timer(delayMillis, createUITask(task));
     }
 
-    /**
-     * 自动获取当前UI实例的构造函数（仅在UI线程调用有效）
-     *
-     * @param delayMillis 延迟执行时间，单位毫秒
-     * @param task        到点执行的任务
-     */
     public UITimer(long delayMillis, Runnable task) {
         this(UI.getCurrent(), delayMillis, task);
         if (this.ui == null) {
@@ -34,29 +29,25 @@ public class UITimer {
         }
     }
 
-    /**
-     * 自动获取当前UI实例、默认延迟1000ms的构造函数（仅在UI线程调用有效）
-     *
-     * @param task 到点执行的任务
-     */
     public UITimer(Runnable task) {
         this(1000, task);
     }
 
     /**
-     * 创建封装UI安全调用的任务
-     *
-     * @param originalTask 原始任务
-     * @return UI安全封装后的任务
+     * 使用Vaadin推荐的带detachHandler的accessLater方法。
      */
     private Runnable createUITask(Runnable originalTask) {
-        return () -> {
-            log.debug("UITimer executing task safely on UI thread.");
-            ui.access(() -> {
-                originalTask.run();
-                ui.push();
-            });
-        };
+        return ui.accessLater(
+                () -> {
+                    log.debug("UITimer executing task safely on UI thread.");
+                    originalTask.run();
+                    ui.push();  // 如果你使用Push，需要显式调用push()，否则可以删除
+                },
+                () -> {
+                    // detachHandler: 当UI被detach后如何处理
+                    log.warn("UITimer: UI has been detached; task skipped.");
+                }
+        );
     }
 
     /**

@@ -17,7 +17,6 @@ import com.vaadin.flow.function.ValueProvider;
 import dev.w0fv1.vaadmin.view.model.table.BaseTableModel;
 import dev.w0fv1.vaadmin.view.model.table.TableConfig;
 import dev.w0fv1.vaadmin.view.model.table.TableField;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
@@ -31,7 +30,7 @@ import static org.reflections.ReflectionUtils.getAllFields;
 
 @Slf4j
 public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLayout {
-    private final Grid<T> grid;
+    private Grid<T> grid;
     private final List<T> data = new ArrayList<>();
 
     private final Span pageInfo = new Span();
@@ -50,18 +49,14 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         if (tableConfig == null) {
             throw new IllegalStateException("@TableConfig not found");
         }
-        this.grid = new Grid<>();
     }
 
-    @PostConstruct
-    public void initializeView() {
+
+    public void build() {
+        this.grid = new Grid<>();
         setData(loadData(page));
         buildPaginationComponent();
-        onInitialized();
-    }
 
-
-    public void buildView() {
         buildTitleBar();
         buildSubActions();
         buildLikeSearchActions();
@@ -74,6 +69,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
         extendGridColumns();
         add(extendPage());
+
     }
 
 
@@ -318,6 +314,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     public Component extendDataAction() {
         return new Div();
     }
+
     abstract public void onCreateEvent();
 
     public Grid.Column<T> extendGridColumn(ValueProvider<T, ?> valueProvider) {
@@ -329,11 +326,6 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     }
 
     public void extendGridColumns() {
-    }
-
-
-    public void onInitialized() {
-
     }
 
 

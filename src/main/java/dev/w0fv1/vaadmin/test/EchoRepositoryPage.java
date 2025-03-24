@@ -22,6 +22,7 @@ import dev.w0fv1.vaadmin.view.form.NormalForm;
 import dev.w0fv1.vaadmin.view.form.RepositoryForm;
 import dev.w0fv1.vaadmin.view.table.BaseRepositoryTablePage;
 import dev.w0fv1.vaadmin.view.tools.UITimer;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -34,20 +35,22 @@ import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 @Route(value = "/home", layout = MainView.class)
 public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Echo, Long> {
     private final EchoService echoService;
-    private boolean dataLoaded = false;
-    public EchoRepositoryPage(EchoService echoService) {
-        super(EchoT.class, EchoF.class, new EchoF("1231231231"),Echo.class);
-        this.echoService = echoService;
 
+    public EchoRepositoryPage(EchoService echoService) {
+        super(EchoT.class, EchoF.class, new EchoF("1231231231"), Echo.class);
+        this.echoService = echoService;
     }
+
+
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         super.beforeEnter(event);
+    }
 
-        if (!dataLoaded) {
-            setDefaultFromModel(new EchoF("setDefaultFromModel"));
-            dataLoaded = true;
-        }
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        setDefaultFromModel(new EchoF("setDefaultFromModel"));
     }
 
     @Override

@@ -30,7 +30,7 @@ public class SampleTablePage extends BaseTablePage<SampleTablePage.SampleData> {
         super(SampleData.class);
         initializeOriginalData();
         filteredData.addAll(originalData);
-        buildView();
+        build();
     }
 
     private void initializeOriginalData() {

@@ -13,7 +13,6 @@ import java.util.List;
 @Route("")
 public class MainView extends BaseMainView {
 
-    private UITimer timer;
 
     public MainView() {
         initView();
@@ -23,21 +22,10 @@ public class MainView extends BaseMainView {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
 
-        timer = new UITimer(100, () -> {
-            setTitleText("MainViewTitle");
-            setSideNavItems(List.of(
-                    new SideNavItem("主页", "/home", VaadinIcon.HOME.create())
-            ));
-        });
+        setTitleText("MainViewTitle");
+        setSideNavItems(List.of(new SideNavItem("主页", "/home", VaadinIcon.HOME.create())));
 
-        timer.start();
     }
 
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        super.onDetach(detachEvent);
-        if (timer != null) {
-            timer.cancel();
-        }
-    }
+
 }

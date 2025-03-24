@@ -11,6 +11,7 @@ import dev.w0fv1.vaadmin.view.BasePage;
 import dev.w0fv1.vaadmin.view.form.RepositoryForm;
 import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
@@ -41,11 +42,22 @@ public abstract class BaseRepositoryTablePage<
 
     private Dialog createDialog;
 
-    private F defaultFromModel;
+    private final F defaultFromModel;
 
+    @PostConstruct
+    public void build() {
+        super.build();
+        createDialog = buildCreateDialog();
+        formInstance.build();
+        buildRepositoryActionColumn();
+        add(createDialog);
+        onBuild();
+    }
+
+    public void onBuild() {
+    }
 
     public void onSave(ID id) {
-
     }
 
 
@@ -73,14 +85,6 @@ public abstract class BaseRepositoryTablePage<
 
         this.defaultFromModel = formModel;
 
-        super.buildView();
-    }
-
-    @Override
-    public void onInitialized() {
-        buildRepositoryActionColumn();
-        createDialog = buildCreateDialog();
-        add(createDialog);
     }
 
     RepositoryForm<F, E, ID> formInstance;

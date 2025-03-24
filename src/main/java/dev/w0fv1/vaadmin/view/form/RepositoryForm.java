@@ -40,8 +40,12 @@ public class RepositoryForm<
         this.entityClass = fromModel.getEntityClass();
         this.onCancel = onCancel;
         this.onSave = onSave;
+    }
+
+    public void build() {
         super.build();
     }
+
 
     public RepositoryForm(Class<F> fromClass, OnSave<ID> onSave, Runnable onCancel, GenericRepository genericRepository) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         this(fromClass.getDeclaredConstructor().newInstance(), onSave, onCancel, genericRepository);
