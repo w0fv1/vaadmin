@@ -14,10 +14,13 @@ import java.util.List;
 public class EntitySelectButton<
         E extends BaseManageEntity<ID>,
         ID> extends Button {
-    private final Dialog dialog;
-    private final String title;
-    private final EntitySelectPage<E, ID> selectPage;
-    private final List<ID> selectedItems = new ArrayList<>();
+    private Dialog dialog;
+    private String title;
+    private EntitySelectPage<E, ID> selectPage;
+    private List<ID> selectedItems = new ArrayList<>();
+
+    private Class<E> entityType;
+    private Boolean singleSelection;
 
     public EntitySelectButton(
             String title,
@@ -26,9 +29,25 @@ public class EntitySelectButton<
             GenericRepository genericRepository,
             Boolean enabled
     ) {
+        this(title, entityClass, singleSelection, enabled);
+        setGenericRepository(genericRepository);
+    }
+
+    public EntitySelectButton(
+            String title,
+            Class<E> entityClass,
+            Boolean singleSelection,
+            Boolean enabled
+    ) {
         super(title);
         this.title = title;
+        this.entityType = entityClass;
+        this.singleSelection = singleSelection;
+        this.setEnabled(enabled); // 直接根据enabled状态设置按钮是否允许输入
+    }
 
+
+    public void setGenericRepository(GenericRepository genericRepository) {
         this.dialog = new Dialog();
 
         EntitySelectPage.OnFinish<ID> onFinishCallback = selectedData -> {
@@ -48,10 +67,11 @@ public class EntitySelectButton<
             dialog.close();
         };
 
+
         selectPage = new EntitySelectPage<>(
-                entityClass,
+                this.entityType,
                 onFinishCallback,
-                singleSelection,
+                this.singleSelection,
                 genericRepository
         );
 
@@ -64,9 +84,7 @@ public class EntitySelectButton<
             selectPage.setSelectedData(selectedItems);
         });
 
-        this.setEnabled(enabled); // 直接根据enabled状态设置按钮是否允许输入
     }
-
 
     public void clear() {
         setText(title);
@@ -78,9 +96,22 @@ public class EntitySelectButton<
     }
 
     public void setValue(List<ID> selectedItems) {
+        // 判断 selectedItems 是否为空或包含不合法数据
+        if (selectedItems == null || selectedItems.isEmpty()) {
+            return; // 不设置
+        }
+
+        ID first = selectedItems.get(0);
+        if ((first instanceof Number && ((Number) first).longValue() == 0L) ||
+                (first instanceof String && ((String) first).isEmpty())) {
+            return; // 无效值，退出
+        }
+
         this.selectedItems.clear();
         this.selectedItems.addAll(selectedItems);
-        selectPage.setSelectedData(selectedItems);
+        if (selectPage != null) {
+            selectPage.setSelectedData(selectedItems);
+        }
         setText("ID为" + selectedItems + "的" + selectedItems.size() + "条数据(点击重选)");
     }
 

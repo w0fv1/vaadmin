@@ -8,12 +8,13 @@ import dev.w0fv1.vaadmin.view.ErrorMessage;
 import dev.w0fv1.vaadmin.view.model.form.FormField;
 import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 
 import static dev.w0fv1.vaadmin.component.FileValidator.validFile;
 import static dev.w0fv1.vaadmin.util.TypeUtil.defaultIfNull;
-
+@Slf4j
 @Getter
 public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     private final Field field;
@@ -28,17 +29,18 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
 
     public BaseFormFieldComponent(Field field, BaseFormModel formModel, Boolean autoInitialize) {
         this.field = field;
-
-        this.setPadding(false);
-        this.autoInitialize = autoInitialize;
-
-        init(formModel);
-        buildTitle();
-    }
-
-    private void init(BaseFormModel formModel) {
         this.formModel = formModel;
         this.formField = field.getAnnotation(FormField.class);
+        this.setPadding(false);
+        this.autoInitialize = autoInitialize;
+        build(formModel);
+    }
+
+    private void build(BaseFormModel formModel) {
+        this.formModel = formModel;
+        this.formField = field.getAnnotation(FormField.class);
+        buildTitle();
+
         initView();
         if (this.autoInitialize) {
             setData(getDefaultValue());

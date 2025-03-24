@@ -14,43 +14,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Getter
 public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends BaseFormFieldComponent<ID> {
 
-    private final EntitySelectButton<E, ID> entitySelectButton;
+    private EntitySelectButton<E, ID> entitySelectButton;
     private Boolean isSingle;
 
+    private FormField formField;
+    private Field field;
+
+    private final GenericRepository genericRepository;
+
     public SingleEntitySelectField(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
-        super(field, formModel, false);
-
-        FormField formField = field.getAnnotation(FormField.class);
-        FormEntitySelectField formEntitySelectField = field.getAnnotation(FormEntitySelectField.class);
-        String title = formField.title();
-        isSingle = !field.getType().equals(List.class);
-        this.entitySelectButton = new EntitySelectButton<>(
-                "选择" + title,
-                (Class<E>) formEntitySelectField.entityField().entityType(),
-                isSingle,
-                genericRepository,
-                formField.enabled()
-
-        );
-        ID modelData = getModelData();
-
-        if (modelData != null) {
-            this.entitySelectButton.setValue(new ArrayList<>() {{
-                add(modelData);
-            }});
-        }
-
-
-        add(this.entitySelectButton);
+        super(field, formModel, true);
+        this.field = field;
+        this.formField = field.getAnnotation(FormField.class);
+        this.genericRepository = genericRepository;
+        this.entitySelectButton.setGenericRepository(genericRepository);
     }
 
 
     @Override
     public void initView() {
-
+        FormEntitySelectField formEntitySelectField = super.getField().getAnnotation(FormEntitySelectField.class);
+        String title = super.getFormField().title();
+        isSingle = !super.getField().getType().equals(List.class);
+        this.entitySelectButton = new EntitySelectButton<>(
+                "选择" + title,
+                (Class<E>) formEntitySelectField.entityField().entityType(),
+                isSingle,
+                super.getFormField().enabled()
+        );
+        add(this.entitySelectButton);
     }
 
     @Override
@@ -65,6 +59,7 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
 
     @Override
     public void setData(ID data) {
+
         this.entitySelectButton.setValue(new ArrayList<>() {{
             add(data);
         }});
