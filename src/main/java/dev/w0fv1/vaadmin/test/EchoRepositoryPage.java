@@ -1,28 +1,31 @@
 package dev.w0fv1.vaadmin.test;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.function.ValueProvider;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import dev.w0fv1.vaadmin.view.*;
 import dev.w0fv1.vaadmin.view.form.NormalForm;
 import dev.w0fv1.vaadmin.view.form.RepositoryForm;
 import dev.w0fv1.vaadmin.view.table.BaseRepositoryTablePage;
+import dev.w0fv1.vaadmin.view.tools.UITimer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 
@@ -31,12 +34,30 @@ import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 @Route(value = "/home", layout = MainView.class)
 public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Echo, Long> {
     private final EchoService echoService;
+    private UITimer timer;
 
     public EchoRepositoryPage(EchoService echoService) {
         super(EchoT.class, EchoF.class, new EchoF("1231231231"),Echo.class);
         this.echoService = echoService;
-    }
 
+    }
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        super.beforeEnter(event);
+
+        timer = new UITimer(1000, () -> {
+            setDefaultFromModel(new EchoF("oooooooooooooooooooo"));
+        });
+
+        timer.start();
+    }
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        super.onDetach(detachEvent);
+        if (timer != null) {
+            timer.cancel();
+        }
+    }
     @Override
     public void extendGridColumns() {
         extendGridComponentColumn((ValueProvider<EchoT, Component>) echoT -> new Button(echoT.getMessage())).setHeader("TEST");

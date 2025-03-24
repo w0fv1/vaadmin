@@ -72,12 +72,14 @@ public abstract class BaseRepositoryTablePage<
         add(createDialog);
     }
 
+    RepositoryForm<F, E, ID> formInstance;
+
 
     private Dialog buildCreateDialog() {
         Dialog dialog = new Dialog();
         try {
 
-            RepositoryForm<F, E, ID> formInstance = new RepositoryForm<>(defaultFromModel,
+            formInstance = new RepositoryForm<>(defaultFromModel,
                     id -> handleSave(id, createDialog),
                     () -> handleCancel(createDialog),
                     genericRepository);
@@ -196,4 +198,9 @@ public abstract class BaseRepositoryTablePage<
     public void onGetPathParameters(ParameterMap parameters) {
 
     }
+
+    public void setDefaultFromModel(F defaultFromModel) {
+        formInstance.setDefaultModel(defaultFromModel);
+    }
+
 }

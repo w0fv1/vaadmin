@@ -28,9 +28,9 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     private final Class<F> fromClass;
     private final FormConfig formConfig;
 
-    private  F formModel;
+    private F model;
 
-    private final F defaultFromModel;
+    private F defaultModel;
 
     private final Boolean isUpdate;
 
@@ -47,8 +47,8 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         this.formConfig = fromClass.getAnnotation(FormConfig.class);
 
         this.isUpdate = isUpdate;
-        this.defaultFromModel = fromModel;
-        this.formModel = defaultFromModel.copy();
+        this.defaultModel = fromModel;
+        this.model = defaultModel.copy();
         this.setPadding(false);
     }
 
@@ -110,9 +110,9 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         // ------ 在校验完之后做自定义的字符串处理 ------
         handleTextTransform();
 
-        log.info(formModel.toString());
+        log.info(model.toString());
 
-        this.onSave(formModel);
+        this.onSave(model);
 
         this.clear();
     }
@@ -144,13 +144,13 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
                 // 拿到当前字段的值
                 field.setAccessible(true);
-                String originalValue = (String) field.get(formModel);
+                String originalValue = (String) field.get(model);
 
                 // 做转换
                 String newValue = transformer.transform(originalValue);
 
                 // 放回model
-                field.set(formModel, newValue);
+                field.set(model, newValue);
 
             } catch (Exception e) {
                 log.error("handleTextTransform error: ", e);
@@ -160,9 +160,9 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     }
 
     private void clear() {
-        this.formModel = defaultFromModel.copy();
+        this.model = defaultModel.copy();
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
-            fieldComponent.clear();
+            fieldComponent.clear(this.model);
         }
     }
 
@@ -196,7 +196,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     }
 
     private Component mapComponent(Field field) {
-        BaseFormFieldComponent<?> formFieldComponent = this.extMapComponent(field, this.formModel);
+        BaseFormFieldComponent<?> formFieldComponent = this.extMapComponent(field, this.model);
         if (formFieldComponent != null) {
             fieldComponents.add(formFieldComponent);
             return formFieldComponent;
@@ -214,43 +214,43 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
             try {
                 CustomFormFieldComponentBuilder customFormFieldComponentBuilder = fieldComponentBuilder.getDeclaredConstructor().newInstance();
-                formFieldComponent = customFormFieldComponentBuilder.build(field, formModel);
+                formFieldComponent = customFormFieldComponentBuilder.build(field, model);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
         } else if (type.equals(String.class) && (!field.isAnnotationPresent(Size.class) || (field.getAnnotation(Size.class).max() < 256))) {
-            formFieldComponent = new TextInputField(field, formModel);
+            formFieldComponent = new TextInputField(field, model);
         } else if (type.equals(String.class) && (field.isAnnotationPresent(Size.class) && (field.getAnnotation(Size.class).max() > 256))) {
-            formFieldComponent = new LongTextInputField(field, formModel);
+            formFieldComponent = new LongTextInputField(field, model);
         } else if (fromField.id() && type.equals(String.class)) {
-            formFieldComponent = new StringIdField(field, formModel);
+            formFieldComponent = new StringIdField(field, model);
         } else if (fromField.id() && type.equals(Long.class)) {
-            formFieldComponent = new LongIdField(field, formModel);
+            formFieldComponent = new LongIdField(field, model);
         } else if (type.equals(BigDecimal.class)) {
-            formFieldComponent = new BigDecimalInputField(field, formModel);
+            formFieldComponent = new BigDecimalInputField(field, model);
         } else if (type.equals(Double.class)) {
-            formFieldComponent = new NumberInputField<>(field, formModel, Double.class);
+            formFieldComponent = new NumberInputField<>(field, model, Double.class);
         } else if (type.equals(Float.class)) {
-            formFieldComponent = new NumberInputField<>(field, formModel, Float.class);
+            formFieldComponent = new NumberInputField<>(field, model, Float.class);
         } else if (type.equals(Long.class)) {
-            formFieldComponent = new NumberInputField<>(field, formModel, Long.class);
+            formFieldComponent = new NumberInputField<>(field, model, Long.class);
         } else if (type.equals(Integer.class)) {
-            formFieldComponent = new NumberInputField<>(field, formModel, Integer.class);
+            formFieldComponent = new NumberInputField<>(field, model, Integer.class);
         } else if (type.equals(Short.class)) {
-            formFieldComponent = new NumberInputField<>(field, formModel, Short.class);
+            formFieldComponent = new NumberInputField<>(field, model, Short.class);
         } else if (type.equals(Byte.class)) {
-            formFieldComponent = new NumberInputField<>(field, formModel, Byte.class);
+            formFieldComponent = new NumberInputField<>(field, model, Byte.class);
         } else if (type.equals(Boolean.class)) {
-            formFieldComponent = new BooleanCheckBoxField(field, formModel);
+            formFieldComponent = new BooleanCheckBoxField(field, model);
         } else if (type.equals(List.class) && fromField.subType().equals(String.class)) {
-            formFieldComponent = new TagInputField(field, formModel);
+            formFieldComponent = new TagInputField(field, model);
         } else if (type.equals(List.class) && fromField.subType().isEnum()) {
-            formFieldComponent = new MultiEnumSelectField(field, formModel);
+            formFieldComponent = new MultiEnumSelectField(field, model);
         } else if (type.isEnum()) {
-            formFieldComponent = new SingleEnumSelectBoxField(field, formModel);
+            formFieldComponent = new SingleEnumSelectBoxField(field, model);
         } else if (type.equals(OffsetDateTime.class)) {
-            formFieldComponent = new DateTimeField(field, formModel);
+            formFieldComponent = new DateTimeField(field, model);
         }
         if (formFieldComponent == null) {
             throw new IllegalStateException("formFieldComponent为null, 这是不应该发生的, 请检查 " + field.getName() + " 字段的类型");
@@ -272,6 +272,12 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         horizontalLayout.setAlignItems(Alignment.END);
         horizontalLayout.add(extTitle());
         add(horizontalLayout);
+    }
+
+    public void setDefaultModel(F defaultModel) {
+        this.defaultModel = defaultModel;
+        clear();
+        log.info("defaultModel：{}", defaultModel);
     }
 
     private Component extTitle() {

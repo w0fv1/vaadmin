@@ -17,8 +17,8 @@ import static dev.w0fv1.vaadmin.util.TypeUtil.defaultIfNull;
 @Getter
 public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     private final Field field;
-    private final BaseFormModel formModel;
-    private final FormField formField;
+    private BaseFormModel formModel;
+    private FormField formField;
     private ErrorMessage errorMessage;
     private final Boolean autoInitialize;
 
@@ -28,13 +28,18 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
 
     public BaseFormFieldComponent(Field field, BaseFormModel formModel, Boolean autoInitialize) {
         this.field = field;
+
+        this.setPadding(false);
+        this.autoInitialize = autoInitialize;
+
+        init(formModel);
+        buildTitle();
+    }
+
+    private void init(BaseFormModel formModel) {
         this.formModel = formModel;
         this.formField = field.getAnnotation(FormField.class);
-        this.setPadding(false);
-        buildTitle();
-
         initView();
-        this.autoInitialize = autoInitialize;
         if (this.autoInitialize) {
             setData(getDefaultValue());
         }
@@ -123,9 +128,15 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
 
     public abstract void clearUI();
 
+    public void clear(BaseFormModel formModel) {
+        clearUI();
+        this.formModel = formModel;
+        // 默认实现：将 data 设置为 getDefaultValue()
+        init(formModel);
+    }
+
     public void clear() {
         clearUI();
-        // 默认实现：将 data 设置为 getDefaultValue()
         if (autoInitialize) {
             setData(getDefaultValue());
         }
