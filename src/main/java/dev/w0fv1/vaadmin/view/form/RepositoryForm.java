@@ -34,7 +34,7 @@ public class RepositoryForm<
     private final Boolean isUpdate;
 
     public RepositoryForm(F fromModel, OnSave<ID> onSave, Runnable onCancel, GenericRepository genericRepository) {
-        super(fromModel, fromModel.getId() != null);
+        super(fromModel, fromModel != null && fromModel.getId() != null);
         this.isUpdate = fromModel.getId() != null;
         this.genericRepository = genericRepository;
         this.entityClass = fromModel.getEntityClass();
@@ -118,9 +118,6 @@ public class RepositoryForm<
 
 
                     Class<? extends BaseManageEntity<?>> entityClass = entityField.entityType();
-                    System.out.println("entityField.entityMapper()" + entityField.entityMapper().toString());
-
-                    System.out.println("entityField.entityMapper()" + entityField.entityMapper().toString());
                     Mapper mapper = entityField.entityMapper().getDeclaredConstructor().newInstance();
 
                     declaredField.setAccessible(true);

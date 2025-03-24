@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.TransactionStatus;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,9 +57,19 @@ public abstract class BaseRepositoryTablePage<
                                    F formModel,
                                    Class<E> entityClass) {
         super(tableClass);
+
         this.entityClass = entityClass;
         this.formClass = formClass;
         this.tableClass = tableClass;
+
+        if (formModel == null) {
+            try {
+                formModel = formClass.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         this.defaultFromModel = formModel;
 
