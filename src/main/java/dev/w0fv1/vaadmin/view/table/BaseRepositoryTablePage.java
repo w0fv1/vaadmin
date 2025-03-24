@@ -40,68 +40,49 @@ public abstract class BaseRepositoryTablePage<
 
     private Dialog createDialog;
 
-    public  void onSave(ID id){
+    private F defaultFromModel;
+
+
+    public void onSave(ID id) {
 
     }
 
-    public interface CreateFormBuilder<
-            F extends BaseEntityFormModel<E, ID>,
-            E extends BaseManageEntity<ID>,
-            ID> {
-        RepositoryForm<F, E, ID> createForm();
-    }
-
-    private CreateFormBuilder<F, E, ID> createFormBuilder;
 
     public BaseRepositoryTablePage(Class<T> tableClass, Class<F> formClass, Class<E> entityClass) {
         this(tableClass, formClass, null, entityClass);
     }
 
     public BaseRepositoryTablePage(Class<T> tableClass, Class<F> formClass,
-                                   CreateFormBuilder<F, E, ID> createFormBuilder,
+                                   F formModel,
                                    Class<E> entityClass) {
         super(tableClass);
         this.entityClass = entityClass;
         this.formClass = formClass;
         this.tableClass = tableClass;
-        this.createFormBuilder = createFormBuilder;
+
+        this.defaultFromModel = formModel;
+
         super.buildView();
     }
 
     @Override
     public void onInitialized() {
-        if (createFormBuilder == null) {
-            createFormBuilder = defaultFormBuilder();
-        }
-
         buildRepositoryActionColumn();
         createDialog = buildCreateDialog();
         add(createDialog);
     }
 
-    private CreateFormBuilder<F, E, ID> defaultFormBuilder() {
-        return () -> {
-            try {
-                return new RepositoryForm<>(formClass,
-                        id -> handleSave(id, createDialog),
-                        () -> handleCancel(createDialog),
-                        genericRepository);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("无法创建 RepositoryForm 实例", e);
-            }
-        };
-    }
 
     private Dialog buildCreateDialog() {
         Dialog dialog = new Dialog();
         try {
-            RepositoryForm<F, E, ID> formInstance = createFormBuilder.createForm();
-            if (formInstance != null) {
-                dialog.add(new VerticalLayout(formInstance));
-            } else {
-                // 如果formInstance为null，添加默认提示或空布局，避免异常
-                dialog.add(new VerticalLayout(new Text("暂无可显示的表单")));
-            }
+
+            RepositoryForm<F, E, ID> formInstance = new RepositoryForm<>(defaultFromModel,
+                    id -> handleSave(id, createDialog),
+                    () -> handleCancel(createDialog),
+                    genericRepository);
+
+            dialog.add(new VerticalLayout(formInstance));
         } catch (Exception e) {
             throw new RuntimeException("无法创建 RepositoryForm 实例", e);
         }
@@ -205,10 +186,12 @@ public abstract class BaseRepositoryTablePage<
     public void beforeEnter(BeforeEnterEvent event) {
         BasePage.super.beforeEnter(event);
     }
+
     @Override
     public void onGetUrlQueryParameters(ParameterMap parameters) {
 
     }
+
     @Override
     public void onGetPathParameters(ParameterMap parameters) {
 

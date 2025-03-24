@@ -33,7 +33,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     private final EchoService echoService;
 
     public EchoRepositoryPage(EchoService echoService) {
-        super(EchoT.class, EchoF.class, Echo.class);
+        super(EchoT.class, EchoF.class, new EchoF("1231231231"),Echo.class);
         this.echoService = echoService;
     }
 

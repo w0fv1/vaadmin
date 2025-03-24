@@ -50,7 +50,6 @@ public class DateTimeField extends BaseFormFieldComponent<OffsetDateTime> {
     }
     @Override
     public void clearUI() {
-        this.dateTimePicker.clear();
-        this.dateTimePicker.setValue(LocalDateTime.now());
+        setData(getDefaultValue()); // 从formModel或默认配置重新获取默认值并恢复UI
     }
 }

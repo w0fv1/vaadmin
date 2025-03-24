@@ -28,7 +28,9 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     private final Class<F> fromClass;
     private final FormConfig formConfig;
 
-    private final F formModel;
+    private  F formModel;
+
+    private final F defaultFromModel;
 
     private final Boolean isUpdate;
 
@@ -45,7 +47,8 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         this.formConfig = fromClass.getAnnotation(FormConfig.class);
 
         this.isUpdate = isUpdate;
-        this.formModel = fromModel;
+        this.defaultFromModel = fromModel;
+        this.formModel = defaultFromModel.copy();
         this.setPadding(false);
     }
 
@@ -157,6 +160,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     }
 
     private void clear() {
+        this.formModel = defaultFromModel.copy();
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.clear();
         }
