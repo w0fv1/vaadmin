@@ -132,7 +132,9 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         clearUI();
         this.formModel = formModel;
         // 默认实现：将 data 设置为 getDefaultValue()
-        init(formModel);
+        if (autoInitialize) {
+            setData(getDefaultValue());
+        }
     }
 
     public void clear() {

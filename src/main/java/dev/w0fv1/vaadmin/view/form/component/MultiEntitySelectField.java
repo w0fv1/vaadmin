@@ -31,11 +31,10 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
                 "选择" + title,
                 (Class<E>) formEntitySelectField.entityField().entityType(),
                 isSingle,
-                genericRepository
-
+                genericRepository,
+                formField.enabled()
         );
         List<ID> modelData = getModelData();
-        log.info("modelData is null :"+((modelData==null)?"null":modelData.toString()));
         if (modelData != null) {
             this.entitySelectButton.setValue(modelData);
         }

@@ -31,7 +31,8 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
                 "选择" + title,
                 (Class<E>) formEntitySelectField.entityField().entityType(),
                 isSingle,
-                genericRepository
+                genericRepository,
+                formField.enabled()
 
         );
         ID modelData = getModelData();

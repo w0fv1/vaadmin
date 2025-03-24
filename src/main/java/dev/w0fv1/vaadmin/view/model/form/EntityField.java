@@ -16,5 +16,4 @@ public @interface EntityField {
     Class<? extends Mapper> entityMapper() ;
 
     Class<? extends BaseManageEntity<?>> entityType();
-
 }

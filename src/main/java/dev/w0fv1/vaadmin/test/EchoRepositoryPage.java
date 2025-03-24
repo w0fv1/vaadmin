@@ -34,8 +34,7 @@ import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 @Route(value = "/home", layout = MainView.class)
 public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Echo, Long> {
     private final EchoService echoService;
-    private UITimer timer;
-
+    private boolean dataLoaded = false;
     public EchoRepositoryPage(EchoService echoService) {
         super(EchoT.class, EchoF.class, new EchoF("1231231231"),Echo.class);
         this.echoService = echoService;
@@ -45,19 +44,12 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     public void beforeEnter(BeforeEnterEvent event) {
         super.beforeEnter(event);
 
-        timer = new UITimer(1000, () -> {
-            setDefaultFromModel(new EchoF("oooooooooooooooooooo"));
-        });
-
-        timer.start();
-    }
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        super.onDetach(detachEvent);
-        if (timer != null) {
-            timer.cancel();
+        if (!dataLoaded) {
+            setDefaultFromModel(new EchoF("setDefaultFromModel"));
+            dataLoaded = true;
         }
     }
+
     @Override
     public void extendGridColumns() {
         extendGridComponentColumn((ValueProvider<EchoT, Component>) echoT -> new Button(echoT.getMessage())).setHeader("TEST");

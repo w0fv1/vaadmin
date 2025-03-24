@@ -91,7 +91,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @EntityField(
             entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,
             entityType = Echo.class)
-    @FormField(title = "手动manyToOne回声")
+    @FormField(title = "手动manyToOne回声", enabled = false)
     private Long manualEchoId;
 
     public EchoF(String message) {
@@ -120,8 +120,6 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
         model.setLabels(labels);
         model.setStatus(status);
     }
-
-
 
 
 }

@@ -23,19 +23,18 @@ public class EntitySelectButton<
             String title,
             Class<E> entityClass,
             Boolean singleSelection,
-            GenericRepository genericRepository
+            GenericRepository genericRepository,
+            Boolean enabled
     ) {
         super(title);
         this.title = title;
-        // Implement the OnFinish callback
+
         this.dialog = new Dialog();
 
         EntitySelectPage.OnFinish<ID> onFinishCallback = selectedData -> {
-
             if (selectedData != null && !selectedData.isEmpty()) {
                 selectedItems.clear();
                 selectedItems.addAll(new ArrayList<>(selectedData));
-
                 setText("ID为" + selectedItems + "的" + selectedData.size() + "条数据(点击重选)");
             } else {
                 setText(title);
@@ -49,27 +48,25 @@ public class EntitySelectButton<
             dialog.close();
         };
 
-
         selectPage = new EntitySelectPage<>(
                 entityClass,
                 onFinishCallback,
-                singleSelection, // Set to true for single selection
+                singleSelection,
                 genericRepository
-
         );
 
         dialog.add(selectPage);
 
-        ComponentEventListener<ClickEvent<Button>> clickEventComponentEventListener = new ComponentEventListener<>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> event) {
-                dialog.open();
-                selectPage.refresh();
-                selectPage.setSelectedData(selectedItems);
-            }
-        };
-        this.addClickListener(clickEventComponentEventListener);
+        this.addClickListener(event -> {
+            if (!isEnabled()) return; // 再次确认enabled状态
+            dialog.open();
+            selectPage.refresh();
+            selectPage.setSelectedData(selectedItems);
+        });
+
+        this.setEnabled(enabled); // 直接根据enabled状态设置按钮是否允许输入
     }
+
 
     public void clear() {
         setText(title);

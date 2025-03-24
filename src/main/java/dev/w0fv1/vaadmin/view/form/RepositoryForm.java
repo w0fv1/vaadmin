@@ -65,6 +65,8 @@ public class RepositoryForm<
     @Override
     BaseFormFieldComponent<?> extMapComponent(Field field, F formModel) {
 
+        FormField formField = field.getAnnotation(FormField.class);
+
         if (field.isAnnotationPresent(FormEntitySelectField.class) && Collection.class.isAssignableFrom(field.getType())) {
             return new MultiEntitySelectField<>(field, formModel, genericRepository);
         } else if (field.isAnnotationPresent(FormEntitySelectField.class) && !Collection.class.isAssignableFrom(field.getType())) {
