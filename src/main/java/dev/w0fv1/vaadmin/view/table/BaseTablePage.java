@@ -4,6 +4,7 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -17,6 +18,8 @@ import com.vaadin.flow.function.ValueProvider;
 import dev.w0fv1.vaadmin.view.model.table.BaseTableModel;
 import dev.w0fv1.vaadmin.view.model.table.TableConfig;
 import dev.w0fv1.vaadmin.view.model.table.TableField;
+import dev.w0fv1.vaadmin.view.table.component.BaseFieldComponent;
+import dev.w0fv1.vaadmin.view.table.component.TextFieldComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
@@ -203,16 +206,69 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
             if (tableFieldInfo != null && !tableFieldInfo.displayName().isEmpty()) {
                 displayName = tableFieldInfo.displayName();
             }
-            grid.addColumn(data -> getFieldStringValue(data, field)) // Data provider
+            grid.addComponentColumn(data -> {
+                        String value = getFieldStringValue(data, field, 20);
+                        Span cell = new Span(value);
+                        cell.getStyle().set("cursor", "pointer");
+                        cell.addClickListener(e -> onFieldClick(data, field, value));
+                        return cell;
+                    }) // Data provider
                     .setHeader(displayName) // Formatted header
                     .setAutoWidth(true)
                     .setResizable(true); // Enable sorting
         }
         grid.setWidthFull();
+        grid.addItemClickListener(event -> {
+            T item = event.getItem();
+            onItemClicked(item);
+        });
+        grid.addItemDoubleClickListener(event -> {
+            T item = event.getItem();
+            onItemDoubleClicked(item);
+        });
         grid.getStyle().set("border", "1px solid #ddd").set("padding", "10px");
         grid.setColumnReorderingAllowed(true); // Allow user to reorder columns
     }
 
+    /**
+     * 单击数据项时触发1
+     */
+    public void onItemClicked(T item) {
+
+    }
+
+    public void onItemDoubleClicked(T item) {
+
+    }
+
+    public void onFieldClick(T item, Field field, Object value) {
+
+        // 判断是否有 @TableFieldComponent 注解且启用
+        TableField tableField = field.getAnnotation(TableField.class);
+        BaseFieldComponent<?> fieldComponent = null;
+
+        // 默认只处理 String 类型
+        if (value instanceof String || tableField == null) {
+            fieldComponent = new TextFieldComponent(field, getFieldStringValue(item, field, 200000));
+        }
+
+        if (fieldComponent == null) {
+            return;
+        }
+
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("字段详情: " + field.getName());
+        dialog.setModal(true);
+        dialog.setWidth("400px");
+
+        dialog.add(fieldComponent);
+
+        Button close = new Button("关闭", e -> dialog.close());
+        dialog.getFooter().add(close);
+
+        dialog.open();
+
+    }
 
     private void buildLikeSearchActions() {
         if (!tableConfig.likeSearch()) {
@@ -257,7 +313,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     public abstract void onLikeSearchEvent(String value);
 
     // Helper method to safely retrieve field values using reflection
-    private String getFieldStringValue(T data, Field field) {
+    private String getFieldStringValue(T data, Field field, Integer maxLength) {
 
         try {
             Object value = field.get(data); // Access field value
@@ -265,8 +321,8 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
                 return "N/A";
             }
             String result = value.toString(); // Handle nulls
-            if (result.length() > 20) {
-                result = result.substring(0, 20) + "...";
+            if (result.length() > maxLength) {
+                result = result.substring(0, maxLength) + "...";
             }
             return result;
         } catch (IllegalAccessException e) {

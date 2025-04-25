@@ -20,4 +20,9 @@ public @interface TableField {
 
     public String likeSearchName() default "";
 
+    /**
+     * 指定使用的组件类（暂时保留接口，当前逻辑只支持String->TextFieldComponent）
+     */
+    Class<?> customComponent() default Void.class;
+
 }

@@ -80,7 +80,6 @@ public class RepositoryForm<
             try {
                 CustomRepositoryFormFieldComponentBuilder customFormFieldComponentBuilder = fieldComponentBuilder.getDeclaredConstructor().newInstance();
                 BaseFormFieldComponent<?> formFieldComponent = customFormFieldComponentBuilder.build(field, formModel, genericRepository);
-
                 return formFieldComponent;
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -152,6 +151,25 @@ public class RepositoryForm<
                     }
                 }
                 saveModel = genericRepository.save(saveModel);
+
+
+                for (Field declaredField : fromModel.getClass().getDeclaredFields()) {
+                    if (!declaredField.isAnnotationPresent(RepositoryMapField.class)) {
+                        continue;
+                    }
+                    RepositoryMapField repositoryMapField = declaredField.getAnnotation(RepositoryMapField.class);
+
+                    if (repositoryMapField.mapper() == null) {
+                        continue;
+                    }
+
+                    RepositoryFieldMapper repositoryFieldMapper = repositoryMapField.mapper().getDeclaredConstructor().newInstance();
+                    declaredField.setAccessible(true);
+
+                    repositoryFieldMapper.map(genericRepository, saveModel, fromModel);
+                }
+
+
                 if (onSave != null) {
                     onSave.run(saveModel.getId());
                 }

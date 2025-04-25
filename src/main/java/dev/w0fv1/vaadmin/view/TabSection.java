@@ -67,7 +67,7 @@ public class TabSection<T> extends VerticalLayout {
         items.add(item);
         addTabInternal(item);
 
-        if (tabs.getComponentCount() == 1) {
+        if (tabs.getTabCount() == 1) {
             tabs.setSelectedIndex(0);
             selectTab(tabs.getSelectedTab());
             notifySelectionListeners();
