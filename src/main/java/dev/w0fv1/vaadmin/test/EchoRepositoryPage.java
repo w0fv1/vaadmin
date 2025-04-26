@@ -296,7 +296,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     }
 
     @Override
-    public void onGetUrlQueryParameters(ParameterMap parameters) {
+    public void onGetUrlQueryParameters(ParameterMap parameters, BeforeEnterEvent event) {
         log.info("onGetUrlParameters:{}", parameters);
     }
 }

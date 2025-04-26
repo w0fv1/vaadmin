@@ -4,6 +4,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.RouteParameters;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,19 +20,37 @@ public interface BasePage extends BeforeEnterObserver {
         ParameterMap queryParams = new ParameterMap(parameters);
         ParameterMap pathParams = new ParameterMap(routeParameters);
 
-        onGetUrlQueryParameters(queryParams);
-        onGetPathParameters(pathParams);
+        onGetUrlQueryParameters(queryParams, event);
+        onGetPathParameters(pathParams, event);
+
+        ParameterMap params = new ParameterMap();
+        params.addAll(queryParams);
+        params.addAll(pathParams);
+        onGetParameters(params, event);
     }
 
-    void onGetUrlQueryParameters(ParameterMap parameters);
-    void onGetPathParameters(ParameterMap parameters);
+    default void onGetUrlQueryParameters(ParameterMap parameters, BeforeEnterEvent event) {
 
+    }
+
+    default void onGetPathParameters(ParameterMap parameters, BeforeEnterEvent event) {
+
+    }
+
+
+    default void onGetParameters(ParameterMap parameters, BeforeEnterEvent event) {
+
+    }
 
     class ParameterMap {
         private final Map<String, List<String>> parameters;
 
         public ParameterMap(Map<String, List<String>> parameters) {
             this.parameters = parameters;
+        }
+
+        public ParameterMap() {
+            this.parameters = new HashMap<>();
         }
 
         public ParameterMap(RouteParameters routeParameters) {
@@ -64,6 +83,19 @@ public interface BasePage extends BeforeEnterObserver {
             return parameters.containsKey(key);
         }
 
+        /**
+         * 将另一个ParameterMap的所有参数合并到当前参数中
+         * 如果键重复，则追加到原有列表后面
+         */
+        public void addAll(ParameterMap other) {
+            other.parameters.forEach((key, valueList) -> {
+                parameters.merge(key, new java.util.ArrayList<>(valueList), (existingList, newList) -> {
+                    existingList.addAll(newList);
+                    return existingList;
+                });
+            });
+        }
+
         @Override
         public String toString() {
             return "UrlParameters{" +
@@ -71,4 +103,5 @@ public interface BasePage extends BeforeEnterObserver {
                     '}';
         }
     }
+
 }

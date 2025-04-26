@@ -48,7 +48,6 @@ public abstract class BaseRepositoryTablePage<
     public void build() {
         super.build();
         createDialog = buildCreateDialog();
-        formInstance.build();
         buildRepositoryActionColumn();
         add(createDialog);
         onBuild();
@@ -167,22 +166,24 @@ public abstract class BaseRepositoryTablePage<
 
     private Component createUpdateButton(T t) {
         Button button = new Button("更新");
-        button.addClickListener(event -> openUpdateDialog(t));
+        button.addClickListener(event -> {
+            Dialog updateDialog = new Dialog();
+
+            log.info("UpdateButton clicked, build Update dialog");
+
+            RepositoryForm<F, E, ID> form = new RepositoryForm<>(
+                    (F) t.toFormModel(),
+                    id -> handleSave(id, updateDialog),
+                    () -> handleCancel(updateDialog),
+                    genericRepository
+            );
+            updateDialog.add(new VerticalLayout(form));
+            add(updateDialog);
+            updateDialog.open();
+        });
         return button;
     }
 
-    private void openUpdateDialog(T t) {
-        Dialog updateDialog = new Dialog();
-        RepositoryForm<F, E, ID> form = new RepositoryForm<>(
-                (F) t.toFormModel(),
-                id -> handleSave(id, updateDialog),
-                () -> handleCancel(updateDialog),
-                genericRepository
-        );
-        updateDialog.add(new VerticalLayout(form));
-        add(updateDialog);
-        updateDialog.open();
-    }
 
     @Override
     public void onCreateEvent() {
@@ -205,12 +206,12 @@ public abstract class BaseRepositoryTablePage<
     }
 
     @Override
-    public void onGetUrlQueryParameters(ParameterMap parameters) {
+    public void onGetUrlQueryParameters(ParameterMap parameters, BeforeEnterEvent event) {
 
     }
 
     @Override
-    public void onGetPathParameters(ParameterMap parameters) {
+    public void onGetPathParameters(ParameterMap parameters, BeforeEnterEvent event) {
 
     }
 

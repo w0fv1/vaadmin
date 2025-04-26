@@ -40,6 +40,7 @@ public class RepositoryForm<
         this.entityClass = fromModel.getEntityClass();
         this.onCancel = onCancel;
         this.onSave = onSave;
+        this.build();
     }
 
     public void build() {
