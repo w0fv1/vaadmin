@@ -58,7 +58,6 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     public void build() {
         this.grid = new Grid<>();
         setData(loadData(page));
-        buildPaginationComponent();
 
         buildTitleBar();
         buildSubActions();
@@ -71,6 +70,8 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         add(grid);
 
         extendGridColumns();
+        buildPaginationComponent();
+
         add(extendPage());
 
     }
