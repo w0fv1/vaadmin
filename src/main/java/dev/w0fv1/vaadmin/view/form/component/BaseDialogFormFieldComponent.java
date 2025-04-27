@@ -3,16 +3,10 @@ package dev.w0fv1.vaadmin.view.form.component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import dev.w0fv1.vaadmin.util.TypeUtil;
-import dev.w0fv1.vaadmin.view.ErrorMessage;
-import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
-import dev.w0fv1.vaadmin.view.model.form.FormField;
+import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import lombok.Getter;
 
 import java.lang.reflect.Field;
-
-import static dev.w0fv1.vaadmin.component.FileValidator.validFile;
-import static dev.w0fv1.vaadmin.util.TypeUtil.defaultIfNull;
 
 /**
  * 基于对话框的表单字段组件。

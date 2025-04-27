@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.model.form;
+package dev.w0fv1.vaadmin.view.form.model;
 
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 

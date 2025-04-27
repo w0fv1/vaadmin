@@ -1,7 +1,6 @@
 package dev.w0fv1.vaadmin.view.table.component;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
 
 import java.lang.reflect.Field;
 

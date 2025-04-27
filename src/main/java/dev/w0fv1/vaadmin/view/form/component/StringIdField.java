@@ -1,7 +1,7 @@
 package dev.w0fv1.vaadmin.view.form.component;
 
 import com.vaadin.flow.component.textfield.TextField;
-import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
+import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;

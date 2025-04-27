@@ -13,7 +13,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import dev.w0fv1.vaadmin.GenericRepository;
-import dev.w0fv1.vaadmin.view.model.table.TableField;
+import dev.w0fv1.vaadmin.view.table.model.TableField;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;

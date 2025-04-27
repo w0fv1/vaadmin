@@ -5,8 +5,7 @@ import dev.w0fv1.mapper.Mapper;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.form.component.*;
-import dev.w0fv1.vaadmin.view.framework.BaseMainView;
-import dev.w0fv1.vaadmin.view.model.form.*;
+import dev.w0fv1.vaadmin.view.form.model.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;

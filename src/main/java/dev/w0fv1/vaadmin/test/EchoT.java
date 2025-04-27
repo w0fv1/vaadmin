@@ -1,13 +1,17 @@
 package dev.w0fv1.vaadmin.test;
 
-import dev.w0fv1.vaadmin.view.model.table.BaseEntityTableModel;
-import dev.w0fv1.vaadmin.view.model.table.TableConfig;
+import dev.w0fv1.vaadmin.view.table.model.BaseEntityTableModel;
+import dev.w0fv1.vaadmin.view.table.model.JsonTableField;
+import dev.w0fv1.vaadmin.view.table.model.TableConfig;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+
+import static dev.w0fv1.vaadmin.util.JsonUtil.toHashMap;
 
 @Data
 @ToString
@@ -19,6 +23,10 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
     private String longMessage;
     private List<String> keywords;
     private Boolean flag;
+
+    @JsonTableField
+    private HashMap<String, Object> manyToOneEcho;
+
     private List<Echo.Label> labels;
     private Echo.Status status;
     private OffsetDateTime createdTime;
@@ -53,6 +61,9 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
         this.message = entity.getMessage();
         this.longMessage = entity.getMessage();
         this.keywords = entity.getKeywords();
+        if (entity.getManyToOneEcho() != null) {
+            this.manyToOneEcho = toHashMap(entity.getManyToOneEcho());
+        }
         this.flag = entity.getFlag();
         this.labels = entity.getLabels();
         this.status = entity.getStatus();

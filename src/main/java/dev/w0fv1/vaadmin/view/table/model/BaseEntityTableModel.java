@@ -1,7 +1,7 @@
-package dev.w0fv1.vaadmin.view.model.table;
+package dev.w0fv1.vaadmin.view.table.model;
 
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
-import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
+import dev.w0fv1.vaadmin.view.form.model.BaseEntityFormModel;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

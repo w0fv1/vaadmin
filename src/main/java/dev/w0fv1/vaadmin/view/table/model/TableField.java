@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.model.table;
+package dev.w0fv1.vaadmin.view.table.model;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -3,9 +3,9 @@ package dev.w0fv1.vaadmin.view.form.component;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.EntitySelectButton;
-import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
-import dev.w0fv1.vaadmin.view.model.form.FormField;
-import dev.w0fv1.vaadmin.view.model.form.FormEntitySelectField;
+import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
+import dev.w0fv1.vaadmin.view.form.model.FormField;
+import dev.w0fv1.vaadmin.view.form.model.FormEntitySelectField;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

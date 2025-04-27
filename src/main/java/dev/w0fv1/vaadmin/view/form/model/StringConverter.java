@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.model.form;
+package dev.w0fv1.vaadmin.view.form.model;
 
 /**
  * 用于对表单String字段做自定义处理的接口

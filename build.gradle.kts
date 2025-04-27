@@ -8,7 +8,7 @@ plugins {
 
 
 group = "dev.w0fv1"
-version = "0.9.6"
+version = "0.10.4"
 
 
 val springBootVersion = "3.4.2" // 设置 Spring Boot 版本
@@ -60,7 +60,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
     implementation("org.reflections:reflections:0.10.2")
-
+// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-hibernate6
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.19.0")
 // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 

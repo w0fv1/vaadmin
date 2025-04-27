@@ -3,7 +3,7 @@ package dev.w0fv1.vaadmin.view.form.component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
+import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 
 import java.lang.reflect.Field;
 

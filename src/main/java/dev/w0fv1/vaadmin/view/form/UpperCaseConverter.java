@@ -1,6 +1,6 @@
 package dev.w0fv1.vaadmin.view.form;
 
-import dev.w0fv1.vaadmin.view.model.form.StringConverter;
+import dev.w0fv1.vaadmin.view.form.model.StringConverter;
 
 public class UpperCaseConverter implements StringConverter {
     @Override

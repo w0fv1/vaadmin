@@ -15,9 +15,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.function.ValueProvider;
-import dev.w0fv1.vaadmin.view.model.table.BaseTableModel;
-import dev.w0fv1.vaadmin.view.model.table.TableConfig;
-import dev.w0fv1.vaadmin.view.model.table.TableField;
+import dev.w0fv1.vaadmin.view.table.model.BaseTableModel;
+import dev.w0fv1.vaadmin.view.table.model.TableConfig;
+import dev.w0fv1.vaadmin.view.table.model.TableField;
 import dev.w0fv1.vaadmin.view.table.component.BaseFieldComponent;
 import dev.w0fv1.vaadmin.view.table.component.TextFieldComponent;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import static dev.w0fv1.vaadmin.util.JsonUtil.toPrettyJson;
 import static java.lang.reflect.Modifier.PRIVATE;
 import static org.reflections.ReflectionUtils.getAllFields;
 
@@ -321,7 +323,19 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
             if (value == null) {
                 return "N/A";
             }
-            String result = value.toString(); // Handle nulls
+            String result = "N/A";
+
+            try {
+                if (value instanceof Map<?, ?> v) {
+                    result = toPrettyJson(v);
+                } else {
+                    result = value.toString(); // Handle nulls
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+
+
             if (result.length() > maxLength) {
                 result = result.substring(0, maxLength) + "...";
             }

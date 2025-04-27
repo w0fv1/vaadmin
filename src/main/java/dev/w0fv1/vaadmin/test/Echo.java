@@ -1,5 +1,6 @@
 package dev.w0fv1.vaadmin.test;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -55,14 +56,16 @@ public class Echo implements BaseManageEntity<Long> {
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
 
+    @JsonIgnore
     // 多对一关系
     @ManyToOne
     @JoinColumn(name = "many_to_one_echo_id")
     private Echo manyToOneEcho;
-
+    @JsonIgnore
     // 一对多关系
     @OneToMany(mappedBy = "manyToOneEcho", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Echo> oneToManyEchoes = new ArrayList<>();
+    @JsonIgnore
 
     // 多对多关系
     @ManyToMany

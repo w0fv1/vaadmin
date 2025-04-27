@@ -1,4 +1,4 @@
-package dev.w0fv1.vaadmin.view.model.table;
+package dev.w0fv1.vaadmin.view.form.model;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,11 +7,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TableConfig {
-    public String title() default "";
-    public String description() default "";
+public @interface FormConfig {
+    String title() default "";
 
-    boolean likeSearch() default false;
-
-
+    String description() default "";
 }

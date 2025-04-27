@@ -2,7 +2,7 @@ package dev.w0fv1.vaadmin.view.form;
 
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
-import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
+import dev.w0fv1.vaadmin.view.form.model.BaseEntityFormModel;
 
 public interface RepositoryFieldMapper<
         E extends BaseManageEntity<?>,

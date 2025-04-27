@@ -5,8 +5,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import dev.w0fv1.vaadmin.util.TypeUtil;
 import dev.w0fv1.vaadmin.view.ErrorMessage;
-import dev.w0fv1.vaadmin.view.model.form.FormField;
-import dev.w0fv1.vaadmin.view.model.form.BaseFormModel;
+import dev.w0fv1.vaadmin.view.form.model.FormField;
+import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
