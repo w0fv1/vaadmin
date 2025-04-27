@@ -137,17 +137,17 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
             // 取到注解和对应的处理器
             TextTransform annotation = field.getAnnotation(TextTransform.class);
-            Class<? extends StringTransformer> transformerClass = annotation.processorClass();
+            Class<? extends StringConverter> transformerClass = annotation.processorClass();
 
             try {
-                StringTransformer transformer = transformerClass.getDeclaredConstructor().newInstance();
+                StringConverter transformer = transformerClass.getDeclaredConstructor().newInstance();
 
                 // 拿到当前字段的值
                 field.setAccessible(true);
                 String originalValue = (String) field.get(model);
 
                 // 做转换
-                String newValue = transformer.transform(originalValue);
+                String newValue = transformer.convert(originalValue);
 
                 // 放回model
                 field.set(model, newValue);

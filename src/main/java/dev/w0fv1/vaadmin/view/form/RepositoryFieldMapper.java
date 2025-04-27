@@ -5,8 +5,8 @@ import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.model.form.BaseEntityFormModel;
 
 public interface RepositoryFieldMapper<
-        F extends BaseEntityFormModel<E, ?>,
-        E extends BaseManageEntity<?>> {
+        E extends BaseManageEntity<?>,
+        F extends BaseEntityFormModel<E, ?>> {
 
     public void map(GenericRepository repository, E entity, F model);
 

@@ -1,8 +1,10 @@
 package dev.w0fv1.vaadmin.test;
 
+import dev.w0fv1.vaadmin.view.form.RepositoryConvert;
+import dev.w0fv1.vaadmin.view.form.RepositoryMapField;
 import dev.w0fv1.vaadmin.view.form.component.SampleRepositoryDialogFormFieldComponent;
 import dev.w0fv1.vaadmin.view.model.form.CustomFormFieldComponent;
-import dev.w0fv1.vaadmin.view.form.UpperCaseTransformer;
+import dev.w0fv1.vaadmin.view.form.UpperCaseConverter;
 import dev.w0fv1.vaadmin.view.form.component.SampleDialogFormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFileUploadFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponentBuilder;
@@ -33,7 +35,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "长信息")
     private String longMessage;
 
-    @TextTransform(processorClass = UpperCaseTransformer.class)
+    @TextTransform(processorClass = UpperCaseConverter.class)
     @FormField(title = "变化信息")
     private String transformedMessage;
 
@@ -87,6 +89,10 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     )
     @FormField(title = "manyToOne回声")
     private Long echoId;
+
+    @RepositoryMapField(mapper = IdEchoRepositoryMapper.class)
+    @FormField(title = "manyToOne回声Mapper")
+    private Long convertEchoId;
 
     @EntityField(
             entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,

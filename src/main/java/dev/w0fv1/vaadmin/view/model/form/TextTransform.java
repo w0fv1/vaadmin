@@ -9,5 +9,5 @@ public @interface TextTransform {
     /**
      * 一个字符串处理逻辑的类，实现你自定义的接口
      */
-    Class<? extends StringTransformer> processorClass();
+    Class<? extends StringConverter> processorClass();
 }
