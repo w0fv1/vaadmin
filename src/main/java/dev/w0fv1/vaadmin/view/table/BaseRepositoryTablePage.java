@@ -46,10 +46,13 @@ public abstract class BaseRepositoryTablePage<
 
     @PostConstruct
     public void build() {
+        presetPredicate();
+
         super.build();
         createDialog = buildCreateDialog();
         buildRepositoryActionColumn();
         add(createDialog);
+
         onBuild();
     }
 
@@ -189,11 +192,18 @@ public abstract class BaseRepositoryTablePage<
     public void onCreateEvent() {
         createDialog.open();
     }
+    /**
+     * 子类可以覆盖该方法，设置预设的筛选条件
+     */
+    public void presetPredicate() {
+        // 默认不做任何处理，子类可覆写
+    }
 
-    @Override
     public void onResetFilterEvent() {
         predicateManager.clearPredicates();
+        presetPredicate(); // 重置后重新应用预设条件
     }
+
 
     @Override
     public Long getTotalSize() {

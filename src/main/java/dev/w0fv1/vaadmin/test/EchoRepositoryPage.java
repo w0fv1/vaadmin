@@ -40,6 +40,12 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
         super(EchoT.class, EchoF.class, new EchoF("1231231231"), Echo.class);
         this.echoService = echoService;
     }
+    @Override
+    public void presetPredicate() {
+        predicateManager.putPredicate("默认筛选正常状态", (cb, root, predicates) ->
+                predicates.add(cb.equal(root.get("status"), Echo.Status.NORMAL))
+        );
+    }
 
 
     @Override

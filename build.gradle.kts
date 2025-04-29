@@ -8,7 +8,7 @@ plugins {
 
 
 group = "dev.w0fv1"
-version = "0.10.4"
+version = "0.11.3"
 
 
 val springBootVersion = "3.4.2" // 设置 Spring Boot 版本
@@ -56,7 +56,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.vaadin/vaadin-spring-boot-starter
     implementation("com.vaadin:vaadin-spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
-
+// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
     implementation("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
     implementation("org.reflections:reflections:0.10.2")

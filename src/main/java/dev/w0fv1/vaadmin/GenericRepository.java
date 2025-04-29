@@ -73,9 +73,9 @@ public class GenericRepository {
 
     @Transactional
     public <T> T save(T entity) {
-        entityManager.persist(entity);
+        T merged = entityManager.merge(entity);
         entityManager.flush();
-        return entity;
+        return merged;
     }
 
     @Transactional

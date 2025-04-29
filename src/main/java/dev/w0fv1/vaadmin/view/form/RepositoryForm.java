@@ -177,11 +177,18 @@ public class RepositoryForm<
             } catch (Exception e) {
                 // 回滚事务
                 status.setRollbackOnly();
+                showNotification("保存失败！" + e.getMessage(), NotificationVariant.LUMO_ERROR);
                 e.printStackTrace();
+                return null;
             }
             return saveModel;
         });
-        showNotification("保存成功！", NotificationVariant.LUMO_SUCCESS);
+
+
+
+        if (model != null && model.getId() != null) {
+            showNotification("保存成功！", NotificationVariant.LUMO_SUCCESS);
+        }
     }
 
     public interface OnSave<ID> {
