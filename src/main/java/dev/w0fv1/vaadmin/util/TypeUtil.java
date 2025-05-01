@@ -91,4 +91,36 @@ public class TypeUtil {
         }
         return false;
     }
+
+    /**
+     * 判断对象是否为"空"
+     *
+     * 支持检查：
+     * - null
+     * - 字符串：长度为0或全空白
+     * - 集合（List, Set）：为空
+     * - Map：为空
+     * - 数组：长度为0
+     *
+     * @param obj 输入对象
+     * @return 是否为空
+     */
+    public static boolean isEmpty(Object obj) {
+        if (obj == null) {
+            return true;
+        }
+        if (obj instanceof String) {
+            return ((String) obj).trim().isEmpty();
+        }
+        if (obj instanceof Collection) {
+            return ((Collection<?>) obj).isEmpty();
+        }
+        if (obj instanceof Map) {
+            return ((Map<?, ?>) obj).isEmpty();
+        }
+        if (obj.getClass().isArray()) {
+            return Arrays.asList((Object[]) obj).isEmpty();
+        }
+        return false;
+    }
 }

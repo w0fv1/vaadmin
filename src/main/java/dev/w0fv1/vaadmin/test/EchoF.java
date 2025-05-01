@@ -27,7 +27,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
 
     @NotBlank(message = "消息不能为空")
     @Size(min = 10, max = 255, message = "消息长度必须在10到255个字符之间")
-    @FormField(title = "信息")
+    @FormField(title = "信息",nullable = false)
     private String message;
 
     @FormField(title = "长信息")
