@@ -185,6 +185,9 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
             if (formFieldInfo == null) {
                 formFieldInfo = new FormField.DefaultFormField();
             }
+            if (!formFieldInfo.display()){
+                continue;
+            }
 
             if (!isUpdate && (formFieldInfo.onlyUpdate() || formFieldInfo.id())) {
                 log.info("该Field {} 为仅更新, 在创建数据时不建造Field", field.getName());

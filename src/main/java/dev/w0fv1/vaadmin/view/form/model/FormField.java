@@ -20,6 +20,8 @@ public @interface FormField {
 
     boolean enabled() default true;
 
+    boolean display() default true;
+
     boolean onlyUpdate() default false;
 
 
@@ -58,6 +60,12 @@ public @interface FormField {
         public boolean enabled() {
             return true;
         }
+
+        @Override
+        public boolean display() {
+            return true;
+        }
+
         @Override
         public boolean onlyUpdate() {
             return false;

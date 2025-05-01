@@ -80,6 +80,9 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "更新时间")
     private OffsetDateTime updatedTime;
 
+    @FormField(title = "隐藏不显示的field",display = false)
+    private String hide;
+
     @FormEntitySelectField(
             entityField = @EntityField(
                     entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class,
