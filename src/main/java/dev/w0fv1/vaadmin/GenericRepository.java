@@ -1,6 +1,7 @@
 package dev.w0fv1.vaadmin;
 
 import com.sun.jna.Callback;
+import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -72,11 +73,16 @@ public class GenericRepository {
 
 
     @Transactional
-    public <T> T save(T entity) {
-        T merged = entityManager.merge(entity);
+    public <T extends BaseManageEntity<?>> T save(T entity) {
+        if (entity.getId() == null) {
+            entityManager.persist(entity);
+        } else {
+            entity = entityManager.merge(entity);
+        }
         entityManager.flush();
-        return merged;
+        return entity;
     }
+
 
     @Transactional
     public <T> void delete(T entity) {

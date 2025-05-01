@@ -302,6 +302,16 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     }
 
     @Override
+    public Boolean enableCreate() {
+        return super.enableCreate();
+    }
+
+    @Override
+    public Boolean enableUpdate() {
+        return super.enableUpdate();
+    }
+
+    @Override
     public void onGetUrlQueryParameters(ParameterMap parameters, BeforeEnterEvent event) {
         log.info("onGetUrlParameters:{}", parameters);
     }

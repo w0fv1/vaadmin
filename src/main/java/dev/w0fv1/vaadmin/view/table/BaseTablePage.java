@@ -82,7 +82,9 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     private void buildDataActions() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setWidth("100%");
-        horizontalLayout.add(new Button("创建", v -> onCreateEvent()));
+        if (enableCreate()){
+            horizontalLayout.add(new Button("创建", v -> onCreateEvent()));
+        }
         horizontalLayout.setJustifyContentMode(JustifyContentMode.END);
         horizontalLayout.add(extendDataAction());
         add(horizontalLayout);
@@ -409,6 +411,9 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     public int getPageSize() {
         return 10;
+    }
+    public Boolean enableCreate() {
+        return true;
     }
 
     private int getTotalPages() {

@@ -163,8 +163,10 @@ public abstract class BaseRepositoryTablePage<
     }
 
     public void buildRepositoryActionColumn() {
-        super.extendGridComponentColumn(this::createUpdateButton)
-                .setHeader("更新").setAutoWidth(true);
+        if (enableUpdate()) {
+            super.extendGridComponentColumn(this::createUpdateButton)
+                    .setHeader("更新").setAutoWidth(true);
+        }
     }
 
     private Component createUpdateButton(T t) {
@@ -192,6 +194,7 @@ public abstract class BaseRepositoryTablePage<
     public void onCreateEvent() {
         createDialog.open();
     }
+
     /**
      * 子类可以覆盖该方法，设置预设的筛选条件
      */
@@ -215,18 +218,14 @@ public abstract class BaseRepositoryTablePage<
         BasePage.super.beforeEnter(event);
     }
 
-    @Override
-    public void onGetUrlQueryParameters(ParameterMap parameters, BeforeEnterEvent event) {
-
-    }
-
-    @Override
-    public void onGetPathParameters(ParameterMap parameters, BeforeEnterEvent event) {
-
-    }
 
     public void setDefaultFromModel(F defaultFromModel) {
         formInstance.setDefaultModel(defaultFromModel);
     }
+
+    public Boolean enableUpdate() {
+        return true;
+    }
+
 
 }
