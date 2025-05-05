@@ -52,13 +52,13 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         this.setPadding(false);
     }
 
-    public void build() {
-        buildTitle();
-        buildDataForm();
-        buildAction();
+    public void initialize() {
+        initTitle();
+        initDataForm();
+        initAction();
     }
 
-    private void buildAction() {
+    private void initAction() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         Button saveButton = new Button("保存");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -90,9 +90,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
 
     private void save() {
-        for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
-            fieldComponent.setModelData();
-        }
+
         List<Boolean> validResults = new ArrayList<>();
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             Boolean valid = fieldComponent.valid();
@@ -105,7 +103,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         }
 
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
-            fieldComponent.save();
+            fieldComponent.invokeModelFileData();
         }
         // ------ 在校验完之后做自定义的字符串处理 ------
         handleTextTransform();
@@ -162,14 +160,14 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     private void clear() {
         this.model = defaultModel.copy();
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
-            fieldComponent.clear(this.model);
+            fieldComponent.clear();
         }
     }
 
 
     abstract public void onCancel();
 
-    private void buildDataForm() {
+    private void initDataForm() {
         List<Field> fieldList = getAllFields(fromClass, ReflectionUtils.withModifier(Modifier.PRIVATE)).stream().toList();
         log.info("Field List的数量为{}", fieldList.size());
         fieldList = fieldList.stream()
@@ -268,7 +266,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     }
 
 
-    private void buildTitle() {
+    private void initTitle() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.add(new H1(getTitle()));
         horizontalLayout.add(new Span(getDescription()));

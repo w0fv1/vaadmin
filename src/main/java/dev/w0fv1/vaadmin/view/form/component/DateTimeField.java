@@ -2,8 +2,6 @@ package dev.w0fv1.vaadmin.view.form.component;
 
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -12,44 +10,81 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * DateTimeField
+ * 绑定 OffsetDateTime 类型的时间选择控件。
+ */
 @Slf4j
-@Getter
 public class DateTimeField extends BaseFormFieldComponent<OffsetDateTime> {
-    @NotNull
-    private  DateTimePicker dateTimePicker;
+
+    private DateTimePicker dateTimePicker; // UI控件
+    private OffsetDateTime data;            // 内部持有的数据
 
     public DateTimeField(Field field, BaseFormModel formModel) {
         super(field, formModel);
+        super.initialize();
 
     }
 
     @Override
-    public void initView() {
-
+    void initStaticView() {
         this.dateTimePicker = new DateTimePicker();
-        this.dateTimePicker.setId(getField().getName()); // 设置唯一的 fieldId
-
-        this.dateTimePicker.setStep(Duration.ofMinutes(30)); // Set step to 30 minutes
-
+        this.dateTimePicker.setId(getField().getName());
+        this.dateTimePicker.setStep(Duration.ofMinutes(30)); // 步长30分钟
+        this.dateTimePicker.setWidthFull();
         this.dateTimePicker.setEnabled(getFormField().enabled());
 
-        this.add(this.dateTimePicker);
+        this.dateTimePicker.addValueChangeListener(event -> {
+            LocalDateTime localDateTime = event.getValue();
+            if (localDateTime == null) {
+                setData(null);
+            } else {
+                setData(localDateTime.atOffset(ZoneOffset.UTC));
+            }
+        });
+
+        add(this.dateTimePicker);
+    }
+
+
+
+    @Override
+    public void pushViewData() {
+        if (dateTimePicker != null) {
+            if (data == null) {
+                dateTimePicker.clear();
+            } else {
+                LocalDateTime uiValue = dateTimePicker.getValue();
+                LocalDateTime newValue = data.toLocalDateTime();
+                if (uiValue == null || !uiValue.equals(newValue)) {
+                    dateTimePicker.setValue(newValue);
+                }
+            }
+        }
     }
 
     @Override
     public OffsetDateTime getData() {
-        LocalDateTime localDateTime = this.dateTimePicker.getValue();
-        if (localDateTime == null) {
-            return null;
-        }
-        return localDateTime.atOffset(ZoneOffset.UTC);
+        return data;
     }
+
     @Override
     public void setData(OffsetDateTime data) {
-        this.dateTimePicker.setValue(data.toLocalDateTime());
+        if (data == null) {
+            data = OffsetDateTime.now();
+        }
+        this.data = data;
     }
+
+    @Override
+    public void clearData() {
+        setData(null);
+    }
+
     @Override
     public void clearUI() {
-        setData(getDefaultValue()); // 从formModel或默认配置重新获取默认值并恢复UI
+        if (dateTimePicker != null) {
+            dateTimePicker.clear();
+        }
     }
 }

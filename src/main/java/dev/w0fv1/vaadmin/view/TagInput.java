@@ -49,12 +49,16 @@ public class TagInput extends VerticalLayout {
     /**
      * 添加新标签的方法，从输入框获取值并添加到 TagGroup。
      */
-    private void addTag() {
+    public void addTag() {
         String value = inputField.getValue().trim();
         if (!value.isEmpty()) {
-            tagGroup.addTag(value);
+            addTag(value);
             inputField.clear();
         }
+    }
+
+    public void addTag(String tag) {
+        tagGroup.addTag(tag);
     }
 
     /**
@@ -65,7 +69,7 @@ public class TagInput extends VerticalLayout {
     public void setTags(List<String> tags) {
         tagGroup.clearTags();
         if (tags != null && !tags.isEmpty()) {
-            tags.forEach(tagGroup::addTag);
+            tags.forEach(this::addTag);
         }
     }
 

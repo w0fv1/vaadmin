@@ -6,62 +6,86 @@ import dev.w0fv1.vaadmin.view.EntitySelectButton;
 import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import dev.w0fv1.vaadmin.view.form.model.FormField;
 import dev.w0fv1.vaadmin.view.form.model.FormEntitySelectField;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MultiEntitySelectField
+ * 多选实体选择器，绑定 List<ID> 类型数据。
+ */
 @Slf4j
-@Getter
 public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends BaseFormFieldComponent<List<ID>> {
 
-    private final EntitySelectButton<E, ID> entitySelectButton;
-    private final Boolean isSingle;
+    private EntitySelectButton<E, ID> entitySelectButton; // UI控件
+    private List<ID> data = new ArrayList<>();            // 内部持有数据
+    private final GenericRepository genericRepository;
 
     public MultiEntitySelectField(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
         super(field, formModel, false);
+        this.genericRepository = genericRepository;
+        super.initialize();
 
-        FormField formField = field.getAnnotation(FormField.class);
-        FormEntitySelectField formEntitySelectField = field.getAnnotation(FormEntitySelectField.class);
-        String title = formField.title();
-        isSingle = !field.getType().equals(List.class);
-        this.entitySelectButton = new EntitySelectButton<>(
-                "选择" + title,
-                (Class<E>) formEntitySelectField.entityField().entityType(),
-                isSingle,
-                genericRepository,
-                formField.enabled()
-        );
-        List<ID> modelData = getModelData();
-        if (modelData != null) {
-            this.entitySelectButton.setValue(modelData);
-        }
-        add(this.entitySelectButton);
     }
 
     @Override
-    public void initView() {
+    void initStaticView() {
+        FormField formField = getFormField();
+        FormEntitySelectField formEntitySelectField = getField().getAnnotation(FormEntitySelectField.class);
+
+        this.entitySelectButton = new EntitySelectButton<>(
+                "选择" + formField.title(),
+                (Class<E>) formEntitySelectField.entityField().entityType(),
+                false, // 这里明确是多选
+                formField.enabled()
+        );
+
+        this.entitySelectButton.setGenericRepository(this.genericRepository);
+
+        this.entitySelectButton.setOnValueChangeListener(selectedIds -> {
+            setData(new ArrayList<>(selectedIds));
+        });
+
+        add(this.entitySelectButton);
+    }
+
+
+
+    @Override
+    public void pushViewData() {
+        if (entitySelectButton != null) {
+            if (data == null || data.isEmpty()) {
+                entitySelectButton.clear();
+            } else {
+                entitySelectButton.setValue(new ArrayList<>(data));
+            }
+        }
     }
 
     @Override
     public List<ID> getData() {
-        return this.entitySelectButton.getValue();
+        return data;
     }
-
 
     @Override
     public void setData(List<ID> data) {
-        this.entitySelectButton.setValue(new ArrayList<>() {{
-            addAll(data);
-        }});
+        this.data.clear();
+        if (data != null) {
+            this.data.addAll(data);
+        }
+    }
+
+    @Override
+    public void clearData() {
+        this.data.clear();
     }
 
     @Override
     public void clearUI() {
-        this.entitySelectButton.clear();
+        if (entitySelectButton != null) {
+            entitySelectButton.clear();
+        }
     }
-
-
 }

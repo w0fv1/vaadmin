@@ -20,13 +20,15 @@ public class SampleRepositoryDialogFormFieldComponent extends BaseDialogFormFiel
     public SampleRepositoryDialogFormFieldComponent(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
         super(field, formModel);
         this.genericRepository = genericRepository;
+        super.initialize();
+
     }
 
     /**
-     * 在主界面上添加一个只读文本框用于显示数据，然后调用父类 initView() 初始化对话框及按钮
+     * 在主界面上添加一个只读文本框用于显示数据，然后调用父类 init View() 初始化对话框及按钮
      */
     @Override
-    public void initView() {
+    public void pushViewData() {
         // 添加主界面显示组件（只读文本框）
         textField = new TextField();
         textField.setId(getField().getName());
@@ -34,13 +36,16 @@ public class SampleRepositoryDialogFormFieldComponent extends BaseDialogFormFiel
         textField.setReadOnly(true);
         add(textField);
         // 初始化对话框及打开按钮
-        super.initView();
+        super.pushViewData();
 
-        if (id != null) {
+        if (id != null && id > 0) {
             var that = this;
             genericRepository.execute(new Runnable() {
                 @Override
                 public void run() {
+                    if (!genericRepository.exist(id, Echo.class)) {
+                        return;
+                    }
                     Echo echo = genericRepository.find(id, Echo.class);
                     that.id = echo.getId();
                     textField.setValue(that.id + ": " + echo.getMessage());

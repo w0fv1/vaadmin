@@ -4,47 +4,67 @@ import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import dev.w0fv1.vaadmin.view.TagInput;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TagInputField 作为表单组件，封装 TagInput，并与表单模型同步。
+ * TagInputField
+ * 多标签输入控件，绑定 List<String> 数据。
  */
 public class TagInputField extends BaseFormFieldComponent<List<String>> {
-    private TagInput tagInput;
 
-    /**
-     * 构造方法，初始化 TagInputField 组件。
-     *
-     * @param field     表单模型中的字段
-     * @param formModel 表单模型实例
-     */
+    private TagInput tagInput; // UI控件
+    private List<String> data = new ArrayList<>(); // 内部持有数据
+
     public TagInputField(Field field, BaseFormModel formModel) {
         super(field, formModel);
+        super.initialize();
+
     }
 
     @Override
-    public void initView() {
+    void initStaticView() {
         this.tagInput = new TagInput();
-
-        // 设置组件的启用状态
         this.tagInput.setEnabled(getFormField().enabled());
-
-        // 将 TagInput 添加到 TagInputField 中
+        this.tagInput.setOnChangeListener(tags -> {
+            // 只更新内部数据，不操作UI
+            setData(new ArrayList<>(tags));
+        });
         add(this.tagInput);
     }
 
     @Override
+    public void pushViewData() {
+        this.tagInput.clear(); // 幂等要求，每次都清空
+        if (data != null) {
+            for (String tag : data) {
+                this.tagInput.addTag(tag);
+            }
+        }
+    }
+
+    @Override
     public List<String> getData() {
-        return tagInput.getTags();
+        return data;
     }
 
     @Override
     public void setData(List<String> data) {
-        tagInput.setTags(data);
+        this.data.clear();
+        if (data != null) {
+            this.data.addAll(data);
+        }
+    }
+
+    @Override
+    public void clearData() {
+        this.data.clear();
     }
 
     @Override
     public void clearUI() {
-        tagInput.clear();
+        if (this.tagInput != null) {
+            this.tagInput.clear();
+        }
     }
 }

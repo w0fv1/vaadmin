@@ -5,68 +5,89 @@ import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.EntitySelectButton;
 import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import dev.w0fv1.vaadmin.view.form.model.FormEntitySelectField;
-import dev.w0fv1.vaadmin.view.form.model.FormField;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * SingleEntitySelectField
+ * 实体选择按钮组件，绑定单个实体ID。
+ */
 @Slf4j
 public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends BaseFormFieldComponent<ID> {
 
-    private EntitySelectButton<E, ID> entitySelectButton;
-    private Boolean isSingle;
-
-    private FormField formField;
-    private Field field;
-
+    private EntitySelectButton<E, ID> entitySelectButton; // UI控件
+    private ID data; // 内部持有的数据
     private final GenericRepository genericRepository;
 
     public SingleEntitySelectField(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
         super(field, formModel, true);
-        this.field = field;
-        this.formField = field.getAnnotation(FormField.class);
         this.genericRepository = genericRepository;
-        this.entitySelectButton.setGenericRepository(genericRepository);
+        super.initialize();
+
     }
 
-
     @Override
-    public void initView() {
-        FormEntitySelectField formEntitySelectField = super.getField().getAnnotation(FormEntitySelectField.class);
-        String title = super.getFormField().title();
-        isSingle = !super.getField().getType().equals(List.class);
+    void initStaticView() {
+        FormEntitySelectField formEntitySelectField = getField().getAnnotation(FormEntitySelectField.class);
+        String title = getFormField().title();
+        boolean isSingle = !getField().getType().equals(List.class);
+
         this.entitySelectButton = new EntitySelectButton<>(
                 "选择" + title,
                 (Class<E>) formEntitySelectField.entityField().entityType(),
                 isSingle,
-                super.getFormField().enabled()
+                getFormField().enabled()
         );
+        this.entitySelectButton.setGenericRepository(this.genericRepository);
+
         add(this.entitySelectButton);
+
+        this.entitySelectButton.setOnValueChangeListener(selected -> {
+            if (selected == null || selected.isEmpty()) {
+                setData(null);
+            } else {
+                setData(selected.getFirst());
+            }
+        });
+    }
+
+
+
+    @Override
+    public void pushViewData() {
+        if (entitySelectButton != null) {
+            if (data == null) {
+                entitySelectButton.clear();
+            } else {
+                List<ID> list = new ArrayList<>();
+                list.add(data);
+                entitySelectButton.setValue(list);
+            }
+        }
     }
 
     @Override
     public ID getData() {
-        if (this.entitySelectButton.getValue().isEmpty()) {
-            return null;
-        }
-
-        return this.entitySelectButton.getValue().getFirst();
+        return data;
     }
-
 
     @Override
     public void setData(ID data) {
+        this.data = data;
+    }
 
-        this.entitySelectButton.setValue(new ArrayList<>() {{
-            add(data);
-        }});
+    @Override
+    public void clearData() {
+        this.data = null;
     }
 
     @Override
     public void clearUI() {
-        this.entitySelectButton.clear();
+        if (entitySelectButton != null) {
+            entitySelectButton.clear();
+        }
     }
-
 }

@@ -1,19 +1,23 @@
 package dev.w0fv1.vaadmin.view;
 
-
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
+/**
+ * EntitySelectButton
+ * 实体选择按钮，支持单选/多选实体，并监听选中变化。
+ */
 public class EntitySelectButton<
         E extends BaseManageEntity<ID>,
         ID> extends Button {
+
     private Dialog dialog;
     private String title;
     private EntitySelectPage<E, ID> selectPage;
@@ -21,6 +25,8 @@ public class EntitySelectButton<
 
     private Class<E> entityType;
     private Boolean singleSelection;
+    @Setter
+    private Consumer<List<ID>> onValueChangeListener; // 监听器
 
     public EntitySelectButton(
             String title,
@@ -43,9 +49,8 @@ public class EntitySelectButton<
         this.title = title;
         this.entityType = entityClass;
         this.singleSelection = singleSelection;
-        this.setEnabled(enabled); // 直接根据enabled状态设置按钮是否允许输入
+        this.setEnabled(enabled);
     }
-
 
     public void setGenericRepository(GenericRepository genericRepository) {
         this.dialog = new Dialog();
@@ -56,17 +61,17 @@ public class EntitySelectButton<
                 selectedItems.addAll(new ArrayList<>(selectedData));
                 setText("ID为" + selectedItems + "的" + selectedData.size() + "条数据(点击重选)");
             } else {
+                selectedItems.clear();
                 setText(title);
             }
 
-            if (selectedData != null) {
-                selectedData.forEach(data -> {
-                    System.out.println("Selected Data: " + data.toString());
-                });
+            // 通知监听器
+            if (onValueChangeListener != null) {
+                onValueChangeListener.accept(new ArrayList<>(selectedItems));
             }
+
             dialog.close();
         };
-
 
         selectPage = new EntitySelectPage<>(
                 this.entityType,
@@ -78,17 +83,22 @@ public class EntitySelectButton<
         dialog.add(selectPage);
 
         this.addClickListener(event -> {
-            if (!isEnabled()) return; // 再次确认enabled状态
+            if (!isEnabled()) return;
             dialog.open();
             selectPage.refresh();
             selectPage.setSelectedData(selectedItems);
         });
-
     }
 
     public void clear() {
+        selectedItems.clear();
         setText(title);
-        selectPage.clear();
+        if (selectPage != null) {
+            selectPage.clear();
+        }
+        if (onValueChangeListener != null) {
+            onValueChangeListener.accept(new ArrayList<>(selectedItems));
+        }
     }
 
     public List<ID> getValue() {
@@ -96,24 +106,28 @@ public class EntitySelectButton<
     }
 
     public void setValue(List<ID> selectedItems) {
-        // 判断 selectedItems 是否为空或包含不合法数据
         if (selectedItems == null || selectedItems.isEmpty()) {
-            return; // 不设置
+            return;
         }
 
-        ID first = selectedItems.get(0);
+        ID first = selectedItems.getFirst();
         if ((first instanceof Number && ((Number) first).longValue() == 0L) ||
                 (first instanceof String && ((String) first).isEmpty())) {
-            return; // 无效值，退出
+            return;
         }
 
         this.selectedItems.clear();
         this.selectedItems.addAll(selectedItems);
+
         if (selectPage != null) {
             selectPage.setSelectedData(selectedItems);
         }
+
         setText("ID为" + selectedItems + "的" + selectedItems.size() + "条数据(点击重选)");
+
+        // 主动通知监听器
+        if (onValueChangeListener != null) {
+            onValueChangeListener.accept(new ArrayList<>(this.selectedItems));
+        }
     }
-
-
 }

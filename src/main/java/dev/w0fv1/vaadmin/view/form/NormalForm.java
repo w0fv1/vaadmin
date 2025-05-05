@@ -46,7 +46,7 @@ public class NormalForm<F extends BaseFormModel> extends BaseForm<F> {
         // super(formModel, formModel != null && formModel.getId() != null);
         // this.isUpdate = (formModel != null && formModel.getId() != null);
 
-        super.build();
+        super.initialize();
     }
 
     /**

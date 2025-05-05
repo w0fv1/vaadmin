@@ -5,7 +5,7 @@ import dev.w0fv1.vaadmin.view.form.component.SampleRepositoryDialogFormFieldComp
 import dev.w0fv1.vaadmin.view.form.model.*;
 import dev.w0fv1.vaadmin.view.form.UpperCaseConverter;
 import dev.w0fv1.vaadmin.view.form.component.SampleDialogFormFieldComponent;
-import dev.w0fv1.vaadmin.view.form.component.SampleFileUploadFieldComponent;
+import dev.w0fv1.vaadmin.view.form.component.SampleBaseFileUploadFieldComponent;
 import dev.w0fv1.vaadmin.view.form.component.SampleFormFieldComponentBuilder;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -48,7 +48,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "定制化信息组件")
     private String customMessage;
 
-    @CustomFormFieldComponent(SampleFileUploadFieldComponent.SampleFileFormFieldComponentBuilder.class)
+    @CustomFormFieldComponent(SampleBaseFileUploadFieldComponent.SampleFileUploadFieldComponentBuilder.class)
     @FormField(title = "上传文件示例")
     private String fileUrl;
 

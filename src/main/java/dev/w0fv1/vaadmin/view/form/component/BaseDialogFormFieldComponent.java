@@ -9,58 +9,105 @@ import lombok.Getter;
 import java.lang.reflect.Field;
 
 /**
- * 基于对话框的表单字段组件。
- * 继承自 BaseFormFieldComponent，并扩展 Dialog 弹出框功能。
+ * BaseDialogFormFieldComponent
+ * 基于弹窗（Dialog）的表单字段基类，绑定任意类型数据。
+ * <p>
+ * 设计要求：
+ * - 只在initStaticView初始化控件；
+ * - 组件自己持有数据，不依赖UI控件；
+ * - 数据与界面刷新完全分离。
+ *
+ * @param <Type> 绑定的数据类型
  */
 @Getter
 public abstract class BaseDialogFormFieldComponent<Type> extends BaseFormFieldComponent<Type> {
 
-    protected Dialog dialog;
-    protected Button openDialogButton;
+    protected Dialog dialog;           // 弹窗
+    protected Button openDialogButton; // 打开弹窗按钮
+    private Type data;                  // 持有的数据
 
     public BaseDialogFormFieldComponent(Field field, BaseFormModel formModel) {
         super(field, formModel);
     }
 
-    /**
-     * 覆盖 initView() 方法，在主界面添加对话框按钮，并初始化 Dialog
-     */
+
     @Override
-    public void initView() {
-        // 子类可在自己的 initView() 中添加主界面显示组件后，再调用 super.initView() 来初始化对话框部分
+    void initStaticView() {
         initDialog();
-        addOpenDialogButton("打开对话框");
+        addOpenDialogButton("打开" + getFormField().title());
+    }
+
+
+
+    @Override
+    public void pushViewData() {
+        // 通常弹窗控件不需要频繁刷新UI，可以根据需要在子类中扩展
+        // 此处可以根据data调整按钮状态或内容
+        if (openDialogButton != null) {
+            if (data != null) {
+                openDialogButton.setText("编辑 " + getFormField().title());
+            } else {
+                openDialogButton.setText("新建 " + getFormField().title());
+            }
+        }
+    }
+
+    @Override
+    public Type getData() {
+        return data;
+    }
+
+    @Override
+    public void setData(Type data) {
+        this.data = data;
+    }
+
+    @Override
+    public void clearData() {
+        this.data = null;
+    }
+
+    @Override
+    public void clearUI() {
+        // 弹窗本身一般不需要清除
+        if (openDialogButton != null) {
+            openDialogButton.setText("新建 " + getFormField().title());
+        }
     }
 
     /**
-     * 初始化 Dialog 弹出框，并添加自定义内容
+     * 初始化 Dialog 弹出框，并添加自定义内容。
      */
     protected void initDialog() {
-        dialog = new Dialog();
-        dialog.setCloseOnEsc(true);
-        dialog.setCloseOnOutsideClick(true);
-        dialog.add(createDialogContent());
+        this.dialog = new Dialog();
+        this.dialog.setCloseOnEsc(true);
+        this.dialog.setCloseOnOutsideClick(true);
+        this.dialog.add(createDialogContent());
     }
 
     /**
-     * 用于构建对话框内部内容的抽象方法，子类必须实现此方法来自定义对话框内容
+     * 子类必须实现，构建对话框内部内容。
+     *
      * @return 对话框内部的 VerticalLayout 布局
      */
     protected abstract VerticalLayout createDialogContent();
 
     /**
-     * 打开对话框
-     */
-    protected void openDialog() {
-        dialog.open();
-    }
-
-    /**
-     * 添加用于打开对话框的按钮
-     * @param buttonText 按钮显示文本
+     * 添加打开Dialog的按钮。
+     *
+     * @param buttonText 按钮显示的文字
      */
     protected void addOpenDialogButton(String buttonText) {
         openDialogButton = new Button(buttonText, event -> openDialog());
         add(openDialogButton);
+    }
+
+    /**
+     * 打开Dialog弹窗。
+     */
+    protected void openDialog() {
+        if (dialog != null) {
+            dialog.open();
+        }
     }
 }

@@ -100,6 +100,7 @@ public abstract class BaseRepositoryTablePage<
                     id -> handleSave(id, createDialog),
                     () -> handleCancel(createDialog),
                     genericRepository);
+            formInstance.initialize();
 
             dialog.add(new VerticalLayout(formInstance));
         } catch (Exception e) {
@@ -182,6 +183,7 @@ public abstract class BaseRepositoryTablePage<
                     () -> handleCancel(updateDialog),
                     genericRepository
             );
+            form.initialize();
             updateDialog.add(new VerticalLayout(form));
             add(updateDialog);
             updateDialog.open();
