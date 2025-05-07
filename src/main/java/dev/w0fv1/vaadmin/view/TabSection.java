@@ -46,6 +46,9 @@ public class TabSection<T> extends VerticalLayout {
             selectTab(tabs.getSelectedTab());
         }
 
+        this.setPadding(false);
+        this.setSpacing(false);
+
         add(tabs, contentArea);
     }
 

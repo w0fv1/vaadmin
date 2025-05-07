@@ -59,6 +59,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     public void initialize() {
         logDebug("开始初始化组件");
         initStaticView();
+        add(errorMessage);
         initData();
         logDebug("数据初始化后，当前值：{}", getData());
         pushViewData();

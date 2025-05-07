@@ -19,7 +19,7 @@ import dev.w0fv1.vaadmin.view.table.model.BaseTableModel;
 import dev.w0fv1.vaadmin.view.table.model.TableConfig;
 import dev.w0fv1.vaadmin.view.table.model.TableField;
 import dev.w0fv1.vaadmin.view.table.component.BaseFieldComponent;
-import dev.w0fv1.vaadmin.view.table.component.TextFieldComponent;
+import dev.w0fv1.vaadmin.view.table.component.TextTableFieldComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
@@ -82,7 +82,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     private void buildDataActions() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setWidth("100%");
-        if (enableCreate()){
+        if (enableCreate()) {
             horizontalLayout.add(new Button("创建", v -> onCreateEvent()));
         }
         horizontalLayout.setJustifyContentMode(JustifyContentMode.END);
@@ -254,7 +254,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
         // 默认只处理 String 类型
         if (value instanceof String || tableField == null) {
-            fieldComponent = new TextFieldComponent(field, getFieldStringValue(item, field, 200000));
+            fieldComponent = new TextTableFieldComponent(field, getFieldStringValue(item, field, 200000));
         }
 
         if (fieldComponent == null) {
@@ -262,7 +262,16 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         }
 
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("字段详情: " + field.getName());
+
+        String label = "";
+
+        if (tableField != null && tableField.displayName() != null && !tableField.displayName().isEmpty()) {
+            label = tableField.displayName();
+        } else {
+            label = field.getName();
+        }
+
+        dialog.setHeaderTitle("字段详情: " + label);
         dialog.setModal(true);
         dialog.setWidth("400px");
 
@@ -412,6 +421,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     public int getPageSize() {
         return 10;
     }
+
     public Boolean enableCreate() {
         return true;
     }
