@@ -40,10 +40,11 @@ public class SampleDialogFormFieldComponent extends BaseDialogFormFieldComponent
 
     @Override
     public void pushViewData() {
+        super.pushViewData();
         if (textField != null) {
             String currentUIValue = textField.getValue();
             if (!data.equals(currentUIValue)) {
-                textField.setValue(data == null ? "" : data);
+                textField.setValue(data);
             }
         }
     }
@@ -71,7 +72,7 @@ public class SampleDialogFormFieldComponent extends BaseDialogFormFieldComponent
     }
 
     @Override
-    protected VerticalLayout createDialogContent() {
+    protected VerticalLayout createStaticDialogContent() {
         VerticalLayout dialogLayout = new VerticalLayout();
 
         dialogTextField = new TextField("请输入内容");

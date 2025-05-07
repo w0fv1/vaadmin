@@ -33,22 +33,24 @@ public abstract class BaseDialogFormFieldComponent<Type> extends BaseFormFieldCo
 
     @Override
     void initStaticView() {
-        initDialog();
-        addOpenDialogButton("打开" + getFormField().title());
-    }
+        this.dialog = new Dialog();
+        this.dialog.setCloseOnEsc(true);
+        this.dialog.setCloseOnOutsideClick(true);
+        this.dialog.add(createStaticDialogContent());
 
+        openDialogButton = new Button("打开对话框", event -> {
+            if (dialog != null) {
+                dialog.open();
+            }
+        });
+        add(openDialogButton);
+    }
 
 
     @Override
     public void pushViewData() {
-        // 通常弹窗控件不需要频繁刷新UI，可以根据需要在子类中扩展
-        // 此处可以根据data调整按钮状态或内容
         if (openDialogButton != null) {
-            if (data != null) {
-                openDialogButton.setText("编辑 " + getFormField().title());
-            } else {
-                openDialogButton.setText("新建 " + getFormField().title());
-            }
+            openDialogButton.setText( getButtonText() );
         }
     }
 
@@ -75,14 +77,11 @@ public abstract class BaseDialogFormFieldComponent<Type> extends BaseFormFieldCo
         }
     }
 
-    /**
-     * 初始化 Dialog 弹出框，并添加自定义内容。
-     */
-    protected void initDialog() {
-        this.dialog = new Dialog();
-        this.dialog.setCloseOnEsc(true);
-        this.dialog.setCloseOnOutsideClick(true);
-        this.dialog.add(createDialogContent());
+    public String getButtonText() {
+        if (data != null) {
+            return "编辑 " + getFormField().title();
+        }
+        return "新建 " + getFormField().title();
     }
 
     /**
@@ -90,24 +89,6 @@ public abstract class BaseDialogFormFieldComponent<Type> extends BaseFormFieldCo
      *
      * @return 对话框内部的 VerticalLayout 布局
      */
-    protected abstract VerticalLayout createDialogContent();
+    protected abstract VerticalLayout createStaticDialogContent();
 
-    /**
-     * 添加打开Dialog的按钮。
-     *
-     * @param buttonText 按钮显示的文字
-     */
-    protected void addOpenDialogButton(String buttonText) {
-        openDialogButton = new Button(buttonText, event -> openDialog());
-        add(openDialogButton);
-    }
-
-    /**
-     * 打开Dialog弹窗。
-     */
-    protected void openDialog() {
-        if (dialog != null) {
-            dialog.open();
-        }
-    }
 }

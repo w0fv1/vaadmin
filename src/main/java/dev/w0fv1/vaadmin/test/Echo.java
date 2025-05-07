@@ -33,6 +33,9 @@ public class Echo implements BaseManageEntity<Long> {
     @Column(name = "message")
     private String message;
 
+    @Column(name = "long_message")
+    private String longMessage;
+
     @Column(name = "flag")
     private Boolean flag;
 

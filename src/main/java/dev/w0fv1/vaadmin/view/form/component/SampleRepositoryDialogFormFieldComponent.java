@@ -59,7 +59,7 @@ public class SampleRepositoryDialogFormFieldComponent extends BaseDialogFormFiel
      * 定制对话框内部内容：包含一个输入框和确认按钮
      */
     @Override
-    protected VerticalLayout createDialogContent() {
+    protected VerticalLayout createStaticDialogContent() {
         VerticalLayout dialogLayout = new VerticalLayout();
         // 对话框内的输入框
         TextField dialogTextField = new TextField("请输入内容");

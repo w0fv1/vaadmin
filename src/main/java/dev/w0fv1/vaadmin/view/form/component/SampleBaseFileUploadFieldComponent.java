@@ -21,13 +21,13 @@ public class SampleBaseFileUploadFieldComponent extends BaseFileUploadFieldCompo
     }
 
     @Override
-    public String handleUploadSucceeded(MemoryBuffer buffer) {
+    public void handleUploadSucceeded(MemoryBuffer buffer) {
         String fileName = buffer.getFileName();
         log.info("上传成功，文件名：{}", fileName);
         setData(fileName);
         pushViewData();
-        return fileName;
     }
+
 
     @Override
     public String getData() {

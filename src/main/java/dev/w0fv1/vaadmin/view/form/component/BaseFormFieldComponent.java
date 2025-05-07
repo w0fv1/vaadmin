@@ -9,12 +9,14 @@ import dev.w0fv1.vaadmin.view.form.model.FormField;
 import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 
 import static dev.w0fv1.vaadmin.component.FieldValidator.validField;
 import static dev.w0fv1.vaadmin.util.TypeUtil.defaultIfNull;
+import static dev.w0fv1.vaadmin.util.TypeUtil.isEmpty;
 
 /**
  * BaseFormFieldComponent
@@ -33,7 +35,8 @@ import static dev.w0fv1.vaadmin.util.TypeUtil.defaultIfNull;
 @Getter
 public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     private final Field field; // 反射字段
-    private final BaseFormModel formModel; // 表单数据模型
+    @Setter
+    private BaseFormModel formModel; // 表单数据模型
     private final FormField formField; // 字段注解
     private ErrorMessage errorMessage; // 错误提示信息
     private final Boolean autoInitialize; // 是否自动初始化数据
@@ -51,11 +54,15 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
 
         buildTitle();
     }
+
     @PostConstruct
     public void initialize() {
+        logDebug("开始初始化组件");
         initStaticView();
         initData();
+        logDebug("数据初始化后，当前值：{}", getData());
         pushViewData();
+        logDebug("UI推送数据完成，当前显示值：{}", getData());
     }
 
     /**
@@ -76,6 +83,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         if (formField.description() != null && !formField.description().isEmpty()) {
             add(new Span(formField.description()));
         }
+        logDebug("标题和描述信息构建完成: {}", title);
     }
 
     /**
@@ -84,8 +92,12 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
      * 子类可以重写，但必须调用super.initData()。
      */
     protected void initData() {
-        if (this.autoInitialize) {
+        if (this.autoInitialize && isEmpty(getData())) {
+            logDebug("初始化数据前，当前值为空，准备设置默认值");
             setData(getFieldDefaultValue());
+            logDebug("设置默认值后，当前值：{}", getData());
+        } else {
+            logDebug("跳过数据初始化，已有数据：{}", getData());
         }
     }
 
@@ -115,13 +127,19 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     @SuppressWarnings("unchecked")
     public Type getFieldDefaultValue() {
         Type data = getModelFieldData();
-        if (data != null) return data;
+
+        if (data != null) {
+            logDebug("从表单模型读取到已有数据：{}", data);
+            return data;
+        }
 
         FormField formField = getFormField();
         if (!formField.defaultValue().isEmpty()) {
+            logDebug("从FormField注解读取到默认值：{}", formField.defaultValue());
             return (Type) TypeUtil.convert(formField.defaultValue(), field.getType(), formField.subType());
         }
 
+        logDebug("无模型值、无注解默认值，使用类型安全默认值");
         return (Type) defaultIfNull(null, field.getType());
     }
 
@@ -144,6 +162,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     public void invokeModelFileData() {
         getField().setAccessible(true);
         try {
+            logDebug("将当前数据推回模型：{}", getData());
             getField().set(this.getFormModel(), getData());
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -155,10 +174,14 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
      * 如果autoInitialize为true，会重新初始化数据。
      */
     public void clear() {
+        logDebug("开始清空组件数据和UI");
         clearData();
         clearUI();
+        clearValid();
         if (autoInitialize) {
-            setData(getFieldDefaultValue());
+            logDebug("启用autoInitialize，重新初始化数据");
+            initData();
+            pushViewData();
         }
     }
 
@@ -172,24 +195,69 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
      */
     public abstract void clearUI();
 
+    public void clearValid() {
+        if (errorMessage != null) {
+            logDebug("清除错误提示信息");
+            errorMessage.setText("");
+            remove(errorMessage);
+        }
+    }
+
     /**
      * 校验当前字段数据。
      * 如果校验失败，显示错误信息。
      * 成功时清除错误信息。
      */
     public Boolean valid() {
-        String valid = validField(field, formModel);
-        if (valid != null && !valid.isEmpty()) {
+        logDebug("开始执行字段校验");
+        String validMessage = "";
+
+        if (field.isAnnotationPresent(FormField.class)) {
+            FormField formField = field.getAnnotation(FormField.class);
+            if (formField != null && !formField.nullable() && isEmpty(getData())) {
+                validMessage = "值为空，该字段不允许为空";
+                logDebug("字段不允许为空校验失败");
+            }
+        }
+
+        if (validMessage.isEmpty()) {
+            validMessage = validField(field, formModel);
+        }
+
+        if (validMessage != null && !validMessage.isEmpty()) {
+            log.warn("字段 [{}] 校验失败: {}", field.getName(), validMessage);
             if (errorMessage == null) {
-                errorMessage = new ErrorMessage(valid);
+                errorMessage = new ErrorMessage(validMessage);
                 add(errorMessage);
             } else {
-                errorMessage.setText(valid);
+                errorMessage.setText(validMessage);
             }
             return false;
-        } else if (errorMessage != null) {
-            remove(errorMessage);
+        } else {
+            logDebug("字段校验通过，数据为：{}", getData());
+            if (errorMessage != null) {
+                remove(errorMessage);
+            }
+            return true;
         }
-        return true;
     }
+
+    /**
+     * 统一的 debug 日志方法，自动附加字段名。
+     *
+     * @param message 日志信息模板
+     * @param args    参数列表
+     */
+    protected void logDebug(String message, Object... args) {
+        if (log.isDebugEnabled()) {
+            // 创建新的数组，fieldName + 原来的 args
+            Object[] newArgs = new Object[args.length + 1];
+            newArgs[0] = field.getName();
+            System.arraycopy(args, 0, newArgs, 1, args.length);
+
+            log.debug("[{}] " + message, newArgs);
+        }
+    }
+
+
 }

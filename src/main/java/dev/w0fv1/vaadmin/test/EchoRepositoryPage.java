@@ -37,7 +37,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     private final EchoService echoService;
 
     public EchoRepositoryPage(EchoService echoService) {
-        super(EchoT.class, EchoF.class, new EchoF("1231231231"), Echo.class);
+        super(EchoT.class, EchoF.class, new EchoF("TEST EchoF 默认内容"), Echo.class);
         this.echoService = echoService;
     }
     @Override
@@ -56,7 +56,6 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
-        setDefaultFromModel(new EchoF("setDefaultFromModel"));
     }
 
     @Override

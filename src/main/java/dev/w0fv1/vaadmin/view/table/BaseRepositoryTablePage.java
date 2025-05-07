@@ -44,27 +44,14 @@ public abstract class BaseRepositoryTablePage<
 
     private final F defaultFromModel;
 
-    @PostConstruct
-    public void build() {
-        presetPredicate();
-
-        super.build();
-        createDialog = buildCreateDialog();
-        buildRepositoryActionColumn();
-        add(createDialog);
-
-        onBuild();
-    }
-
-    public void onBuild() {
-    }
-
-    public void onSave(ID id) {
-    }
-
-
     public BaseRepositoryTablePage(Class<T> tableClass, Class<F> formClass, Class<E> entityClass) {
         this(tableClass, formClass, null, entityClass);
+    }
+
+    public BaseRepositoryTablePage(Class<T> tableClass,
+                                   F formModel,
+                                   Class<E> entityClass) {
+        this(tableClass, (Class<F>) formModel.getClass(), formModel, entityClass);
     }
 
     public BaseRepositoryTablePage(Class<T> tableClass, Class<F> formClass,
@@ -88,6 +75,25 @@ public abstract class BaseRepositoryTablePage<
         this.defaultFromModel = formModel;
 
     }
+
+    @PostConstruct
+    public void build() {
+        presetPredicate();
+
+        super.build();
+        createDialog = buildCreateDialog();
+        buildRepositoryActionColumn();
+        add(createDialog);
+
+        onBuild();
+    }
+
+    public void onBuild() {
+    }
+
+    public void onSave(ID id) {
+    }
+
 
     RepositoryForm<F, E, ID> formInstance;
 

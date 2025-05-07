@@ -41,17 +41,8 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
         echoF.setId(id);
         echoF.setMessage(message);
         echoF.setLongMessage(longMessage);
-        echoF.setKeywords(keywords);
 
 
-        echoF.setFlag(flag);
-        echoF.setLabels(labels);
-        echoF.setDefaultMessage(longMessage);
-        echoF.setCustomMessage(message);
-        echoF.setStatus(status);
-        echoF.setCreatedTime(createdTime);
-        echoF.setUpdatedTime(updatedTime);
-        echoF.setEchoId(echoId);
         return echoF;
     }
 
@@ -59,7 +50,7 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
     public void formEntity(Echo entity) {
         this.id = entity.getId();
         this.message = entity.getMessage();
-        this.longMessage = entity.getMessage();
+        this.longMessage = entity.getLongMessage();
         this.keywords = entity.getKeywords();
         if (entity.getManyToOneEcho() != null) {
             this.manyToOneEcho = toHashMap(entity.getManyToOneEcho());

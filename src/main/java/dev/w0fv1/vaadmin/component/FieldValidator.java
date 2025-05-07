@@ -31,14 +31,6 @@ public class FieldValidator {
             throw new RuntimeException(e);
         }
 
-        if (field.isAnnotationPresent(FormField.class)) {
-            FormField formField = field.getAnnotation(FormField.class);
-
-            if (formField != null && !formField.nullable() && isEmpty(value)) {
-                return "值为空，该字段不允许为空";
-            }
-        }
-
 
         // 使用 Validator 的 validateValue 方法，仅验证指定字段的值
         Set<? extends ConstraintViolation<?>> violations = validator.validateValue(beanClass, propertyName, value);

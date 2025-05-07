@@ -32,7 +32,7 @@ public abstract class BaseFileUploadFieldComponent<Type> extends BaseFormFieldCo
     }
 
     @Override
-    void initStaticView() {
+    public void initStaticView() {
         this.memoryBuffer = new MemoryBuffer();
         this.uploadButton = new Button("上传" + this.getFormField().title());
 
@@ -43,8 +43,7 @@ public abstract class BaseFileUploadFieldComponent<Type> extends BaseFormFieldCo
         this.upload.setEnabled(getFormField().enabled());
 
         this.upload.addSucceededListener(event -> {
-            Type uploadedData = handleUploadSucceeded(memoryBuffer);
-            setData(uploadedData);
+            handleUploadSucceeded(memoryBuffer);
             pushViewData();
         });
 
@@ -95,5 +94,5 @@ public abstract class BaseFileUploadFieldComponent<Type> extends BaseFormFieldCo
      * 子类必须实现：处理上传成功后的文件。
      * 将 MemoryBuffer 转换为需要绑定的数据。
      */
-    public abstract Type handleUploadSucceeded(MemoryBuffer buffer);
+    public abstract void handleUploadSucceeded(MemoryBuffer buffer);
 }
