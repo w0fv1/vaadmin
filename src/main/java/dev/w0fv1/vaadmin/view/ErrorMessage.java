@@ -10,6 +10,16 @@ public class ErrorMessage extends Span {
         icon.getStyle().set("padding", "var(--lumo-space-xs)");
         this.add(icon);
         this.add(new Span(message));
+        this.setVisible(true);
+        this.getElement().getThemeList().add("badge error");
+    }
+
+    public ErrorMessage() {
+        Icon icon = VaadinIcon.EXCLAMATION_CIRCLE_O.create();
+        icon.getStyle().set("padding", "var(--lumo-space-xs)");
+        this.add(icon);
+        this.add(new Span(""));
+        this.setVisible(false);
         this.getElement().getThemeList().add("badge error");
     }
 

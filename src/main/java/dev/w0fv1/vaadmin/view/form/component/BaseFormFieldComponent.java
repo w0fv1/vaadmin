@@ -38,7 +38,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
     @Setter
     private BaseFormModel formModel; // 表单数据模型
     private final FormField formField; // 字段注解
-    private ErrorMessage errorMessage; // 错误提示信息
+    private ErrorMessage errorMessage = new ErrorMessage(); // 错误提示信息
     private final Boolean autoInitialize; // 是否自动初始化数据
 
     public BaseFormFieldComponent(Field field, BaseFormModel formModel) {
@@ -92,7 +92,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
      * 子类可以重写，但必须调用super.initData()。
      */
     protected void initData() {
-        if (this.autoInitialize ) {
+        if (this.autoInitialize) {
             logDebug("初始化数据前，当前值为空，准备设置默认值");
             setData(getFieldDefaultValue());
             logDebug("设置默认值后，当前值：{}", getData());
@@ -197,7 +197,7 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         if (errorMessage != null) {
             logDebug("清除错误提示信息");
             errorMessage.setText("");
-            remove(errorMessage);
+            errorMessage.setVisible(false);
         }
     }
 
@@ -223,18 +223,14 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         }
 
         if (validMessage != null && !validMessage.isEmpty()) {
-            log.warn("字段 [{}] 校验失败: {}", field.getName(), validMessage);
-            if (errorMessage == null) {
-                errorMessage = new ErrorMessage(validMessage);
-                add(errorMessage);
-            } else {
-                errorMessage.setText(validMessage);
-            }
+            log.warn("字段 [{}] 校验失败: {}，当前为：{}", field.getName(), validMessage, getData());
+            errorMessage.setText(validMessage);
+            errorMessage.setVisible(true);
             return false;
         } else {
             logDebug("字段校验通过，数据为：{}", getData());
             if (errorMessage != null) {
-                remove(errorMessage);
+                errorMessage.setVisible(false);
             }
             return true;
         }
