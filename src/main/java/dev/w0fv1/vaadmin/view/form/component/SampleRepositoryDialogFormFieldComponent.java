@@ -102,8 +102,12 @@ public class SampleRepositoryDialogFormFieldComponent extends BaseDialogFormFiel
     }
 
     @Override
-    public void clearUI() {
+    public void clearData() {
         this.id = null;
+    }
+
+    @Override
+    public void clearUI() {
         textField.clear();
     }
 

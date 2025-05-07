@@ -24,7 +24,6 @@ public abstract class BaseDialogFormFieldComponent<Type> extends BaseFormFieldCo
 
     protected Dialog dialog;           // 弹窗
     protected Button openDialogButton; // 打开弹窗按钮
-    private Type data;                  // 持有的数据
 
     public BaseDialogFormFieldComponent(Field field, BaseFormModel formModel) {
         super(field, formModel);
@@ -54,31 +53,8 @@ public abstract class BaseDialogFormFieldComponent<Type> extends BaseFormFieldCo
         }
     }
 
-    @Override
-    public Type getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(Type data) {
-        this.data = data;
-    }
-
-    @Override
-    public void clearData() {
-        this.data = null;
-    }
-
-    @Override
-    public void clearUI() {
-        // 弹窗本身一般不需要清除
-        if (openDialogButton != null) {
-            openDialogButton.setText("新建 " + getFormField().title());
-        }
-    }
-
     public String getButtonText() {
-        if (data != null) {
+        if (getData() != null) {
             return "编辑 " + getFormField().title();
         }
         return "新建 " + getFormField().title();

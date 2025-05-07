@@ -33,6 +33,9 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "长信息",nullable = false)
     private String longMessage;
 
+    @CustomFormFieldComponent(UserverFileUploadFieldComponent.UserverFileFormFieldComponentBuilder.class)
+    @FormField(title = "商品主图")
+    private String imageUrl;
 
     public EchoF(String message) {
         this.message = message;
