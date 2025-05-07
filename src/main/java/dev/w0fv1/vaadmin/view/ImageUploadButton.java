@@ -4,6 +4,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.upload.Upload;
@@ -12,6 +13,8 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Base64;
+
+import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 
 public class ImageUploadButton<T> extends Div {
 
@@ -79,7 +82,7 @@ public class ImageUploadButton<T> extends Div {
         // ========= 3. 监听上传成功事件 =========
         upload.addSucceededListener(event -> {
             String fileName = event.getFileName();
-            Notification.show("Uploaded: " + fileName, 2000, Notification.Position.MIDDLE);
+            showNotification("Uploaded: " + fileName, NotificationVariant.LUMO_CONTRAST);
 
             // 将图片转换为 base64
             String newImageUrl = "data:" + event.getMIMEType() + ";base64," + handler.getBase64(buffer);
@@ -120,10 +123,10 @@ public class ImageUploadButton<T> extends Div {
         applyButton.addClickListener(e -> {
             if (uploadResult != null) {
                 handler.apply(uploadResult);
-                Notification.show("应用成功！", 2000, Notification.Position.MIDDLE);
+                showNotification("应用成功！",NotificationVariant.LUMO_SUCCESS);
 
             } else {
-                Notification.show("还没有任何可应用的数据！", 2000, Notification.Position.MIDDLE);
+                showNotification("还没有任何可应用的数据！", NotificationVariant.LUMO_WARNING);
             }
         });
 

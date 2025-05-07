@@ -7,6 +7,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import dev.w0fv1.vaadmin.view.form.model.*;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 import static org.reflections.ReflectionUtils.getAllFields;
 
 
@@ -105,7 +107,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         log.debug("validResults: {}", Arrays.toString(validResults.toArray()));
         for (Boolean validResult : validResults) {
             if (!validResult) {
-                Notification.show("表单字段存在错误，请按说明修正", 2000, Notification.Position.MIDDLE);
+                showNotification("表单字段存在错误，请按说明修正", NotificationVariant.LUMO_ERROR);
                 return;
             }
         }
@@ -118,12 +120,14 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
         log.info(model.toString());
 
-        this.onSave(model);
+        Boolean onSaveResult = this.onSave(model);
 
-        this.clear();
+        if (onSaveResult) {
+            this.clear();
+        }
     }
 
-    abstract public void onSave(F data);
+    abstract public Boolean onSave(F data);
 
     /**
      * 针对标记了 @TextTransform 的字段进行处理
@@ -167,9 +171,6 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
 
     private void clear() {
         this.model = defaultModel.copy();
-
-        log.debug("model: {}", model.toString());
-        log.debug("defaultModel: {}", defaultModel.toString());
 
         for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
             fieldComponent.setFormModel(this.model);

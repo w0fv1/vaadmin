@@ -65,12 +65,13 @@ public class NormalForm<F extends BaseFormModel> extends BaseForm<F> {
      * @param data 校验、收集完毕的表单数据
      */
     @Override
-    public void onSave(F data) {
+    public Boolean onSave(F data) {
         log.info("NormalForm 收集到数据: {}", data.toString());
         // 将数据通过回调交给上层，让上层去处理
         if (onSave != null) {
             onSave.accept(data);
         }
+        return true;
     }
 }
 

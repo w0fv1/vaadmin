@@ -236,12 +236,12 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
                     echoF,
                     savedData -> {
                         // onSave 回调逻辑
-                        Notification.show("保存成功，用户输入：" + savedData.toString());
+                        showNotification("保存成功，用户输入：" + savedData.toString(),NotificationVariant.LUMO_SUCCESS);
                     },
                     () -> {
                         dialog.close();
                         // onCancel 回调逻辑
-                        Notification.show("用户取消了操作");
+                        showNotification("用户取消了操作",NotificationVariant.LUMO_WARNING);
                     }
             );
 
@@ -291,7 +291,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
         tabSection.addTab(new TabSection.TabItem<>("设置", "settings", new Span("设置内容")));
         tabSection.onTabSelected(value -> {
-            Notification.show("选中Tab值：" + value);
+            showNotification("选中Tab值：" + value);
         });
         // 示例：获取当前选中的Tab value
 

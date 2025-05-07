@@ -92,12 +92,10 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
      * 子类可以重写，但必须调用super.initData()。
      */
     protected void initData() {
-        if (this.autoInitialize && isEmpty(getData())) {
+        if (this.autoInitialize ) {
             logDebug("初始化数据前，当前值为空，准备设置默认值");
             setData(getFieldDefaultValue());
             logDebug("设置默认值后，当前值：{}", getData());
-        } else {
-            logDebug("跳过数据初始化，已有数据：{}", getData());
         }
     }
 

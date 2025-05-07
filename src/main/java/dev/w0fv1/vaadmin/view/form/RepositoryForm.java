@@ -85,7 +85,7 @@ public class RepositoryForm<
 
 
     @Override
-    public void onSave(F fromModel) {
+    public Boolean onSave(F fromModel) {
 
         log.info(fromModel.toString());
 
@@ -171,8 +171,9 @@ public class RepositoryForm<
             } catch (Exception e) {
                 // 回滚事务
                 status.setRollbackOnly();
-                showNotification("保存失败！" + e.getMessage(), NotificationVariant.LUMO_ERROR);
                 e.printStackTrace();
+                showNotification("保存失败！" + e.getMessage(), NotificationVariant.LUMO_ERROR);
+
                 return null;
             }
             return saveModel;
@@ -180,9 +181,12 @@ public class RepositoryForm<
 
 
 
-        if (model != null && model.getId() != null) {
-            showNotification("保存成功！", NotificationVariant.LUMO_SUCCESS);
+        if (model == null || model.getId() == null) {
+            return false;
         }
+        showNotification("保存成功！", NotificationVariant.LUMO_SUCCESS);
+        return true;
+
     }
 
     public interface OnSave<ID> {
