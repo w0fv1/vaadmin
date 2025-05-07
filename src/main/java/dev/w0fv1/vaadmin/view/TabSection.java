@@ -78,6 +78,7 @@ public class TabSection<T> extends VerticalLayout {
         for (Map.Entry<Tab, T> entry : tabToValue.entrySet()) {
             if (Objects.equals(entry.getValue(), value)) {
                 tabs.setSelectedTab(entry.getKey());
+                notifySelectionListeners();
                 return;
             }
         }
