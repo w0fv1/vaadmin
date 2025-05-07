@@ -219,17 +219,20 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         }
 
         if (validMessage.isEmpty()) {
-            validMessage = validField(field, formModel);
+            validMessage = validField(field, formModel,getData());
         }
 
         if (validMessage != null && !validMessage.isEmpty()) {
             log.warn("字段 [{}] 校验失败: {}，当前为：{}", field.getName(), validMessage, getData());
-            errorMessage.setText(validMessage);
-            errorMessage.setVisible(true);
+            if (errorMessage != null) {
+                errorMessage.setText(validMessage);
+                errorMessage.setVisible(true);
+            }
             return false;
         } else {
             logDebug("字段校验通过，数据为：{}", getData());
             if (errorMessage != null) {
+                errorMessage.setText("");
                 errorMessage.setVisible(false);
             }
             return true;

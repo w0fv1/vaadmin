@@ -18,18 +18,10 @@ public class FieldValidator {
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private static final Validator validator = factory.getValidator();
 
-    public static String validField(Field field, Object object) {
+    public static String validField(Field field, Object object,Object value) {
         Class<?> beanClass = field.getDeclaringClass();
         // 获取字段名称
         String propertyName = field.getName();
-
-        Object value = null;
-
-        try {
-            value = field.get(object);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
 
 
         // 使用 Validator 的 validateValue 方法，仅验证指定字段的值
