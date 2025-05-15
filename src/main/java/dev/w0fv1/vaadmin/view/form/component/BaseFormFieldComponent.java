@@ -26,7 +26,7 @@ import static dev.w0fv1.vaadmin.util.TypeUtil.isEmpty;
  * 2. initStaticView()：初始化UI控件，只涉及静态结构，不处理数据；
  * 3. initData()：初始化组件数据，可以在子类中重写，但必须调用super.initData()；
  * 4. pushViewData()：根据当前数据刷新UI，要求幂等（相同数据多次调用不会导致UI异常）；
- * 5. getData()/setData()：只处理数据，不操作任何UI控件；
+ * 5. getData()/setData()：只处理数据，不操作任何UI控件；getData()应该返回数据的副本；
  * 6. 支持自动初始化数据，支持清空和校验。
  *
  * @param <Type> 当前字段绑定的数据类型（如 String, List<String>）
@@ -55,7 +55,6 @@ public abstract class BaseFormFieldComponent<Type> extends VerticalLayout {
         buildTitle();
     }
 
-    @PostConstruct
     public void initialize() {
         logDebug("开始初始化组件");
         initStaticView();

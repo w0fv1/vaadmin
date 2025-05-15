@@ -219,7 +219,10 @@ public class GenericRepository {
         public void removePredicate(String key) {
             predicateBuilders.remove(key);
         }
-
+        // Add or replace multiple predicate builders at once
+        public void addAllPredicates(Map<String, PredicateBuilder<T>> builders) {
+            predicateBuilders.putAll(builders);
+        }
         // Clear all predicates
         public void clearPredicates() {
             predicateBuilders.clear();

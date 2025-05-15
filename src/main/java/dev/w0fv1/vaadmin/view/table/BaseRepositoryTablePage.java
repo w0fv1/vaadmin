@@ -17,10 +17,13 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public abstract class BaseRepositoryTablePage<
@@ -35,6 +38,9 @@ public abstract class BaseRepositoryTablePage<
 
     @Getter
     protected final GenericRepository.PredicateManager<E> predicateManager = new GenericRepository.PredicateManager<>();
+
+
+    private final Map<String, GenericRepository.PredicateBuilder<E>> extPredicateBuilders = new HashMap<>();
 
     private final Class<E> entityClass;
     private final Class<F> formClass;
@@ -79,6 +85,7 @@ public abstract class BaseRepositoryTablePage<
     @PostConstruct
     public void build() {
         presetPredicate();
+        predicateManager.addAllPredicates(this.extPredicateBuilders);
 
         super.build();
         createDialog = buildCreateDialog();
@@ -120,6 +127,7 @@ public abstract class BaseRepositoryTablePage<
         onSave(id);
         dialog.close();
         reloadCurrentData();
+
     }
 
     private void handleCancel(Dialog dialog) {
@@ -134,15 +142,24 @@ public abstract class BaseRepositoryTablePage<
 
     private List<T> fetchPageData(int page, TransactionStatus status) {
         try {
-            return genericRepository.getPage(entityClass, page, getPageSize(), predicateManager)
-                    .stream()
+            List<E> entities = genericRepository.getPage(entityClass, page, getPageSize(), predicateManager);
+            List<T> result = entities.stream()
                     .map(this::convertToDto)
                     .toList();
+
+            // 打印实体 ID 或关键词等关键信息
+            log.info("加载第 {} 页数据，共 {} 条：", page + 1, result.size());
+            for (T dto : result) {
+                log.info(" - {}", dto); // 确保你的 BaseEntityTableModel 实现了合理的 toString()
+            }
+
+            return result;
         } catch (Exception e) {
             status.setRollbackOnly();
             throw new RuntimeException("事务执行失败，已回滚。", e);
         }
     }
+
 
     private T convertToDto(E entity) {
         try {
@@ -210,9 +227,16 @@ public abstract class BaseRepositoryTablePage<
         // 默认不做任何处理，子类可覆写
     }
 
+    public void extPredicate(String key, GenericRepository.PredicateBuilder<E> predicateBuilder) {
+        this.extPredicateBuilders.put(key, predicateBuilder);
+        predicateManager.addAllPredicates(this.extPredicateBuilders);
+        super.refresh();
+    }
+
     public void onResetFilterEvent() {
         predicateManager.clearPredicates();
-        presetPredicate(); // 重置后重新应用预设条件
+        presetPredicate();
+        predicateManager.addAllPredicates(this.extPredicateBuilders);
     }
 
 

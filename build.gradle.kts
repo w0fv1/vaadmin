@@ -3,19 +3,21 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("maven-publish")
     id("signing")
-    id("com.vaadin") version "24.6.6"
+    id("com.vaadin") version "24.7.3"
 }
 
 
 group = "dev.w0fv1"
-version = "0.14.13"
+version = "0.16.0"
 
 
-val springBootVersion = "3.4.2" // 设置 Spring Boot 版本
+val springBootVersion = "3.4.5" // 设置 Spring Boot 版本
 
-extra["springAiVersion"] = "1.0.0-M5"
-extra["vaadinVersion"] = "24.6.6"
-
+extra["springAiVersion"] ="1.0.0-RC1"
+extra["vaadinVersion"] = "24.7.3"
+vaadin {
+    productionMode = true
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21

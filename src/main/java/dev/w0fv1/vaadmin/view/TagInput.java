@@ -62,16 +62,14 @@ public class TagInput extends VerticalLayout {
     }
 
     /**
-     * 设置标签列表。
+     * 设置单个标签（包装 TagGroup 的 setTag 方法）
      *
-     * @param tags 标签列表
+     * @param tags 新标签
      */
     public void setTags(List<String> tags) {
-        tagGroup.clearTags();
-        if (tags != null && !tags.isEmpty()) {
-            tags.forEach(this::addTag);
-        }
+        tagGroup.setTags(tags);
     }
+
 
     /**
      * 获取当前的标签列表。

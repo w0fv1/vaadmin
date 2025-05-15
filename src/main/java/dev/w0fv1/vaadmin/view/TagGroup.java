@@ -55,6 +55,23 @@ public class TagGroup extends FlexLayout {
         }
     }
 
+    public void setTags(List<String> tags) {
+        this.tags.clear();
+        removeAll();
+
+        if (tags != null && !tags.isEmpty()) {
+            for (String tag : tags) {
+                if (tag != null && !tag.trim().isEmpty()) {
+                    this.tags.add(tag);
+                    Span badge = createBadge(tag);
+                    add(badge);
+                }
+            }
+        }
+
+        notifyChange();
+    }
+
     /**
      * 删除一个标签。
      *

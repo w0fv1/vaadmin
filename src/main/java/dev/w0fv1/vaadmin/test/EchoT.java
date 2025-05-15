@@ -6,6 +6,7 @@ import dev.w0fv1.vaadmin.view.table.model.TableConfig;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static dev.w0fv1.vaadmin.util.JsonUtil.toHashMap;
 
+@Slf4j
 @Data
 @ToString
 @TableConfig(title = "回声管理", description = "这是一个测试页面, 用于测试后台框架的建立", likeSearch = true)
@@ -41,7 +43,7 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
         echoF.setId(id);
         echoF.setMessage(message);
         echoF.setLongMessage(longMessage);
-
+        echoF.setKeywords(keywords);
 
         return echoF;
     }

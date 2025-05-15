@@ -4,6 +4,7 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import dev.w0fv1.mapper.Mapper;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
+import dev.w0fv1.vaadmin.test.Echo;
 import dev.w0fv1.vaadmin.view.form.component.*;
 import dev.w0fv1.vaadmin.view.form.model.*;
 import lombok.extern.slf4j.Slf4j;
@@ -146,6 +147,7 @@ public class RepositoryForm<
                 }
                 saveModel = genericRepository.save(saveModel);
 
+                log.info("saveModelsaveModelsaveModelsaveModelsaveModel:{}",((Echo)saveModel).getKeywords());
 
                 for (Field declaredField : fromModel.getClass().getDeclaredFields()) {
                     if (!declaredField.isAnnotationPresent(RepositoryMapField.class)) {

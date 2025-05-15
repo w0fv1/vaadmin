@@ -2,6 +2,7 @@ package dev.w0fv1.vaadmin.view.form.component;
 
 import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import dev.w0fv1.vaadmin.view.TagInput;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
  * TagInputField
  * 多标签输入控件，绑定 List<String> 数据。
  */
+@Slf4j
 public class TagInputField extends BaseFormFieldComponent<List<String>> {
 
     private TagInput tagInput; // UI控件
@@ -27,6 +29,7 @@ public class TagInputField extends BaseFormFieldComponent<List<String>> {
         this.tagInput = new TagInput();
         this.tagInput.setEnabled(getFormField().enabled());
         this.tagInput.setOnChangeListener(tags -> {
+            log.debug("getData<UNK>setOnChangeListener{}",tags);
             // 只更新内部数据，不操作UI
             setData(new ArrayList<>(tags));
         });
@@ -35,22 +38,21 @@ public class TagInputField extends BaseFormFieldComponent<List<String>> {
 
     @Override
     public void pushViewData() {
-        this.tagInput.clear(); // 幂等要求，每次都清空
-        if (data != null) {
-            for (String tag : data) {
-                this.tagInput.addTag(tag);
-            }
+
+        if (getData() != null) {
+            this.tagInput.setTags(getData());
         }
     }
 
     @Override
     public List<String> getData() {
-        return data;
+        return new ArrayList<>(data);
     }
 
     @Override
     public void setData(List<String> data) {
         this.data.clear();
+
         if (data != null) {
             this.data.addAll(data);
         }

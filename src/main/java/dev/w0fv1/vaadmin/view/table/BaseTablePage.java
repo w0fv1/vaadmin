@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -143,6 +144,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     public void jumpPage(int page) {
         this.page = page;
+
         setData(loadData(this.page));
         updatePageInfo();
     }
@@ -212,6 +214,27 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
                 displayName = tableFieldInfo.displayName();
             }
             grid.addComponentColumn(data -> {
+                        // 打印日志
+                        log.debug("渲染数据: [{}]",data);
+                        try {
+
+                            // 获取字段值（用于日志）
+                            Object rawValue = field.get(data);
+                            String value = getFieldStringValue(data, field, 20);
+
+                            // 获取主键（假设字段名是 "id"，可根据需要改为注解识别）
+                            Object id = null;
+                            id = data.getClass().getMethod("getId").invoke(data);
+
+                            // 打印日志
+                            log.debug("渲染字段: [{}], 数据ID: [{}], 原始值: [{}], 渲染值: [{}]",
+                                    field.getName(), id, rawValue, value);
+
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                            throw new RuntimeException(e);
+                        }
+
+
                         String value = getFieldStringValue(data, field, 20);
                         Span cell = new Span(value);
                         cell.getStyle().set("cursor", "pointer");
@@ -340,7 +363,12 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
                 if (value instanceof Map<?, ?> v) {
                     result = toPrettyJson(v);
                 } else {
+
+
                     result = value.toString(); // Handle nulls
+
+                    log.debug(field.getName() + " getFieldStringValue is " + result);
+
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

@@ -11,7 +11,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static java.util.UUID.randomUUID;
 
@@ -85,26 +87,31 @@ public class Echo implements BaseManageEntity<Long> {
 
     @Converter
     public static class StringListConverter implements AttributeConverter<List<String>, String> {
+        private static final String SEPARATOR = ";";
+
         @Override
-        public String convertToDatabaseColumn(List<String> strings) {
-            if (strings == null) {
-                return "";
+        public String convertToDatabaseColumn(List<String> attribute) {
+            if (attribute == null || attribute.isEmpty()) {
+                return ""; // 或者返回 null，取决于你的数据库列是否允许 NULL 和你的偏好
+                // 如果返回 null，convertToEntityAttribute 也需要处理 null
             }
-            if (strings.isEmpty()) {
-                return "";
-            }
-            StringBuilder result = new StringBuilder();
-            for (String string : strings) {
-                result.append(string).append(";");
-            }
-            return result.substring(0, result.length() - 1);
+            // 过滤掉列表中的 null 或空字符串，避免产生 "a;;b" 这样的情况，除非你特意需要
+            // return attribute.stream()
+            //                 .filter(s -> s != null && !s.isEmpty())
+            //                 .collect(Collectors.joining(SEPARATOR));
+            return String.join(SEPARATOR, attribute); // String.join 会处理 null 元素，但可能不是你想要的方式
         }
 
         @Override
-        public List<String> convertToEntityAttribute(String s) {
-            return List.of(s.split(";"));
+        public List<String> convertToEntityAttribute(String dbData) {
+            if (dbData == null || dbData.isEmpty()) {
+                return new ArrayList<>(); // <--- 关键修改：返回一个空的可变列表
+            }
+            // 使用 Arrays.asList 然后包装成 new ArrayList 确保返回的是可变列表
+            return new ArrayList<>(Arrays.asList(dbData.split(Pattern.quote(SEPARATOR))));
+            // Pattern.quote(SEPARATOR) 是为了防止SEPARATOR是正则表达式特殊字符时产生问题
+            // 如果你确定SEPARATOR永远是简单字符，直接用 dbData.split(SEPARATOR) 也可以
         }
-
     }
 
     public enum Label {

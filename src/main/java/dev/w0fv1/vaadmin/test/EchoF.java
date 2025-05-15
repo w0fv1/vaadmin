@@ -27,12 +27,14 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
 
     @NotBlank(message = "消息不能为空")
     @Size(min = 10, max = 255, message = "消息长度必须在10到255个字符之间")
-    @FormField(title = "信息",nullable = false)
+    @FormField(title = "信息", nullable = false)
     private String message;
 
-    @FormField(title = "长信息",nullable = false)
+    @FormField(title = "长信息", nullable = false)
     private String longMessage;
 
+    @FormField(title = "关键词", nullable = false, subType = String.class)
+    private List<String> keywords;
     @CustomFormFieldComponent(UserverFileUploadFieldComponent.UserverFileFormFieldComponentBuilder.class)
     @FormField(title = "商品主图")
     private String imageUrl;
@@ -46,6 +48,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
         Echo echo = new Echo();
         echo.setMessage(message);
         echo.setLongMessage(longMessage);
+        echo.setKeywords(keywords);
         return echo;
     }
 
@@ -53,6 +56,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     public void translate(Echo model) {
         model.setMessage(message);
         model.setLongMessage(longMessage);
+        model.setKeywords(keywords);
     }
 
 
