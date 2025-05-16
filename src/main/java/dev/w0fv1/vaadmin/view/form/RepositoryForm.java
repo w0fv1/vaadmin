@@ -147,7 +147,6 @@ public class RepositoryForm<
                 }
                 saveModel = genericRepository.save(saveModel);
 
-                log.info("saveModelsaveModelsaveModelsaveModelsaveModel:{}",((Echo)saveModel).getKeywords());
 
                 for (Field declaredField : fromModel.getClass().getDeclaredFields()) {
                     if (!declaredField.isAnnotationPresent(RepositoryMapField.class)) {
