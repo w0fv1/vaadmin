@@ -1,18 +1,15 @@
 package dev.w0fv1.vaadmin;
 
-import com.sun.jna.Callback;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionException;
@@ -20,192 +17,157 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static java.util.Objects.isNull;
-
+/**
+ * 通用仓库：封装了 <b>CRUD / 分页 / 动态过滤 / 多字段排序</b> 功能。<br/>
+ * - 通过 {@link PredicateManager} 组合 <code>CriteriaBuilder</code> 过滤条件；<br/>
+ * - 通过 {@link SortOrder} 列表完成服务器端多字段 ASC/DESC 排序。<br/>
+ */
 @Slf4j
 @Component
 @Repository
+@RequiredArgsConstructor
+@SuppressWarnings("unchecked")
 public class GenericRepository {
+
+    /* -------------------------------------------------- DI -------------------------------------------------- */
     @PersistenceContext
     private EntityManager entityManager;
+    private final TransactionTemplate txTemplate;
 
-    private final TransactionTemplate transactionTemplate;
-
-    public GenericRepository(TransactionTemplate transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
+    /* -------------------------------------------------- Tx helpers -------------------------------------------------- */
+    public <T> T execute(TransactionCallback<T> cb) throws TransactionException {
+        return txTemplate.execute(cb);
     }
 
-    @Nullable
-    public <T> T execute(TransactionCallback<T> action) throws TransactionException {
-        return transactionTemplate.execute(action);
+    public <T> T execute(Supplier<T> cb) {
+        return txTemplate.execute(st -> safeGet(cb, st));
     }
 
-    @Nullable
-    public <T> T execute(Supplier<T> callback) throws TransactionException {
-        return transactionTemplate.execute(status -> {
-            try {
-                return callback.get();
-            } catch (Exception e) {
-                log.error("数据加载失败", e);
-                status.setRollbackOnly();
-                return null;
-            }
-        });
-    }
-
-    @Nullable
-    public void execute(Runnable callback) throws TransactionException {
-        transactionTemplate.execute(status -> {
-            try {
-                callback.run();
-            } catch (Exception e) {
-                log.error("数据加载失败", e);
-                status.setRollbackOnly();
-            }
+    public void execute(Runnable run) {
+        txTemplate.execute(st -> {
+            safeRun(run, st);
             return null;
         });
     }
-
-
-    @Transactional
-    public <T extends BaseManageEntity<?>> T save(T entity) {
-        if (entity.getId() == null) {
-            entityManager.persist(entity);
-        } else {
-            entity = entityManager.merge(entity);
-        }
-        entityManager.flush();
-        return entity;
-    }
-
-
-    @Transactional
-    public <T> void delete(T entity) {
-        entityManager.remove(entity);
-        entityManager.flush();
-    }
-
-
     @Transactional
     public <T> Boolean exist(Long id, Class<T> clazz) {
         return entityManager.find(clazz, id) != null;
     }
 
-    @Transactional
-    public <T, ID> T find(ID id, Class<T> type) {
-        return entityManager.find(type, id);
-    }
-
-    @Transactional
-    public <T, ID> List<T> findAll(List<ID> ids, Class<T> type) {
-        if (ids == null || ids.isEmpty()) {
-            return List.of(); // 返回空列表
-        }
-
-        // 构建 JPQL 查询
-        String jpql = "SELECT e FROM " + type.getSimpleName() + " e WHERE e.id IN :ids";
-        TypedQuery<T> query = entityManager.createQuery(jpql, type);
-        query.setParameter("ids", ids);
-        List<T> resultList = query.getResultList();
-        if (resultList == null) {
-            return List.of();
-        }
-        return resultList;
-    }
-
-
-    @Transactional
-    public <T> T find(String uuid, Class<T> type) {
-        String query = "FROM " + type.getSimpleName() + " t WHERE t.uuid = :uuid";
-        TypedQuery<T> typedQuery = entityManager.createQuery(query, type);
-        typedQuery.setParameter("uuid", uuid);
-
-        if (typedQuery.getResultList().isEmpty()) {
+    private <T> T safeGet(Supplier<T> s, TransactionStatus st) {
+        try {
+            return s.get();
+        } catch (Exception e) {
+            st.setRollbackOnly();
+            log.error("Tx failure", e);
             return null;
         }
-        return typedQuery.getSingleResult();
     }
 
-    public Long findMaxIdByLtLastTime(Class<?> type, OffsetDateTime lastTime) {
-        return findMaxIdByLtLastTime(type, lastTime, 0L);
-    }
-
-//    @Transactional
-//    public <T extends BaseEntity<ID>, ID> T updateStatusById(ID id, Class<T> clazz, Status newStatus) {
-//        // 根据 ID 和类型查找实体
-//        T entity = entityManager.find(clazz, id);
-//        if (entity != null) {
-//            // 更新状态
-//            entity.setStatus(newStatus);
-//            // 合并实体，保存更改
-//            entityManager.merge(entity);
-//        }
-//        return entity;
-//    }
-
-    public Long findMaxIdByLtLastTime(Class<?> type, OffsetDateTime lastTime, Long coalesceValue) {
-        Query query = entityManager.createQuery("SELECT max(a.id) FROM " + type.getSimpleName() + " a WHERE a.createdTime < :lastTime");
-        query.setParameter("lastTime", lastTime);
-//        query.setParameter("coalesceValue", coalesceValue);
-        Long result = (Long) query.getSingleResult();
-        if (isNull(result)) {
-            result = coalesceValue;
+    private void safeRun(Runnable r, TransactionStatus st) {
+        try {
+            r.run();
+        } catch (Exception e) {
+            st.setRollbackOnly();
+            log.error("Tx failure", e);
         }
-        return result;
+    }
+
+    /* -------------------------------------------------- Basic CRUD -------------------------------------------------- */
+    @Transactional
+    public <T extends BaseManageEntity<?>> T save(T e) {
+        if (e.getId() == null) entityManager.persist(e);
+        else e = entityManager.merge(e);
+        entityManager.flush();
+        return e;
+    }
+
+    @Transactional
+    public <T> void delete(T e) {
+        entityManager.remove(e);
+        entityManager.flush();
+    }
+
+    /* -------------------------------------------------- Page + Filter + Sort -------------------------------------------------- */
+
+    /**
+     * 排序描述
+     */
+    @Getter
+    @Setter
+    @RequiredArgsConstructor
+    public static class SortOrder {
+        public SortOrder(QuerySortOrder querySortOrder) {
+            this.property = querySortOrder.getSorted();
+            if (querySortOrder.getDirection().equals(SortDirection.ASCENDING)) {
+                this.direction = Direction.ASC;
+            } else if (querySortOrder.getDirection().equals(SortDirection.DESCENDING)) {
+                this.direction = Direction.DESC;
+            } else {
+                this.direction = Direction.ASC;
+            }
+        }
+
+        public enum Direction {ASC, DESC}
+
+        private final String property;
+        private final Direction direction;
+
+
     }
 
     /**
-     * 获取表的总记录数，应用条件筛选
+     * 带条件 & 排序的分页查询
+     *
+     * @param type       实体类型
+     * @param page       第几页（从 0）
+     * @param size       每页大小
+     * @param pm         条件管理器
+     * @param sortOrders 排序
      */
     @Transactional
-    public <T> Long getTotalSize(Class<T> type, PredicateManager<T> predicateManager) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<T> root = cq.from(type);
-        List<Predicate> predicates = predicateManager.buildPredicates(cb, root);
-
-        // 设置查询返回类型为 Long，选择计数
-        cq.select(cb.count(root));
-
-        // 应用传入的 Predicate 条件
-        if (!predicates.isEmpty()) {
-            cq.where(predicates.toArray(new Predicate[0]));
-        }
-
-        TypedQuery<Long> typedQuery = entityManager.createQuery(cq);
-        return typedQuery.getSingleResult();
-    }
-
-
-    @Transactional
-    public <T> List<T> getPage(Class<T> type, int page, int size, PredicateManager<T> predicateManager) {
-
-
-        // 使用 CriteriaBuilder 构造查询
+    public <T> List<T> getPage(Class<T> type, int page, int size, PredicateManager<T> pm, List<SortOrder> sortOrders) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(type);
         Root<T> root = cq.from(type);
-        List<Predicate> predicates = predicateManager.buildPredicates(cb, root);
 
-        // 应用传入的 Predicate 条件
-        cq.where(predicates.toArray(new Predicate[0]));
+        // where 条件
+        List<jakarta.persistence.criteria.Predicate> preds = pm.buildPredicates(cb, root);
+        if (!preds.isEmpty()) cq.where(preds.toArray(new jakarta.persistence.criteria.Predicate[0]));
 
-        // 创建查询并设置分页
-        TypedQuery<T> query = entityManager.createQuery(cq);
-        query.setFirstResult(page * size); // 设置起始位置
-        query.setMaxResults(size); // 设置每页大小
+        // order by
+        if (sortOrders != null && !sortOrders.isEmpty()) {
+            List<Order> orders = sortOrders.stream().map(so -> so.direction == SortOrder.Direction.ASC ? cb.asc(root.get(so.property)) : cb.desc(root.get(so.property))).toList();
+            cq.orderBy(orders);
+        }
 
-        return query.getResultList();
+        TypedQuery<T> q = entityManager.createQuery(cq);
+        q.setFirstResult(page * size);
+        q.setMaxResults(size);
+        return q.getResultList();
     }
 
+    /* -------------------------------------------------- Total size -------------------------------------------------- */
+    @Transactional
+    public <T> Long getTotalSize(Class<T> type, PredicateManager<T> pm) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<T> root = cq.from(type);
+        cq.select(cb.count(root));
+        List<jakarta.persistence.criteria.Predicate> preds = pm.buildPredicates(cb, root);
+        if (!preds.isEmpty()) cq.where(preds.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        return entityManager.createQuery(cq).getSingleResult();
+    }
+
+    /* -------------------------------------------------- Predicate utilities -------------------------------------------------- */
+    @FunctionalInterface
     public interface PredicateBuilder<T> {
-        void build(CriteriaBuilder cb, Root<T> root, List<Predicate> predicates);
+        void build(CriteriaBuilder cb, Root<T> root, List<jakarta.persistence.criteria.Predicate> preds);
     }
+
 
     public static class PredicateManager<T> {
         private final Map<String, PredicateBuilder<T>> predicateBuilders = new HashMap<>();
@@ -246,5 +208,33 @@ public class GenericRepository {
         }
     }
 
+    /* -------------------------------------------------- misc 单条查询 / util 方法（选留） -------------------------------------------------- */
+    @Transactional
+    public <T, ID> T find(ID id, Class<T> type) {
+        return entityManager.find(type, id);
+    }
 
+    @Transactional
+    public <T, ID> List<T> findAll(List<ID> ids, Class<T> type) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of(); // 返回空列表
+        }
+
+        // 构建 JPQL 查询
+        String jpql = "SELECT e FROM " + type.getSimpleName() + " e WHERE e.id IN :ids";
+        TypedQuery<T> query = entityManager.createQuery(jpql, type);
+        query.setParameter("ids", ids);
+        List<T> resultList = query.getResultList();
+        if (resultList == null) {
+            return List.of();
+        }
+        return resultList;
+    }
+
+    @Transactional
+    public <T, ID> ID saveAndReturnId(T e) {
+        entityManager.persist(e);
+        entityManager.flush();
+        return (ID) ((BaseManageEntity<?>) e).getId();
+    }
 }

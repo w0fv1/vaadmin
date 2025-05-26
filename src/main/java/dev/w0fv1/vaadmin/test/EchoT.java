@@ -3,6 +3,7 @@ package dev.w0fv1.vaadmin.test;
 import dev.w0fv1.vaadmin.view.table.model.BaseEntityTableModel;
 import dev.w0fv1.vaadmin.view.table.model.JsonTableField;
 import dev.w0fv1.vaadmin.view.table.model.TableConfig;
+import dev.w0fv1.vaadmin.view.table.model.TableField;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -20,6 +21,8 @@ import static dev.w0fv1.vaadmin.util.JsonUtil.toHashMap;
 @TableConfig(title = "回声管理", description = "这是一个测试页面, 用于测试后台框架的建立", likeSearch = true)
 @NoArgsConstructor
 public class EchoT implements BaseEntityTableModel<Echo, Long> {
+    @TableField(displayName = "ID", order = 1, sortable = true)
+
     private Long id;
     private String message;
     private String longMessage;

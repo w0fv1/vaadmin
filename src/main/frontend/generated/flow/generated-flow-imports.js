@@ -24,7 +24,7 @@ const loadOnDemand = (key) => {
     pending.push(import('./chunks/chunk-97da19ff1009ba9d06098e7bb3aea464e2a9ec17ecaa6a7fbb2d79e9116a0e0c.js'));
   }
   if (key === 'fb6691820c9db43f992dbf2a9c665577c4b4666bb0fae7fde10cdbf1821f5e87') {
-    pending.push(import('./chunks/chunk-871d93b795d1d21da019b7de242e4ed36efa3a02074e4792361efdcbb3409568.js'));
+    pending.push(import('./chunks/chunk-f28eeacad4546c4058d3efc1daf6a79b2e15c5bb269e779c3cc7d2fc7827365d.js'));
   }
   return Promise.all(pending);
 }

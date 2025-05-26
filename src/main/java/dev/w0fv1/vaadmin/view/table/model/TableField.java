@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 public @interface TableField {
     public int order() default 100;
 
+    public String key() default "";
+
     public String displayName() default "";
 
     public String defaultValue() default "无";
@@ -17,6 +19,8 @@ public @interface TableField {
     public boolean editable() default false;
 
     public boolean likeSearch() default false;
+
+    public boolean sortable() default false;
 
     public String likeSearchName() default "";
 

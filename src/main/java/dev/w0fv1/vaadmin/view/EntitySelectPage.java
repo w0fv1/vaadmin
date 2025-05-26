@@ -286,7 +286,7 @@ public class EntitySelectPage<
         List<E> fetchedData = genericRepository.execute(status -> {
             List<E> list = new ArrayList<>();
             try {
-                List<E> entities = genericRepository.getPage(entityClass, page, pageSize, predicateManager);
+                List<E> entities = genericRepository.getPage(entityClass, page, pageSize, predicateManager, null);
                 list.addAll(entities);
             } catch (Exception e) {
                 log.error("数据加载失败", e);
