@@ -18,6 +18,7 @@ import dev.w0fv1.vaadmin.view.table.component.TextTableFieldComponent;
 import dev.w0fv1.vaadmin.view.table.model.BaseTableModel;
 import dev.w0fv1.vaadmin.view.table.model.TableConfig;
 import dev.w0fv1.vaadmin.view.table.model.TableField;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
@@ -36,12 +37,23 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     private final Class<T> tableClass;
     private final TableConfig tableConfig;
 
-    private final Grid<T> grid = new Grid<>();
-    private final TextField likeSearchInput = new TextField();
+    protected final Grid<T> grid = new Grid<>();
+    protected final TextField likeSearchInput = new TextField();
 
-    private ConfigurableFilterDataProvider<T, Void, String> provider;
+    protected ConfigurableFilterDataProvider<T, Void, String> provider;
 
-    private boolean viewBuilt = false;
+    private boolean staticViewBuilt = false;
+    private boolean dataInitialized = false;
+
+
+    @Getter
+    private HorizontalLayout titleBar;
+    @Getter
+    private HorizontalLayout secondaryAction;
+    @Getter
+    private HorizontalLayout dataActions;
+    @Getter
+    private Component primaryActions;
 
     public BaseTablePage(Class<T> tableClass) {
         this.tableClass = tableClass;
@@ -49,10 +61,45 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         if (tableConfig == null) throw new IllegalStateException("@TableConfig not found");
     }
 
-    public void initialize() {
-        if (viewBuilt) return;
-        buildStaticView();
-        viewBuilt = true;
+    // ================ 拆解后的生命周期方法 ================ //
+
+    /**
+     * 1. 初始化静态UI结构（不含数据）
+     */
+    public void initStaticView() {
+        if (staticViewBuilt) return;
+
+        buildTitleBar();
+        buildSecondaryAction();
+        buildLikeSearchBar();
+        buildDataActions();
+        buildGridColumns();
+
+        add(grid);
+        add(extendPage());
+
+        staticViewBuilt = true;
+    }
+
+    /**
+     * 2. 初始化数据组件，必须调用super.initData()
+     */
+    public void initData() {
+        if (dataInitialized) return;
+
+        provider = DataProvider.fromFilteringCallbacks(this::fetch, this::count)
+                // 使用默认 FilterCombiner，避免 NPE
+                .withConfigurableFilter();
+        grid.setItems(provider);
+
+        dataInitialized = true;
+    }
+
+    /**
+     * 3. 将数据推送至UI展示层，需幂等
+     */
+    public void pushViewData() {
+        refresh();
     }
 
     public void refresh() {
@@ -64,19 +111,17 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         refresh();
     }
 
-    private void buildStaticView() {
-        buildTitleBar();
-        buildSubActions();
-        buildLikeSearchBar();
-        buildDataActions();
 
-        buildGridColumns();
-        add(grid);
-        add(extendPage());
-
-        provider = DataProvider.fromFilteringCallbacks(this::fetch, this::count).withConfigurableFilter(null);
-        grid.setItems(provider);
+    /**
+     * 4. 完整的初始化逻辑（子类控制调用时机）
+     */
+    public void initialize() {
+        initStaticView();
+        initData();
+        pushViewData();
     }
+
+    // ================ 原有的数据加载方法 ================ //
 
     private Stream<T> fetch(Query<T, String> q) {
         return loadChunk(q.getOffset(), q.getLimit(), q.getFilter().orElse(null), q.getSortOrders()).stream();
@@ -85,6 +130,8 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     private int count(Query<T, String> q) {
         return getTotalSize(q.getFilter().orElse(null)).intValue();
     }
+
+    // ================ 以下代码保留原有逻辑不变 ================ //
 
     private void buildGridColumns() {
         List<Field> fields = new ArrayList<>(getAllFields(tableClass, ReflectionUtils.withModifier(PRIVATE)).stream().toList());
@@ -126,30 +173,56 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         }
     }
 
+
     private void buildTitleBar() {
-        HorizontalLayout hl = new HorizontalLayout(new H1(getTitle()), new Button(VaadinIcon.REFRESH.create(), v -> refresh()), extendPrimaryAction());
-        hl.setAlignItems(Alignment.END);
-        add(hl);
+        primaryActions = extendPrimaryAction();
+        titleBar = new HorizontalLayout(new H1(getTitle()), new Button(VaadinIcon.REFRESH.create(), v -> refresh()), primaryActions);
+        titleBar.setAlignItems(Alignment.END);
+        add(titleBar);
         if (!getDescription().isEmpty()) add(new Span(getDescription()));
     }
 
-    private void buildSubActions() {
-        add(new HorizontalLayout(buildSecondaryAction()));
+    private void buildSecondaryAction() {
+        secondaryAction = new HorizontalLayout(extendSecondaryAction());
+        add(secondaryAction);
     }
 
+    /**
+     * 构建模糊搜索栏：
+     *  - 在同一行（HorizontalLayout）中，最左侧放文字标识，紧接输入框，最后是搜索按钮。
+     */
     private void buildLikeSearchBar() {
         if (!tableConfig.likeSearch()) return;
+
+        // 创建布局，保证三元素同行显示
+        HorizontalLayout likeSearchBar = new HorizontalLayout();
+        likeSearchBar.setAlignItems(Alignment.CENTER);
+
+        // 文字标识
+        Span label = new Span("关键字搜索：");
+
+        // 输入框
         likeSearchInput.setPlaceholder("搜索 " + getLikeSearchFieldNames());
-        likeSearchInput.addValueChangeListener(e -> applyFilter(e.getValue()));
-        add(likeSearchInput);
+        likeSearchInput.addValueChangeListener(e -> applyFilter(e.getValue())); // 原有即时过滤逻辑保留
+
+        // 搜索按钮
+        Button searchButton = new Button(VaadinIcon.SEARCH.create(), e -> applyFilter(likeSearchInput.getValue()));
+        searchButton.getElement().setAttribute("title", "搜索");
+
+        // 组装并添加进页面
+        likeSearchBar.add(label, likeSearchInput, searchButton);
+        add(likeSearchBar);
     }
 
+
     private void buildDataActions() {
-        HorizontalLayout hl = new HorizontalLayout();
-        if (enableCreate()) hl.add(new Button("创建", e -> onCreateEvent()));
-        hl.add(extendDataAction());
-        hl.setJustifyContentMode(JustifyContentMode.END);
-        add(hl);
+        dataActions = new HorizontalLayout();
+        dataActions.setWidthFull(); // 关键：让 HorizontalLayout 占满宽度
+
+        if (enableCreate()) dataActions.add(new Button("创建", e -> onCreateEvent()));
+        dataActions.add(extendDataAction());
+        dataActions.setJustifyContentMode(JustifyContentMode.END);
+        add(dataActions);
     }
 
     private String getFieldStringValue(T item, Field f, int max) {
@@ -162,16 +235,31 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     }
 
     public List<String> getLikeSearchFieldNames() {
-        return getAllFields(tableClass, ReflectionUtils.withModifier(PRIVATE)).stream()
-                .filter(f -> Optional.ofNullable(f.getAnnotation(TableField.class)).map(TableField::likeSearch).orElse(false))
-                .map(Field::getName).collect(Collectors.toList());
+        List<String> fieldNames = new ArrayList<>();
+        Set<Field> fields = getAllFields(tableClass, ReflectionUtils.withModifier(PRIVATE));
+        for (Field f : fields) {
+            TableField annotation = f.getAnnotation(TableField.class);
+            if (annotation != null && annotation.likeSearch()) {
+                String displayName = annotation.displayName();
+                if (displayName != null && !displayName.isBlank()) {
+                    fieldNames.add(displayName);
+                } else {
+                    fieldNames.add(f.getName());
+                }
+            }
+        }
+        return fieldNames;
     }
+
+    // ======= 抽象方法保留原接口 ======= //
 
     protected abstract List<T> loadChunk(int offset, int limit, String filter, List<QuerySortOrder> sortOrders);
 
     protected abstract Long getTotalSize(String filter);
 
     public abstract void onCreateEvent();
+
+    // ======= 扩展点，保留原有方法 ======= //
 
     public String getTitle() {
         return tableConfig.title();
@@ -185,7 +273,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         return new Div();
     }
 
-    public Component buildSecondaryAction() {
+    public Component extendSecondaryAction() {
         return new Div();
     }
 
@@ -197,9 +285,54 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         return new Div();
     }
 
-    public void extendGridColumns() {
+    // ======= 组件添加扩展方法 ======= //
 
+    /**
+     * 向 titleBar 添加组件
+     * @param components 要添加的组件
+     */
+    public void addTitleBar(Component... components) {
+        if (titleBar != null) {
+            titleBar.add(components);
+        }
     }
+
+    /**
+     * 向 secondaryAction 添加组件
+     * @param components 要添加的组件
+     */
+    public void addSecondaryAction(Component... components) {
+        if (secondaryAction != null) {
+            secondaryAction.add(components);
+        }
+    }
+
+    /**
+     * 向 dataActions 添加组件
+     * @param components 要添加的组件
+     */
+    public void addDataActions(Component... components) {
+        if (dataActions != null) {
+            dataActions.add(components);
+        }
+    }
+
+    /**
+     * 向 primaryActions 添加组件，仅当其是 Composite 类型容器时有效
+     * @param components 要添加的组件
+     */
+    public void addPrimaryActions(Component... components) {
+        if (primaryActions instanceof HasComponents) {
+            ((HasComponents) primaryActions).add(components);
+        } else {
+            log.warn("primaryActions 不是容器类型，不能添加组件: {}", primaryActions.getClass().getSimpleName());
+        }
+    }
+
+
+    public void extendGridColumns() {
+    }
+
     public Grid.Column<T> extendGridColumn(ValueProvider<T, ?> valueProvider) {
         return this.grid.addColumn(valueProvider);
     }
@@ -207,6 +340,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     public <V extends Component> Grid.Column<T> extendGridComponentColumn(ValueProvider<T, V> componentProvider) {
         return this.grid.addComponentColumn(componentProvider);
     }
+
     public void onItemClicked(T item) {
     }
 

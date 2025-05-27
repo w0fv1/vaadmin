@@ -37,18 +37,9 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
         // 传入默认表单模型，方便 "创建" 弹窗预置内容
         super(EchoT.class, EchoF.class, new EchoF("TEST EchoF 默认内容"), Echo.class);
         this.echoService = echoService;
-    }
-
-    /* -------------------------------------------------- 生命周期 -------------------------------------------------- */
-
-    /**
-     * PostConstruct 先由父类构建静态 UI，此处再触发数据加载 & 推送。
-     */
-    @PostConstruct
-    private void afterStaticViewReady() {
-        // 由于本页面没有额外的动态路由参数，直接初始化即可。
         initialize();
     }
+
 
     /* -------------------------------------------------- 查询谓词 -------------------------------------------------- */
 
@@ -100,7 +91,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
     /** 子操作：打开实体选择器 */
     @Override
-    public Component buildSecondaryAction() {
+    public Component extendSecondaryAction() {
         return new Button("打开数据选择测试", e -> {
             Dialog dialog = new Dialog();
             EntitySelectPage<Echo, Long> selectPage = new EntitySelectPage<>(

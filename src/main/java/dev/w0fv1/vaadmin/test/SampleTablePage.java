@@ -76,7 +76,7 @@ public class SampleTablePage extends BaseTablePage<SampleTablePage.SampleData> {
     }
 
     @Override
-    public Component buildSecondaryAction() {
+    public Component extendSecondaryAction() {
         return new Button("子操作", VaadinIcon.COG.create(), e -> log.info("点击了子操作"));
     }
 

@@ -24,6 +24,7 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
     @TableField(displayName = "ID", order = 1, sortable = true)
 
     private Long id;
+    @TableField(displayName = "信息", order = 2,likeSearch = true)
     private String message;
     private String longMessage;
     private List<String> keywords;

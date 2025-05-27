@@ -33,8 +33,17 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormField(title = "长信息", nullable = false)
     private String longMessage;
 
+
+    @FormEntitySelectField(
+            entityField = @EntityField(entityType = Echo.class, entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class)
+    )
+    @FormField(title = "长信息", nullable = false)
+    private Long echoId;
+
     @FormField(title = "关键词", nullable = false, subType = String.class)
     private List<String> keywords;
+
+
     @CustomFormFieldComponent(UserverFileUploadFieldComponent.UserverFileFormFieldComponentBuilder.class)
     @FormField(title = "商品主图")
     private String imageUrl;

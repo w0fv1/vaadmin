@@ -62,7 +62,7 @@ public class RepositoryForm<
     }
 
     @Override
-    BaseFormFieldComponent<?> extMapComponent(Field field, F formModel) {
+    BaseFormFieldComponent<?> extandMapComponent(Field field, F formModel) {
 
         FormField formField = field.getAnnotation(FormField.class);
 

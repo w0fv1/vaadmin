@@ -6,7 +6,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -234,7 +233,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     private Component mapComponent(Field field) {
         log.debug("开始映射字段 [{}] 到表单组件", field.getName());
 
-        BaseFormFieldComponent<?> formFieldComponent = this.extMapComponent(field, this.model);
+        BaseFormFieldComponent<?> formFieldComponent = this.extandMapComponent(field, this.model);
         if (formFieldComponent != null) {
             log.debug("字段 [{}] 通过 extMapComponent 扩展方法自定义生成了组件：{}", field.getName(), formFieldComponent.getClass().getSimpleName());
             fieldComponents.add(formFieldComponent);
@@ -322,7 +321,7 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     }
 
 
-    BaseFormFieldComponent<?> extMapComponent(Field field, F formModel) {
+    BaseFormFieldComponent<?> extandMapComponent(Field field, F formModel) {
         return null;
     }
 

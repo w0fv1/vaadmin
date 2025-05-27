@@ -17,11 +17,9 @@ import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,7 @@ public abstract class BaseRepositoryTablePage<
     @Getter
     protected final GenericRepository.PredicateManager<E> predicateManager = new GenericRepository.PredicateManager<>();
 
-    private final Map<String, GenericRepository.PredicateBuilder<E>> extPredicateBuilders = new HashMap<>();
+    private final Map<String, GenericRepository.PredicateBuilder<E>> extendPredicateBuilders = new HashMap<>();
 
     private final Class<E> entityClass;
     private final Class<F> formClass;
@@ -75,17 +73,17 @@ public abstract class BaseRepositoryTablePage<
     }
 
     @PostConstruct
-    public void build() {
-        presetPredicate();
-        predicateManager.addAllPredicates(extPredicateBuilders);
-
-        super.initialize(); // 构建 UI
-
+    private void afterInject() {
         createDialog = buildCreateDialog();
-        buildRepositoryActionColumn();
-
         add(createDialog);
+    }
 
+    @Override
+    public void initialize() {
+        presetPredicate();
+        predicateManager.addAllPredicates(extendPredicateBuilders);
+        super.initialize(); // 构建 UI
+        buildRepositoryActionColumn();
         onBuild();
     }
 
@@ -164,7 +162,7 @@ public abstract class BaseRepositoryTablePage<
         return genericRepository.execute((TransactionCallback<List<T>>) status -> {
             try {
                 buildLikeSearchPredicate(filter);
-                predicateManager.addAllPredicates(extPredicateBuilders);
+                predicateManager.addAllPredicates(extendPredicateBuilders);
                 List<SortOrder> sortOrders = querySortOrders.stream().map(SortOrder::new).toList();
 
 
@@ -184,7 +182,7 @@ public abstract class BaseRepositoryTablePage<
         return genericRepository.execute((TransactionCallback<Long>) status -> {
             try {
                 buildLikeSearchPredicate(filter);
-                predicateManager.addAllPredicates(extPredicateBuilders);
+                predicateManager.addAllPredicates(extendPredicateBuilders);
                 return genericRepository.getTotalSize(entityClass, predicateManager);
             } catch (Exception e) {
                 status.setRollbackOnly();
@@ -224,16 +222,16 @@ public abstract class BaseRepositoryTablePage<
     /**
      * 扩展筛选器入口
      */
-    public void extPredicate(String key, GenericRepository.PredicateBuilder<E> predicateBuilder) {
-        this.extPredicateBuilders.put(key, predicateBuilder);
-        predicateManager.addAllPredicates(extPredicateBuilders);
+    public void extendPredicate(String key, GenericRepository.PredicateBuilder<E> predicateBuilder) {
+        this.extendPredicateBuilders.put(key, predicateBuilder);
+        predicateManager.addAllPredicates(extendPredicateBuilders);
         refresh();
     }
 
     public void onResetFilterEvent() {
         predicateManager.clearPredicates();
         presetPredicate();
-        predicateManager.addAllPredicates(extPredicateBuilders);
+        predicateManager.addAllPredicates(extendPredicateBuilders);
         refresh();
     }
 
