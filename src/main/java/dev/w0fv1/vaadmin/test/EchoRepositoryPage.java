@@ -21,6 +21,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.time.Duration;
+
+// 若需要直接使用 StatsCard 类型，可再 import com.example.stats.StatsCard;
 
 import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 
@@ -177,6 +182,33 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
         tabSection.addTab(new TabSection.TabItem<>("设置", "settings", new Span("设置内容")));
         tabSection.onTabSelected(val -> showNotification("选中 Tab 值：" + val));
         layout.add(tabSection);
+
+        /* ---------- 示例数据统计卡片 ---------- */
+        StatsCardGroup statsGroup = new StatsCardGroup("示例数据统计");
+        statsGroup.createAndAddCard(
+                VaadinIcon.MONEY.create(),
+                "昨日收入",
+                () -> {
+                    double amount = 50000 + Math.random() * 100000; // 5万 ~ 15万
+
+                    return NumberFormat.getCurrencyInstance(Locale.CHINA).format(amount );
+                },
+                Duration.ofSeconds(3));
+
+        statsGroup.createAndAddCard(
+                VaadinIcon.CREDIT_CARD.create(),
+                "本月累计收入",
+                () -> NumberFormat.getCurrencyInstance(Locale.CHINA).format(9876543.21),
+                Duration.ofMinutes(2));
+
+        statsGroup.createAndAddCard(
+                VaadinIcon.GROUP.create(),
+                "昨日活跃用户",
+                () -> NumberFormat.getIntegerInstance(Locale.CHINA).format(45231),
+                Duration.ofSeconds(45));
+
+        layout.add(statsGroup);
+        /* ---------- 统计卡片示例结束 ---------- */
 
         return layout;
     }
