@@ -40,7 +40,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
     public EchoRepositoryPage(EchoService echoService) {
         // 传入默认表单模型，方便 "创建" 弹窗预置内容
-        super(EchoT.class, EchoF.class, new EchoF("TEST EchoF 默认内容"), Echo.class);
+        super(EchoT.class, EchoF.class, Echo.class);
         this.echoService = echoService;
         initialize();
     }
@@ -48,7 +48,9 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
     /* -------------------------------------------------- 查询谓词 -------------------------------------------------- */
 
-    /** 默认仅显示 NORMAL 状态 */
+    /**
+     * 默认仅显示 NORMAL 状态
+     */
     @Override
     public void presetPredicate() {
 //        predicateManager.putPredicate("statusIsNormal", (cb, root, predicates) ->
@@ -94,7 +96,9 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
     /* -------------------------------------------------- Action 扩展区 ------------------------------------------------ */
 
-    /** 子操作：打开实体选择器 */
+    /**
+     * 子操作：打开实体选择器
+     */
     @Override
     public Component extendSecondaryAction() {
         return new Button("打开数据选择测试", e -> {
@@ -115,13 +119,17 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
         });
     }
 
-    /** 数据栏额外按钮 */
+    /**
+     * 数据栏额外按钮
+     */
     @Override
     public Component extendDataAction() {
         return new Button("extDataAction Message");
     }
 
-    /** 标题栏右侧主操作 */
+    /**
+     * 标题栏右侧主操作
+     */
     @Override
     public Component extendPrimaryAction() {
         Button randomBtn = new Button("随机创建", e -> {
@@ -156,8 +164,15 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
         /* ---------- 图片上传按钮 ---------- */
         ImageUploadButton<String> uploadBtn = new ImageUploadButton<>(null, new ImageUploadButton.ImageUploadHandler<>() {
-            @Override public String handleUploadSucceeded(MemoryBuffer buffer) { return "success"; }
-            @Override public void apply(String data) { log.info("upload: {}", data); }
+            @Override
+            public String handleUploadSucceeded(MemoryBuffer buffer) {
+                return "success";
+            }
+
+            @Override
+            public void apply(String data) {
+                log.info("upload: {}", data);
+            }
         });
         layout.add(uploadBtn);
 
@@ -191,7 +206,7 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
                 () -> {
                     double amount = 50000 + Math.random() * 100000; // 5万 ~ 15万
 
-                    return NumberFormat.getCurrencyInstance(Locale.CHINA).format(amount );
+                    return NumberFormat.getCurrencyInstance(Locale.CHINA).format(amount);
                 },
                 Duration.ofSeconds(3));
 
@@ -220,7 +235,10 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
         NormalForm<EchoF> normalForm = new NormalForm<>(
                 formModel,
                 saved -> showNotification("保存成功：" + saved, NotificationVariant.LUMO_SUCCESS),
-                () -> { dialog.close(); showNotification("用户取消", NotificationVariant.LUMO_WARNING);} );
+                () -> {
+                    dialog.close();
+                    showNotification("用户取消", NotificationVariant.LUMO_WARNING);
+                });
         dialog.add(normalForm);
         dialog.setWidth("600px");
         dialog.setHeight("80vh");
@@ -231,8 +249,14 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
         Dialog dlg = new Dialog();
         RepositoryForm<EchoF, Echo, Long> repoForm = new RepositoryForm<>(
                 new EchoF("预制内容"),
-                id -> { dlg.close(); refresh(); },
-                () -> { dlg.close(); refresh(); },
+                id -> {
+                    dlg.close();
+                    refresh();
+                },
+                () -> {
+                    dlg.close();
+                    refresh();
+                },
                 genericRepository
         );
         repoForm.initialize();
@@ -241,13 +265,22 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     }
 
     /* -------------------------------------------------- 其它覆写 -------------------------------------------------- */
-    @Override public Boolean enableCreate() { return true; }
-    @Override public Boolean enableUpdate() {
+    @Override
+    public Boolean enableCreate() {
+        return true;
+    }
+
+    @Override
+    public Boolean enableUpdate() {
         return super.enableUpdate();
     }
 
     @Override
     public void onGetUrlQueryParameters(ParameterMap parameters, BeforeEnterEvent event) {
         log.info("onGetUrlParameters: {}", parameters);
+
+        EchoF baseProduct = new EchoF(Echo.Status.HIDDEN);
+
+        super.setDefaultFromModel(baseProduct);
     }
 }

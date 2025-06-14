@@ -60,19 +60,45 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         initAction();
     }
 
+
+    public void removeAllUi() {
+        // 如果 actionLayout 存在于布局中，才移除
+        if (actionLayout != null && this.getChildren().anyMatch(component -> component == actionLayout)) {
+            remove(actionLayout);
+        }
+
+        // 同理，titleLayout
+        if (titleLayout != null && this.getChildren().anyMatch(component -> component == titleLayout)) {
+            remove(titleLayout);
+        }
+
+        // 清除每个字段组件（这些组件可能是通过 add() 添加的）
+        for (BaseFormFieldComponent<?> fieldComponent : fieldComponents) {
+            if (this.getChildren().anyMatch(component -> component == fieldComponent)) {
+                remove(fieldComponent);
+            }
+        }
+
+        fieldComponents.clear();
+    }
+
+
+    private HorizontalLayout primaryActionLayout;
+    VerticalLayout actionLayout;
+
     private void initAction() {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        primaryActionLayout = new HorizontalLayout();
         Button saveButton = new Button("保存");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(v -> save());
-        horizontalLayout.add(saveButton);
+        primaryActionLayout.add(saveButton);
 
 
         if (!isUpdate) {
             Button clearButton = new Button("清空");
             clearButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
             clearButton.addClickListener(v -> clear());
-            horizontalLayout.add(clearButton);
+            primaryActionLayout.add(clearButton);
         }
 
         Button cancelButton = new Button("取消");
@@ -81,13 +107,15 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
             clear();
             onCancel();
         });
-        horizontalLayout.add(cancelButton);
+        primaryActionLayout.add(cancelButton);
 
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.add(horizontalLayout);
-        verticalLayout.add(extAction());
-        verticalLayout.setPadding(false);
-        add(verticalLayout);
+        actionLayout = new VerticalLayout();
+        actionLayout.add(primaryActionLayout);
+        actionLayout.add(extAction());
+        actionLayout.setPadding(false);
+
+
+        add(actionLayout);
     }
 
 
@@ -233,6 +261,9 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
     private Component mapComponent(Field field) {
         log.debug("开始映射字段 [{}] 到表单组件", field.getName());
 
+
+        log.debug("mapComponentmapComponentmapComponent model 开始映射字段 [{}] 到表单组件", this.model);
+
         BaseFormFieldComponent<?> formFieldComponent = this.extandMapComponent(field, this.model);
         if (formFieldComponent != null) {
             log.debug("字段 [{}] 通过 extMapComponent 扩展方法自定义生成了组件：{}", field.getName(), formFieldComponent.getClass().getSimpleName());
@@ -325,14 +356,15 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
         return null;
     }
 
+    HorizontalLayout titleLayout;
 
     private void initTitle() {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.add(new H1(getTitle()));
-        horizontalLayout.add(new Span(getDescription()));
-        horizontalLayout.setAlignItems(Alignment.END);
-        horizontalLayout.add(extTitle());
-        add(horizontalLayout);
+        titleLayout = new HorizontalLayout();
+        titleLayout.add(new H1(getTitle()));
+        titleLayout.add(new Span(getDescription()));
+        titleLayout.setAlignItems(Alignment.END);
+        titleLayout.add(extTitle());
+        add(titleLayout);
     }
 
     /**
@@ -342,8 +374,11 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
      */
     public void setDefaultModel(F defaultModel) {
         this.defaultModel = defaultModel;
+        this.model = defaultModel.copy();
         clear();
-        log.debug("调用 setDefaultModel()，已设置 defaultModel，并清空表单数据，defaultModel 内容：{}", defaultModel);
+        removeAllUi();
+        initialize();
+        log.debug("调用 setDefaultModel()，已设置 defaultModel，并清空表单数据，defaultModel 内容：{}", this.model);
     }
 
 

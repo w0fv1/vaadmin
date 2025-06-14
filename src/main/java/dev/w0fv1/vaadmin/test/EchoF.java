@@ -42,7 +42,6 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     private Long echoId;
 
 
-
     @FormEntitySelectField(
             entityField = @EntityField(entityType = Echo.class, entityMapper = EchoEntityFieldMapper.ManyToManyEchoesFieldMapper.class)
     )
@@ -61,6 +60,11 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
 
     public EchoF(String message) {
         this.message = message;
+    }
+
+
+    public EchoF(Echo.Status status) {
+        this.status = status;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     public GenericRepository.PredicateBuilder<Echo> getEntityPredicateBuilder() {
         // 永久过滤：status == NORMAL
         return (cb, root, predicates) -> predicates.add(
-                cb.equal(root.get("status"), Echo.Status.NORMAL)
+                cb.equal(root.get("status"), getStatus())
         );
     }
 }
