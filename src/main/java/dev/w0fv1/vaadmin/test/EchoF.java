@@ -1,5 +1,6 @@
 package dev.w0fv1.vaadmin.test;
 
+import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.view.form.RepositoryMapField;
 import dev.w0fv1.vaadmin.view.form.component.SampleRepositoryDialogFormFieldComponent;
 import dev.w0fv1.vaadmin.view.form.model.*;
@@ -55,6 +56,8 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @CustomFormFieldComponent(UserverFileUploadFieldComponent.UserverFileFormFieldComponentBuilder.class)
     @FormField(title = "商品主图")
     private String imageUrl;
+    @FormField(title = "状态", nullable = false)
+    private Echo.Status status;
 
     public EchoF(String message) {
         this.message = message;
@@ -66,6 +69,7 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
         echo.setMessage(message);
         echo.setLongMessage(longMessage);
         echo.setKeywords(keywords);
+        echo.setStatus(status);
         return echo;
     }
 
@@ -74,7 +78,14 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
         model.setMessage(message);
         model.setLongMessage(longMessage);
         model.setKeywords(keywords);
+        model.setStatus(status);
     }
 
-
+    @Override
+    public GenericRepository.PredicateBuilder<Echo> getEntityPredicateBuilder() {
+        // 永久过滤：status == NORMAL
+        return (cb, root, predicates) -> predicates.add(
+                cb.equal(root.get("status"), Echo.Status.NORMAL)
+        );
+    }
 }

@@ -20,6 +20,7 @@ import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static dev.w0fv1.vaadmin.util.TypeUtil.isBaseType;
 import static org.reflections.ReflectionUtils.getAllFields;
@@ -67,13 +68,16 @@ public class EntitySelectPage<
     private final Set<Checkbox> selectedCheckboxes = new HashSet<>();
 
     private Checkbox lastSelectedCheckbox;
+    private final Set<String> permanentPredicateKeys = new HashSet<>();          // >>> NEW
 
     public void clear() {
         data.clear();
         // Removed likeSearchInput.clear();
         idSearchInput.clear();
         uuidSearchInput.clear();
-        predicateManager.clearPredicatesWithOut("init");
+        predicateManager.clearPredicatesWithOut(
+                Stream.concat(Stream.of("init"), permanentPredicateKeys.stream())
+                        .toArray(String[]::new));
         selectedItems.clear();
         pageInput.clear();
         selectedCheckboxes.clear();
@@ -389,7 +393,9 @@ public class EntitySelectPage<
         // Removed likeSearchInput.clear();
         idSearchInput.clear();
         uuidSearchInput.clear();
-        predicateManager.clearPredicatesWithOut("init");
+        predicateManager.clearPredicatesWithOut(
+                Stream.concat(Stream.of("init"), permanentPredicateKeys.stream())
+                        .toArray(String[]::new));
         selectedItems.clear();
 
         jumpPage(0);
@@ -451,4 +457,13 @@ public class EntitySelectPage<
         return (int) Math.ceil((double) totalSize / pageSize);
     }
 
+    /* -------------------- 外部新增永久过滤器 -------------------- */
+    public void addPermanentFilter(String key, GenericRepository.PredicateBuilder<E> builder) {   // >>> NEW
+        if (builder == null) {
+            return;
+        }
+        predicateManager.putPredicate(key, builder);
+        permanentPredicateKeys.add(key);
+        log.debug("已添加永久过滤器 key={}", key);
+    }
 }

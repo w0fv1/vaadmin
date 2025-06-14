@@ -1,5 +1,6 @@
 package dev.w0fv1.vaadmin.view.table.model;
 
+import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.form.model.BaseEntityFormModel;
 
@@ -52,5 +53,7 @@ public interface BaseEntityTableModel<
 
         throw new RuntimeException("无法确定泛型类型E的Class对象");
     }
+
+
 }
 

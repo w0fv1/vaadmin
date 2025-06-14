@@ -3,6 +3,7 @@ package dev.w0fv1.vaadmin.view.form.component;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.EntitySelectButton;
+import dev.w0fv1.vaadmin.view.form.model.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import dev.w0fv1.vaadmin.view.form.model.FormField;
 import dev.w0fv1.vaadmin.view.form.model.FormEntitySelectField;
@@ -23,11 +24,10 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
     private List<ID> data = new ArrayList<>();            // 内部持有数据
     private final GenericRepository genericRepository;
 
-    public MultiEntitySelectField(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
+    public MultiEntitySelectField(Field field, BaseEntityFormModel<E, ID> formModel, GenericRepository genericRepository) {
         super(field, formModel, true);
         this.genericRepository = genericRepository;
         super.initialize();
-
     }
 
     @Override
@@ -42,7 +42,7 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
                 formField.enabled()
         );
 
-        this.entitySelectButton.setGenericRepository(this.genericRepository);
+        this.entitySelectButton.setGenericRepository(this.genericRepository, ((BaseEntityFormModel) getFormModel()).getEntityPredicateBuilder());
 
         this.entitySelectButton.setOnValueChangeListener(selectedIds -> {
             setData(new ArrayList<>(selectedIds));

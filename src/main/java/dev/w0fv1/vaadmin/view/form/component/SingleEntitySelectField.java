@@ -3,6 +3,7 @@ package dev.w0fv1.vaadmin.view.form.component;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.EntitySelectButton;
+import dev.w0fv1.vaadmin.view.form.model.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import dev.w0fv1.vaadmin.view.form.model.FormEntitySelectField;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
     private ID data; // 内部持有的数据
     private final GenericRepository genericRepository;
 
-    public SingleEntitySelectField(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
+    public SingleEntitySelectField(Field field, BaseEntityFormModel<E, ID> formModel, GenericRepository genericRepository) {
         super(field, formModel, true);
         this.genericRepository = genericRepository;
         super.initialize();
@@ -41,7 +42,7 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
                 isSingle,
                 getFormField().enabled()
         );
-        this.entitySelectButton.setGenericRepository(this.genericRepository);
+        this.entitySelectButton.setGenericRepository(this.genericRepository, ((BaseEntityFormModel) getFormModel()).getEntityPredicateBuilder());
 
         add(this.entitySelectButton);
 

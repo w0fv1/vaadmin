@@ -43,6 +43,7 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
 
     private Long echoId;
 
+
     @Override
     public EchoF toFormModel() {
         EchoF echoF = new EchoF();
@@ -51,6 +52,7 @@ public class EchoT implements BaseEntityTableModel<Echo, Long> {
         echoF.setLongMessage(longMessage);
         echoF.setKeywords(keywords);
         echoF.setEchoId(echoId);
+        echoF.setStatus(status);
         echoF.setManyToManyEchoes(manyToManyEchoesIds);
         return echoF;
     }

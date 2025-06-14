@@ -51,9 +51,9 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
     /** 默认仅显示 NORMAL 状态 */
     @Override
     public void presetPredicate() {
-        predicateManager.putPredicate("statusIsNormal", (cb, root, predicates) ->
-                predicates.add(cb.equal(root.get("status"), Echo.Status.NORMAL))
-        );
+//        predicateManager.putPredicate("statusIsNormal", (cb, root, predicates) ->
+//                predicates.add(cb.equal(root.get("status"), Echo.Status.NORMAL))
+//        );
     }
 
     /* -------------------------------------------------- Grid 扩展列 ------------------------------------------------ */

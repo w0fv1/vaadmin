@@ -38,7 +38,7 @@ public class EntitySelectButton<
             Boolean enabled
     ) {
         this(title, entityClass, singleSelection, enabled);
-        setGenericRepository(genericRepository);
+        setGenericRepository(genericRepository,null);
     }
 
     public EntitySelectButton(
@@ -54,7 +54,7 @@ public class EntitySelectButton<
         this.setEnabled(enabled);
     }
 
-    public void setGenericRepository(GenericRepository genericRepository) {
+    public void setGenericRepository(GenericRepository genericRepository, GenericRepository.PredicateBuilder<E> predicateBuilder) {
         this.dialog = new Dialog();
 
         EntitySelectPage.OnFinish<ID> onFinishCallback = selectedData -> {
@@ -89,6 +89,7 @@ public class EntitySelectButton<
             selectPage.setSelectedData(selectedItems);
             dialog.open();
         });
+        selectPage.addPermanentFilter("preset", predicateBuilder);
 
         selectPage.initialize();
     }

@@ -1,5 +1,6 @@
 package dev.w0fv1.vaadmin.view.form.model;
 
+import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 
 import java.lang.reflect.Method;
@@ -33,5 +34,11 @@ public interface BaseEntityFormModel<E extends BaseManageEntity<ID>, ID> extends
             e.printStackTrace();
         }
         throw new RuntimeException("无法确定E的类型");
+    }
+
+
+
+    default public GenericRepository.PredicateBuilder<E> getEntityPredicateBuilder() {
+        return null;
     }
 }
