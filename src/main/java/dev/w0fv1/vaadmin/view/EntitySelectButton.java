@@ -5,6 +5,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.function.Consumer;
  * EntitySelectButton
  * 实体选择按钮，支持单选/多选实体，并监听选中变化。
  */
+@Slf4j
 public class EntitySelectButton<
         E extends BaseManageEntity<ID>,
         ID> extends Button {
@@ -84,10 +86,11 @@ public class EntitySelectButton<
 
         this.addClickListener(event -> {
             if (!isEnabled()) return;
-            dialog.open();
-            selectPage.refresh();
             selectPage.setSelectedData(selectedItems);
+            dialog.open();
         });
+
+        selectPage.initialize();
     }
 
     public void clear() {
@@ -106,28 +109,42 @@ public class EntitySelectButton<
     }
 
     public void setValue(List<ID> selectedItems) {
-        if (selectedItems == null || selectedItems.isEmpty()) {
+
+        if (selectedItems == null) {
             return;
         }
 
-        ID first = selectedItems.getFirst();
-        if ((first instanceof Number && ((Number) first).longValue() == 0L) ||
-                (first instanceof String && ((String) first).isEmpty())) {
+        if (selectedItems.isEmpty()) {
             return;
         }
+
+
+        ID first = selectedItems.getFirst(); // 如果你用的是 Java 8 之前的版本，这里应改为 selectedItems.get(0)
+
+        if ((first instanceof Number && ((Number) first).longValue() == 0L)) {
+            return;
+        }
+
+        if ((first instanceof String && ((String) first).isEmpty())) {
+            return;
+        }
+
 
         this.selectedItems.clear();
+
         this.selectedItems.addAll(selectedItems);
 
         if (selectPage != null) {
             selectPage.setSelectedData(selectedItems);
         }
 
-        setText("ID为" + selectedItems + "的" + selectedItems.size() + "条数据(点击重选)");
+        String text = "ID为" + selectedItems + "的" + selectedItems.size() + "条数据(点击重选)";
+        setText(text);
 
         // 主动通知监听器
         if (onValueChangeListener != null) {
             onValueChangeListener.accept(new ArrayList<>(this.selectedItems));
         }
     }
+
 }

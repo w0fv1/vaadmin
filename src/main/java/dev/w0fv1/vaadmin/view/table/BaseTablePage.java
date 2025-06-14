@@ -240,9 +240,9 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
         for (Field f : fields) {
             TableField annotation = f.getAnnotation(TableField.class);
             if (annotation != null && annotation.likeSearch()) {
-                String displayName = annotation.displayName();
-                if (displayName != null && !displayName.isBlank()) {
-                    fieldNames.add(displayName);
+                String key = annotation.key();
+                if (key != null && !key.isBlank()) {
+                    fieldNames.add(key);
                 } else {
                     fieldNames.add(f.getName());
                 }

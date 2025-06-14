@@ -83,6 +83,17 @@ public interface BasePage extends BeforeEnterObserver {
         public List<String> get(String key) {
             return this.parameters.getOrDefault(key, List.of());
         }
+        public Integer getInt(String key, Integer defaultValue) {
+            return getSingle(key).map(Integer::valueOf).orElse(defaultValue);
+        }
+
+        public Long getLong(String key, Long defaultValue) {
+            return getSingle(key).map(Long::valueOf).orElse(defaultValue);
+        }
+
+        public boolean contains(String key) {
+            return parameters.containsKey(key);
+        }
 
         public void add(String key, String value) {
             this.parameters.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
@@ -96,6 +107,13 @@ public interface BasePage extends BeforeEnterObserver {
 
         public Map<String, List<String>> asMap() {
             return this.parameters;
+        }
+
+        @Override
+        public String toString() {
+            return "UrlParameters{" +
+                    "parameters=" + parameters +
+                    '}';
         }
     }
 }

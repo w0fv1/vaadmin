@@ -37,8 +37,16 @@ public class EchoF implements BaseFormModel, BaseEntityFormModel<Echo, Long> {
     @FormEntitySelectField(
             entityField = @EntityField(entityType = Echo.class, entityMapper = EchoEntityFieldMapper.ManyToOneEchoFieldMapper.class)
     )
-    @FormField(title = "长信息", nullable = false)
+    @FormField(title = "多对一", nullable = false)
     private Long echoId;
+
+
+
+    @FormEntitySelectField(
+            entityField = @EntityField(entityType = Echo.class, entityMapper = EchoEntityFieldMapper.ManyToManyEchoesFieldMapper.class)
+    )
+    @FormField(title = "多对多", nullable = false)
+    private List<Long> manyToManyEchoes;
 
     @FormField(title = "关键词", nullable = false, subType = String.class)
     private List<String> keywords;

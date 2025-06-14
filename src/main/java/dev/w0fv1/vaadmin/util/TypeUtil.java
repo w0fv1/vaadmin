@@ -2,7 +2,6 @@ package dev.w0fv1.vaadmin.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.type.MapType;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -79,7 +78,7 @@ public class TypeUtil {
     }};
 
 
-    public static Boolean isBaseTye(Class<?> clazz) {
+    public static Boolean isBaseType(Class<?> clazz) {
         if (clazz.isPrimitive()) {
             return true;
         }

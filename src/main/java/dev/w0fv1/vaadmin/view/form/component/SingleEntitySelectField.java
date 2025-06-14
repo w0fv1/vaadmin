@@ -55,7 +55,6 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
     }
 
 
-
     @Override
     public void pushViewData() {
         if (entitySelectButton != null) {

@@ -24,7 +24,7 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
     private final GenericRepository genericRepository;
 
     public MultiEntitySelectField(Field field, BaseFormModel formModel, GenericRepository genericRepository) {
-        super(field, formModel, false);
+        super(field, formModel, true);
         this.genericRepository = genericRepository;
         super.initialize();
 
@@ -52,13 +52,15 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
     }
 
 
-
     @Override
     public void pushViewData() {
+        log.info("pushViewData:{}pushViewData");
+
         if (entitySelectButton != null) {
             if (data == null || data.isEmpty()) {
                 entitySelectButton.clear();
             } else {
+                log.info("data:{}", data);
                 entitySelectButton.setValue(new ArrayList<>(data));
             }
         }

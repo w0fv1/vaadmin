@@ -21,7 +21,7 @@ import org.reflections.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static dev.w0fv1.vaadmin.util.TypeUtil.isBaseTye;
+import static dev.w0fv1.vaadmin.util.TypeUtil.isBaseType;
 import static org.reflections.ReflectionUtils.getAllFields;
 
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
@@ -44,7 +44,7 @@ public class EntitySelectPage<
     private final boolean singleSelection;
 
     private final Grid<E> grid;
-    private final List<ID> data = new ArrayList<>();
+    private final List<E> data = new ArrayList<>();
 
     // Removed likeSearchInput
     private final TextField idSearchInput = new TextField();
@@ -218,7 +218,7 @@ public class EntitySelectPage<
         }));
 
         for (Field field : fieldList) {
-            if (!isBaseTye(field.getType())) {
+            if (!isBaseType(field.getType())) {
                 continue;
             }
 
@@ -235,8 +235,6 @@ public class EntitySelectPage<
                     .setSortable(true);
         }
 
-        // Load initial data
-        loadData();
     }
 
     /**
@@ -279,10 +277,15 @@ public class EntitySelectPage<
         pageInfo.setText(String.format("第 %d 页，共 %d 页", page + 1, getTotalPages()));
     }
 
+    public void initialize() {
+        loadData();
+        pushViewData();
+    }
+
     /**
      * Loads data for the current page with applied filters.
      */
-    private void loadData() {
+    public void loadData() {
         List<E> fetchedData = genericRepository.execute(status -> {
             List<E> list = new ArrayList<>();
             try {
@@ -295,28 +298,48 @@ public class EntitySelectPage<
             }
             return list;
         });
+
         if (fetchedData != null) {
             setData(fetchedData);
+            pushViewData();                    // >>> PATCH
+            selectedCheckboxes.clear();        // 保证旧 checkbox 引用清空 // >>> PATCH
+            lastSelectedCheckbox = null;       // >>> PATCH
+        }
+    }
+
+    public void setData(List<E> data) {
+        this.data.clear();
+        if (data != null) {
+            this.data.addAll(data);
         }
     }
 
     /**
-     * Sets the data to the grid.
-     */
-    public void setData(List<E> data) {
-        this.data.clear();
-        // Assuming you want to display entities, not just their IDs
-        // Adjust accordingly if you intend to store IDs only
-        grid.setItems(data);
-    }
-
-    /**
-     * Sets the data to the grid.
+     * 外部设置需要“被勾选”的 ID 列表。
+     * - 同步 `selectedItems`；
+     * - 清空旧的 checkbox 引用；
+     * - 立即刷新 Grid，使对应行复选框显示为选中状态。
      */
     public void setSelectedData(List<ID> data) {
+        log.debug("setSelectedData 被调用，参数: {}", data);
+
+        // 1. 更新内部选中集合
         this.selectedItems.clear();
-        this.selectedItems.addAll(data);
-        this.refresh();
+        if (data != null) {
+            this.selectedItems.addAll(data);
+        }
+
+        // 2. 重置本地复选框引用，防止旧引用失效
+        this.selectedCheckboxes.clear();
+        this.lastSelectedCheckbox = null;
+
+        // 3. **刷新 Grid** —— 重新渲染 ComponentColumn，使复选框选中状态与 selectedItems 对齐
+        pushViewData();
+        log.debug("setSelectedData 完成，已刷新 Grid 并同步选中状态");
+    }
+
+    public void pushViewData() {
+        grid.setItems(this.data);
     }
 
     /**
@@ -368,6 +391,7 @@ public class EntitySelectPage<
         uuidSearchInput.clear();
         predicateManager.clearPredicatesWithOut("init");
         selectedItems.clear();
+
         jumpPage(0);
     }
 
@@ -427,8 +451,4 @@ public class EntitySelectPage<
         return (int) Math.ceil((double) totalSize / pageSize);
     }
 
-    @PostConstruct
-    public void init() {
-        // Initial data load is already handled in the constructor.
-    }
 }
