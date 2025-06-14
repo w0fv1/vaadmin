@@ -42,8 +42,10 @@ public class SingleEntitySelectField<E extends BaseManageEntity<ID>, ID> extends
                 isSingle,
                 getFormField().enabled()
         );
-        this.entitySelectButton.setGenericRepository(this.genericRepository, ((BaseEntityFormModel) getFormModel()).getEntityPredicateBuilder());
+        this.entitySelectButton.setGenericRepository(this.genericRepository,
+                formEntitySelectField.enablePredicate() ?
 
+                        ((BaseEntityFormModel) getFormModel()).getEntityPredicateBuilder() : null);
         add(this.entitySelectButton);
 
         this.entitySelectButton.setOnValueChangeListener(selected -> {

@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FormEntitySelectField {
     EntityField entityField();
+
+    boolean enablePredicate() default true;
 }

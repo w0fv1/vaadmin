@@ -4,7 +4,6 @@ import dev.w0fv1.vaadmin.GenericRepository;
 import dev.w0fv1.vaadmin.entity.BaseManageEntity;
 import dev.w0fv1.vaadmin.view.EntitySelectButton;
 import dev.w0fv1.vaadmin.view.form.model.BaseEntityFormModel;
-import dev.w0fv1.vaadmin.view.form.model.BaseFormModel;
 import dev.w0fv1.vaadmin.view.form.model.FormField;
 import dev.w0fv1.vaadmin.view.form.model.FormEntitySelectField;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +41,10 @@ public class MultiEntitySelectField<E extends BaseManageEntity<ID>, ID> extends 
                 formField.enabled()
         );
 
-        this.entitySelectButton.setGenericRepository(this.genericRepository, ((BaseEntityFormModel) getFormModel()).getEntityPredicateBuilder());
+        this.entitySelectButton.setGenericRepository(this.genericRepository,
+                formEntitySelectField.enablePredicate() ?
+
+                        ((BaseEntityFormModel) getFormModel()).getEntityPredicateBuilder() : null);
 
         this.entitySelectButton.setOnValueChangeListener(selectedIds -> {
             setData(new ArrayList<>(selectedIds));
