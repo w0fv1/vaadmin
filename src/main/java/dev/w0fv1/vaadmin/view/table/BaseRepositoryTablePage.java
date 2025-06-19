@@ -12,8 +12,11 @@ import dev.w0fv1.vaadmin.view.BasePage;
 import dev.w0fv1.vaadmin.view.form.RepositoryForm;
 import dev.w0fv1.vaadmin.view.form.model.BaseEntityFormModel;
 import dev.w0fv1.vaadmin.view.table.model.BaseEntityTableModel;
+import dev.w0fv1.vaadmin.view.table.model.TableField;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,8 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static dev.w0fv1.vaadmin.view.table.model.TableField.SqlType.JSONB;
 
 @Slf4j
 public abstract class BaseRepositoryTablePage<
@@ -194,20 +199,100 @@ public abstract class BaseRepositoryTablePage<
     /**
      * 根据 filter 构建模糊搜索谓词
      */
+    /**
+     * 根据 filter 构建模糊搜索谓词
+     *
+     * <p>支持：</p>
+     * <ul>
+     *   <li>varchar / text 直接 ILIKE</li>
+     *   <li>numeric / enum / date 统一 cast(... as varchar) ILIKE</li>
+     *   <li>json / jsonb 字段使用 column::text ILIKE</li>
+     * </ul>
+     *
+     * <p>可通过 {@link dev.w0fv1.vaadmin.view.table.model.TableField#sqlType()}
+     * 显式指定 SQL 类型；若未指定，则自动根据 Java 类型推断，
+     * 且 <b>List 类型默认视为 JSONB</b>。</p>
+     */
     private void buildLikeSearchPredicate(String filter) {
+
+        // 1. 先移除旧的 likeSearch 谓词，避免多次叠加
         predicateManager.removePredicate("likeSearch");
-        if (filter != null && !filter.isBlank()) {
-            predicateManager.putPredicate("likeSearch", (cb, root, predicates) -> {
-                List<Predicate> likes = new ArrayList<>();
-                for (String field : super.getLikeSearchFieldNames()) {
-                    likes.add(cb.like(root.get(field), "%" + filter + "%"));
-                }
-                if (!likes.isEmpty()) {
-                    predicates.add(cb.or(likes.toArray(new Predicate[0])));
-                }
-            });
+
+        // 2. 空串直接返回
+        if (filter == null || filter.isBlank()) {
+            return;
         }
+
+        // 3. 统一处理成小写模糊匹配串
+        final String lowerPattern = "%" + filter.toLowerCase() + "%";
+
+        predicateManager.putPredicate("likeSearch", (cb, root, predicates) -> {
+
+            List<Predicate> likes = new ArrayList<>();
+
+            // 当前实体类型，用于反射读取字段注解
+            Class<?> entityClass = root.getModel().getBindableJavaType();
+
+            // 遍历所有开启 likeSearch 的字段
+            for (String field : super.getLikeSearchFieldNames()) {
+
+                Path<?> path = root.get(field);
+                Class<?> javaType = path.getJavaType();
+
+                /*---------------------------------- 读取 @TableField.sqlType() ----------------------------------*/
+                TableField.SqlType sqlType = TableField.SqlType.AUTO;
+                try {
+                    java.lang.reflect.Field entityField = entityClass.getDeclaredField(field);
+                    TableField tfAnno = entityField.getAnnotation(TableField.class);
+                    if (tfAnno != null) {
+                        sqlType = tfAnno.sqlType();
+                    }
+                } catch (NoSuchFieldException ignore) {
+                }
+
+                /*---------------------------------- AUTO 模式下：按 Java 类型推断 ----------------------------------*/
+                if (sqlType == TableField.SqlType.AUTO) {
+                    if (String.class.isAssignableFrom(javaType)) {
+                        sqlType = TableField.SqlType.TEXT;
+                    } else if (Number.class.isAssignableFrom(javaType)
+                            || java.time.temporal.Temporal.class.isAssignableFrom(javaType)
+                            || java.util.Date.class.isAssignableFrom(javaType)
+                            || javaType.isEnum()) {
+                        sqlType = TableField.SqlType.NUMERIC;
+                    } else if (java.util.List.class.isAssignableFrom(javaType)) {
+                        // List 默认当作 jsonb
+                        sqlType = TableField.SqlType.JSONB;
+                    } else {
+                        // 兜底仍然按 TEXT 处理
+                        sqlType = TableField.SqlType.TEXT;
+                    }
+                }
+
+                /*---------------------------------- 根据 sqlType 生成表达式 ----------------------------------*/
+                Expression<String> expr;
+                switch (sqlType) {
+                    case JSONB -> {
+                        // json / jsonb 必须先 ::text 再 ILIKE
+                        expr = cb.lower(
+                                cb.function("cast", String.class, path, cb.literal("text"))
+                        );
+                    }
+                    default -> {
+                        // 其他都让 Hibernate 自动 cast 为 varchar
+                        expr = cb.lower(path.as(String.class));
+                    }
+                }
+
+                likes.add(cb.like(expr, lowerPattern));
+            }
+
+            // 收敛成 OR
+            if (!likes.isEmpty()) {
+                predicates.add(cb.or(likes.toArray(new Predicate[0])));
+            }
+        });
     }
+
 
     private T convertToDto(E entity) {
         try {
