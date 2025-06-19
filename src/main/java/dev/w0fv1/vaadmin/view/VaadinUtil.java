@@ -2,6 +2,7 @@ package dev.w0fv1.vaadmin.view;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.Page;
+import com.vaadin.flow.component.textfield.TextArea;
 
 /**
  * Vaadin 工具类，包含常用操作工具方法。
@@ -26,4 +27,19 @@ public class VaadinUtil {
             System.err.println("无法获取当前 UI 实例，无法打开新标签页");
         }
     }
+
+
+    /**
+     * 将文本复制到剪贴板
+     */
+    public static void copyToClipboard(String text) {
+        // 使用 JavaScript 来执行剪贴板操作
+        UI.getCurrent().getPage().executeJs(
+                "navigator.clipboard.writeText($0).then(function() {" +
+                        "  console.log('复制成功');" +
+                        "}, function(err) {" +
+                        "  console.error('复制失败: ', err);" +
+                        "});", text);
+    }
+
 }

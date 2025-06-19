@@ -291,10 +291,10 @@ public abstract class BaseForm<F extends BaseFormModel> extends VerticalLayout {
                 throw new RuntimeException(e);
             }
 
-        } else if (type.equals(String.class) && (!field.isAnnotationPresent(Size.class) || (field.getAnnotation(Size.class).max() < 256))) {
+        } else if (type.equals(String.class) && !fromField.longText() && !fromField.id()) {
             formFieldComponent = new TextInputField(field, model);
             log.debug("字段 [{}] 匹配 TextInputField", field.getName());
-        } else if (type.equals(String.class) && (field.isAnnotationPresent(Size.class) && (field.getAnnotation(Size.class).max() > 256))) {
+        } else if (type.equals(String.class) && fromField.longText() && !fromField.id()) {
             formFieldComponent = new LongTextInputField(field, model);
             log.debug("字段 [{}] 匹配 LongTextInputField", field.getName());
         } else if (fromField.id() && type.equals(String.class)) {
