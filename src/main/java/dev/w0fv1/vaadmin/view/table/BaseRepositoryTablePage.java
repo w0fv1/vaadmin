@@ -273,9 +273,7 @@ public abstract class BaseRepositoryTablePage<
                 switch (sqlType) {
                     case JSONB -> {
                         // json / jsonb 必须先 ::text 再 ILIKE
-                        expr = cb.lower(
-                                cb.function("cast", String.class, path, cb.literal("text"))
-                        );
+                        expr = cb.lower(cb.function("jsonb_pretty", String.class, path));
                     }
                     default -> {
                         // 其他都让 Hibernate 自动 cast 为 varchar
