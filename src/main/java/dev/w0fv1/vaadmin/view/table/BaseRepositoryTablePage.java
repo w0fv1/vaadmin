@@ -170,10 +170,11 @@ public abstract class BaseRepositoryTablePage<
                 predicateManager.addAllPredicates(extendPredicateBuilders);
                 List<SortOrder> sortOrders = querySortOrders.stream().map(SortOrder::new).toList();
 
+                int page = offset / limit;
 
-                List<E> entities = genericRepository.getPage(entityClass, offset, limit, predicateManager, sortOrders);
+                List<E> entities = genericRepository.getPage(entityClass, page, limit, predicateManager, sortOrders);
                 List<T> result = entities.stream().map(this::convertToDto).collect(Collectors.toList());
-                log.debug("加载 offset={} limit={} filter={} 条数：{}", offset, limit, filter, result.size());
+                log.debug("加载 page={} limit={} filter={} 条数：{}", page, limit, filter, result.size());
                 return result;
             } catch (Exception e) {
                 status.setRollbackOnly();
