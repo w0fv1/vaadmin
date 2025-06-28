@@ -27,6 +27,7 @@ import java.time.Duration;
 
 // 若需要直接使用 StatsCard 类型，可再 import com.example.stats.StatsCard;
 
+import static dev.w0fv1.vaadmin.view.tools.LoadingOverlay.startLoading;
 import static dev.w0fv1.vaadmin.view.tools.Notifier.showNotification;
 
 /**
@@ -224,6 +225,14 @@ public class EchoRepositoryPage extends BaseRepositoryTablePage<EchoT, EchoF, Ec
 
         layout.add(statsGroup);
         /* ---------- 统计卡片示例结束 ---------- */
+
+        layout.add(new Button("显示loading", new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> event) {
+                startLoading(UI.getCurrent(), "正在加载中...", 5000L);
+            }
+        }));
+
 
         return layout;
     }
