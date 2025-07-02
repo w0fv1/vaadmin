@@ -20,6 +20,7 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.criteria.JpaExpression;
 import org.springframework.transaction.support.TransactionCallback;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 
@@ -276,6 +277,9 @@ public abstract class BaseRepositoryTablePage<
                         // json / jsonb 必须先 ::text 再 ILIKE
                         expr = cb.lower(cb.function("jsonb_pretty", String.class, path));
                     }
+                    case NUMERIC ->                                // bigint/decimal/enum/date
+                            expr = cb.lower(((JpaExpression<?>) path).cast(String.class));
+
                     default -> {
                         // 其他都让 Hibernate 自动 cast 为 varchar
                         expr = cb.lower(path.as(String.class));

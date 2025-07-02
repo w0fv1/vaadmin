@@ -8,7 +8,7 @@ plugins {
 
 
 group = "dev.w0fv1"
-version = "0.27.6"
+version = "0.28.0"
 
 
 val springBootVersion = "3.4.5" // 设置 Spring Boot 版本
@@ -70,13 +70,13 @@ dependencies {
 
     implementation("dev.w0fv1:fmapper:0.0.5") // 替换为实际的 group 和 version
     annotationProcessor("dev.w0fv1:fmapper:0.0.5") // 注解处理器依赖
-
+    runtimeOnly("org.postgresql:postgresql:42.7.7")
     compileOnly("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
 
-    runtimeOnly("com.h2database:h2:2.3.230")
+//    runtimeOnly("com.h2database:h2:2.3.230")
 }
 
 tasks.test {
