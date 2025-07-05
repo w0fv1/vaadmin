@@ -20,10 +20,10 @@ import static dev.w0fv1.vaadmin.util.JsonUtil.toHashMap;
 @Slf4j
 @Data
 @ToString
-@TableConfig(title = "回声管理", description = "这是一个测试页面, 用于测试后台框架的建立", likeSearch = true)
+@TableConfig(title = "回声管理", description = "这是一个测试页面, 用于测试后台框架的建立", likeSearch = true, pageSize = 20)
 @NoArgsConstructor
 public class EchoT implements BaseEntityTableModel<Echo, Long> {
-    @TableField(displayName = "ID", order = 1, sortable = true,likeSearch = true)
+    @TableField(displayName = "ID", order = 1, sortable = true, likeSearch = true)
     private Long id;
     @TableField(displayName = "信息", order = 2, likeSearch = true)
     private String message;

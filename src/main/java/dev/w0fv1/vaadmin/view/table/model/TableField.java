@@ -23,6 +23,7 @@ public @interface TableField {
     public boolean sortable() default false;
 
     public String likeSearchName() default "";
+    boolean frozen() default false;
 
     /**
      * 指定使用的组件类（暂时保留接口，当前逻辑只支持String->TextFieldComponent）

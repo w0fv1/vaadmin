@@ -87,6 +87,15 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
     public void initData() {
         if (dataInitialized) return;
 
+
+        grid.setPageSize(tableConfig.pageSize());   // ← 关键
+
+        if (tableConfig.allRowsVisible()) {
+            grid.setAllRowsVisible(true);
+        } else {
+            grid.setHeight("800px");
+        }
+
         provider = DataProvider.fromFilteringCallbacks(this::fetch, this::count)
                 // 使用默认 FilterCombiner，避免 NPE
                 .withConfigurableFilter();
@@ -141,13 +150,19 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
             TableField tf = f.getAnnotation(TableField.class);
             String header = tf != null && !tf.displayName().isEmpty() ? tf.displayName() : f.getName();
             String columnKey = tf != null && !tf.key().isEmpty() ? tf.key() : f.getName();
+            Grid.Column<T> col;  // <—— 把列句柄留下，后面统一处理冻结
 
             if (tf != null && tf.sortable()) {
-                grid.addColumn(item -> getComparableFieldValue(item, f))
+                col = grid.addColumn(item -> getComparableFieldValue(item, f))
                         .setHeader(header).setSortable(true).setKey(columnKey).setAutoWidth(true);
             } else {
-                grid.addComponentColumn(item -> buildSpanCell(item, f))
+                col = grid.addComponentColumn(item -> buildSpanCell(item, f))
                         .setHeader(header).setKey(columnKey).setAutoWidth(true);
+            }
+            /* ---------- 新增逻辑：根据注解决定是否冻结 ---------- */
+            if (tf != null && tf.frozen()) {
+                col.setFrozen(true);      // → 冻结到左边
+                // 如需禁止用户拖动改变顺序，可再加：col.setReorderable(false);
             }
         }
         extendGridColumns();
@@ -189,7 +204,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     /**
      * 构建模糊搜索栏：
-     *  - 在同一行（HorizontalLayout）中，最左侧放文字标识，紧接输入框，最后是搜索按钮。
+     * - 在同一行（HorizontalLayout）中，最左侧放文字标识，紧接输入框，最后是搜索按钮。
      */
     private void buildLikeSearchBar() {
         if (!tableConfig.likeSearch()) return;
@@ -289,6 +304,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     /**
      * 向 titleBar 添加组件
+     *
      * @param components 要添加的组件
      */
     public void addTitleBar(Component... components) {
@@ -299,6 +315,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     /**
      * 向 secondaryAction 添加组件
+     *
      * @param components 要添加的组件
      */
     public void addSecondaryAction(Component... components) {
@@ -309,6 +326,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     /**
      * 向 dataActions 添加组件
+     *
      * @param components 要添加的组件
      */
     public void addDataActions(Component... components) {
@@ -319,6 +337,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     /**
      * 向 primaryActions 添加组件，仅当其是 Composite 类型容器时有效
+     *
      * @param components 要添加的组件
      */
     public void addPrimaryActions(Component... components) {

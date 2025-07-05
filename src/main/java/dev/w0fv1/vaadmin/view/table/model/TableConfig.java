@@ -13,5 +13,6 @@ public @interface TableConfig {
 
     boolean likeSearch() default false;
 
-
+    int pageSize() default 50;
+    boolean allRowsVisible() default false;
 }
