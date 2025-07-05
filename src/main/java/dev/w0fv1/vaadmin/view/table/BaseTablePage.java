@@ -144,7 +144,17 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
 
     private void buildGridColumns() {
         List<Field> fields = new ArrayList<>(getAllFields(tableClass, ReflectionUtils.withModifier(PRIVATE)).stream().toList());
-        fields.sort(Comparator.comparingDouble(f -> Optional.ofNullable(f.getAnnotation(TableField.class)).map(TableField::order).orElse(100)));
+        fields.sort(Comparator.comparingDouble(f -> {
+            TableField tableField = f.getAnnotation(TableField.class);
+
+            // 设置冻结列的排序值为最小（确保它排在最前面）
+            if (tableField != null && tableField.frozen()) {
+                return -1;  // 冻结列排最前面
+            }
+
+            // 非冻结列按原来的 order 排序
+            return Optional.ofNullable(tableField).map(TableField::order).orElse(100);
+        }));
         for (Field f : fields) {
             f.setAccessible(true);
             TableField tf = f.getAnnotation(TableField.class);
@@ -160,7 +170,7 @@ public abstract class BaseTablePage<T extends BaseTableModel> extends VerticalLa
                         .setHeader(header).setKey(columnKey).setAutoWidth(true);
             }
             /* ---------- 新增逻辑：根据注解决定是否冻结 ---------- */
-            if (tf != null && tf.frozen()) {
+            if (tf != null && (tf.frozen() || tf.id())) {
                 col.setFrozen(true);      // → 冻结到左边
                 // 如需禁止用户拖动改变顺序，可再加：col.setReorderable(false);
             }

@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TableField {
+    public boolean id() default false;
+
     public int order() default 100;
 
     public String key() default "";
